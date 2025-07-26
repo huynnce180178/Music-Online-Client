@@ -765,7 +765,7 @@ export default function SongDetail({ songId, onClose }) {
                 .progress-bar-wrap {
                     display: none;
                 }
-                @media (max-width: 1024px) {
+                @media (max-width: 780px) {
                     .progress-bar-wrap {
                         display: block !important;
                     }
