@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { PlayerContext } from "../context/PlayerContext";
 import { useTranslation } from 'react-i18next';
+import { useParams } from "react-router-dom";
 import BASE_API_URL from "../services/base.api.url";
 
 function getInitialCount() {
@@ -18,6 +19,7 @@ export default function GenresList() {
     const playerCtx = useContext(PlayerContext) || {};
     const { playSong } = playerCtx;
     const { t } = useTranslation();
+    const { genreId } = useParams();
 
     function getBreakpoint() {
         if (window.innerWidth < 576) return "mobile";
@@ -26,10 +28,25 @@ export default function GenresList() {
     }
 
     useEffect(() => {
-        axios.get(`${BASE_API_URL}/api/v1/guest/genre/genresViewMore?page=0&size=20&sortBy=id&sortDir=asc`)
-            .then(res => setGenres(res.data))
-            .catch(() => setGenres([]));
-    }, []);
+        if (genreId) {
+            // If genreId is provided, fetch specific genre
+            axios.get(`${BASE_API_URL}/api/v1/guest/genre/${genreId}/songs`)
+                .then(res => {
+                    const genreData = res.data?.data || res.data;
+                    if (genreData) {
+                        setGenres([genreData]);
+                    } else {
+                        setGenres([]);
+                    }
+                })
+                .catch(() => setGenres([]));
+        } else {
+            // Fetch all genres for genres-viewmore page
+            axios.get(`${BASE_API_URL}/api/v1/guest/genre/genresViewMore?page=0&size=20&sortBy=id&sortDir=asc`)
+                .then(res => setGenres(res.data))
+                .catch(() => setGenres([]));
+        }
+    }, [genreId]);
 
     useEffect(() => {
         function handleResize() {

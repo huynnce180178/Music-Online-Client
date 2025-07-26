@@ -26,9 +26,33 @@ export default function FeaturedAlbums() {
     const [startIdx, setStartIdx] = useState(0);
 
     useEffect(() => {
-        fetch(`${BASE_API_URL}/api/v1/guest/ablum/featured`)
-            .then(res => res.json())
-            .then(data => {
+        // Try multiple endpoints to find the correct one
+        const endpoints = [
+            `${BASE_API_URL}/api/v1/guest/ablum/featured`,
+            `${BASE_API_URL}/api/v1/guest/album/featured`,
+            `${BASE_API_URL}/api/v1/guest/ablum/featured-albums`,
+            `${BASE_API_URL}/api/v1/guest/album/featured-albums`
+        ];
+        
+        const tryEndpoint = async (index = 0) => {
+            if (index >= endpoints.length) {
+                console.error('All featured album endpoints failed');
+                setAlbums([]);
+                return;
+            }
+            
+            const endpoint = endpoints[index];
+            console.log(`Trying featured albums endpoint ${index + 1}:`, endpoint);
+            
+            try {
+                const res = await fetch(endpoint);
+                if (!res.ok) {
+                    throw new Error(`HTTP ${res.status}`);
+                }
+                
+                const data = await res.json();
+                console.log(`Featured albums endpoint ${index + 1} response:`, data);
+                
                 // Check if data is an array and has content
                 if (Array.isArray(data) && data.length > 0) {
                     const mapped = data.map(album => ({
@@ -38,6 +62,7 @@ export default function FeaturedAlbums() {
                         cover: album.coverUrl || "/img/default-cover.png",
                     }));
                     setAlbums(mapped);
+                    console.log('Set featured albums successfully:', mapped.length);
                 } else if (data && Array.isArray(data.data)) {
                     // Handle case where data is wrapped in a data property
                     const mapped = data.data.map(album => ({
@@ -47,12 +72,19 @@ export default function FeaturedAlbums() {
                         cover: album.coverUrl || "/img/default-cover.png",
                     }));
                     setAlbums(mapped);
+                    console.log('Set featured albums from data.data:', mapped.length);
                 } else {
-                    console.warn("Featured albums data is not in expected format:", data);
-                    setAlbums([]);
+                    console.warn(`Featured albums endpoint ${index + 1} returned empty or invalid data:`, data);
+                    tryEndpoint(index + 1);
+                    return;
                 }
-            })
-            .catch(() => setAlbums([]));
+            } catch (error) {
+                console.error(`Featured albums endpoint ${index + 1} failed:`, error.message);
+                tryEndpoint(index + 1);
+            }
+        };
+        
+        tryEndpoint();
     }, []);
 
     useEffect(() => {

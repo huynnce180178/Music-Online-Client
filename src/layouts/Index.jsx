@@ -245,9 +245,10 @@ function AppRoutes(props) {
           <Route path="artists" element={<ArtistsPage />} />
           <Route path="artist/:artistId" element={<ArtistProfile />} />
           <Route path="genres" element={<GenresPage />} />
+          <Route path="genres/:genreId/songs" element={<GenresList />} />
+          <Route path="genres-viewmore" element={<GenresList />} />
           <Route path="top-tracks" element={<TopTracksPage />} />
           <Route path="downloads" element={<DownloadPage />} />
-          <Route path="genres-viewmore" element={<GenresList />} />
           <Route path="favourites" element={<FavoritePage />} />
           <Route path="history" element={<HistoryPage />} />
           <Route path="album/:albumId" element={<AlbumDetail />} />

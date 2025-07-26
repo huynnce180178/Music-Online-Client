@@ -87,26 +87,57 @@ export default function Top15Albums() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        fetch(`${BASE_API_URL}/api/v1/guest/album/top15`)
-            .then((res) => res.json())
-            .then((data) => {
+        setLoading(true);
+        
+        // Try multiple endpoints to find the correct one
+        const endpoints = [
+            `${BASE_API_URL}/api/v1/guest/ablum/top15`,
+            `${BASE_API_URL}/api/v1/guest/album/top15`,
+            `${BASE_API_URL}/api/v1/guest/album/top-15`,
+            `${BASE_API_URL}/api/v1/guest/ablum/top-15`
+        ];
+        
+        const tryEndpoint = async (index = 0) => {
+            if (index >= endpoints.length) {
+                console.error('All album endpoints failed');
+                setAlbums([]);
+                setLoading(false);
+                return;
+            }
+            
+            const endpoint = endpoints[index];
+            console.log(`Trying album endpoint ${index + 1}:`, endpoint);
+            
+            try {
+                const res = await fetch(endpoint);
+                if (!res.ok) {
+                    throw new Error(`HTTP ${res.status}`);
+                }
+                
+                const data = await res.json();
+                console.log(`Album endpoint ${index + 1} response:`, data);
+                
                 // Check if data is an array and has content
                 if (Array.isArray(data) && data.length > 0) {
                     setAlbums(data);
+                    console.log('Set albums successfully:', data.length);
                 } else if (data && Array.isArray(data.data)) {
                     // Handle case where data is wrapped in a data property
                     setAlbums(data.data);
+                    console.log('Set albums from data.data:', data.data.length);
                 } else {
-                    console.warn("Top 15 albums data is not in expected format:", data);
-                    setAlbums([]);
+                    console.warn(`Album endpoint ${index + 1} returned empty or invalid data:`, data);
+                    tryEndpoint(index + 1);
+                    return;
                 }
                 setLoading(false);
-            })
-            .catch((error) => {
-                console.error("Lỗi khi lấy dữ liệu:", error);
-                setAlbums([]);
-                setLoading(false);
-            });
+            } catch (error) {
+                console.error(`Album endpoint ${index + 1} failed:`, error.message);
+                tryEndpoint(index + 1);
+            }
+        };
+        
+        tryEndpoint();
     }, []);
 
     // Chia album thành 3 cột
