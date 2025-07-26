@@ -329,7 +329,7 @@ function SongPlay({ sidebarWidth = 0 }) {
                     backdropFilter: 'blur(12px)',
                     width: `calc(100vw - ${sidebarWidth}px)`,
                     minHeight: 90,
-                    padding: '0 32px',
+                    padding: window.innerWidth <= 768 ? '0 16px' : '0 32px',
                     position: 'fixed',
                     left: sidebarWidth,
                     bottom: 0,
@@ -344,22 +344,24 @@ function SongPlay({ sidebarWidth = 0 }) {
                 <div className="player-thumb">
                     <img src={song?.profilePicUrl} alt={song?.title}
                         style={{
-                            width: 72, height: 72, borderRadius: 16,
+                            width: window.innerWidth <= 768 ? 60 : 72, 
+                            height: window.innerWidth <= 768 ? 60 : 72, 
+                            borderRadius: window.innerWidth <= 768 ? 12 : 16,
                             objectFit: "cover", boxShadow: "0 2px 16px #29aaff44"
                         }} />
                 </div>
 
                 {/* Song Info */}
                 <div className="player-info" style={{
-                    flex: 1, padding: "0 24px 5px 18px", overflow: "hidden"
+                    flex: 1, padding: window.innerWidth <= 768 ? "0 16px 5px 12px" : "0 24px 5px 18px", overflow: "hidden"
                 }}>
                     <div className="player-title" style={{
-                        color: "#fff", fontWeight: 700, fontSize: 22,
+                        color: "#fff", fontWeight: 700, fontSize: window.innerWidth <= 768 ? 18 : 22,
                         textShadow: "0 1px 8px #0006", overflow: "hidden",
                         display: "-webkit-box", WebkitLineClamp: 1, WebkitBoxOrient: "vertical"
                     }}>{song?.title}</div>
                     <div className="player-artist" style={{
-                        color: "#8ca0c6", fontWeight: 400, fontSize: 15,
+                        color: "#8ca0c6", fontWeight: 400, fontSize: window.innerWidth <= 768 ? 13 : 15,
                         opacity: 0.95, marginTop: 2, whiteSpace: "nowrap",
                         overflow: "hidden", textOverflow: "ellipsis"
                     }}>{song?.artistName || song?.albumName}</div>
@@ -367,7 +369,10 @@ function SongPlay({ sidebarWidth = 0 }) {
 
                 {/* Controls */}
                 <div className="player-controls" style={{
-                    flex: "0 0 170px", display: 'flex', gap: 18, alignItems: "center"
+                    flex: window.innerWidth <= 768 ? "0 0 140px" : "0 0 170px", 
+                    display: 'flex', 
+                    gap: window.innerWidth <= 768 ? 12 : 18, 
+                    alignItems: "center"
                 }}>
                     <button
                         className="player-btn"
@@ -400,7 +405,9 @@ function SongPlay({ sidebarWidth = 0 }) {
 
                 {/* Progress */}
                 <div className="player-progress-wrap" style={{
-                    flex: "2 2 320px", maxWidth: 340, padding: "0 24px"
+                    flex: window.innerWidth <= 768 ? "1 1 200px" : "2 2 320px", 
+                    maxWidth: window.innerWidth <= 768 ? 200 : 340, 
+                    padding: window.innerWidth <= 768 ? "0 12px" : "0 24px"
                 }}>
                     <input
                         type="range"
@@ -416,7 +423,7 @@ function SongPlay({ sidebarWidth = 0 }) {
                             height: 6, borderRadius: 4
                         }}
                     />
-                    <div className="d-flex justify-content-between mt-1" style={{ color: "#8ca0c6", fontSize: 13 }}>
+                    <div className="d-flex justify-content-between mt-1" style={{ color: "#8ca0c6", fontSize: window.innerWidth <= 768 ? 11 : 13 }}>
                         <span>{formatTime(currentTime)}</span>
                         <span>{song ? song.duration.substring(3) : "0:00"}</span>
                     </div>
@@ -424,11 +431,15 @@ function SongPlay({ sidebarWidth = 0 }) {
 
                 {/* Right Controls */}
                 <div className="player-actions" style={{
-                    flex: "0 0 160px", marginRight: '10px', display: "flex", gap: 12, alignItems: "center"
+                    flex: window.innerWidth <= 768 ? "0 0 120px" : "0 0 160px", 
+                    marginRight: window.innerWidth <= 768 ? '5px' : '10px', 
+                    display: "flex", 
+                    gap: window.innerWidth <= 768 ? 8 : 12, 
+                    alignItems: "center"
                 }}>
-                    <i className="bi bi-volume-up" style={{ fontSize: 19, color: "#8ca0c6" }}></i>
+                    <i className="bi bi-volume-up" style={{ fontSize: window.innerWidth <= 768 ? 16 : 19, color: "#8ca0c6" }}></i>
                     <input type="range" min={0} max={1} step={0.01} value={volume} onChange={handleVolume}
-                        style={{ width: 60, accentColor: "#3ed8ff" }} />
+                        style={{ width: window.innerWidth <= 768 ? 40 : 60, accentColor: "#3ed8ff" }} />
                     <button className={`player-btn like${liked ? " liked" : ""}`}
                         title={t("favorite") || "Favorite"}
                         onClick={toggleWishlist}
@@ -696,6 +707,21 @@ function SongPlay({ sidebarWidth = 0 }) {
 .improved-player {
     animation: fadeInUp 0.4s;
 }
+
+/* iPhone safe area support */
+@supports (padding: max(0px)) {
+    .improved-player {
+        padding-bottom: max(0px, env(safe-area-inset-bottom));
+    }
+}
+
+/* Ensure player doesn't get cut off on mobile */
+@media (max-width: 768px) {
+    .improved-player {
+        min-height: 80px;
+        padding-bottom: max(8px, env(safe-area-inset-bottom));
+    }
+}
 @keyframes fadeInUp {
     from { opacity: 0; transform: translateY(40px);}
     to { opacity: 1; transform: translateY(0);}
@@ -714,6 +740,14 @@ function SongPlay({ sidebarWidth = 0 }) {
     transition: background 0.18s, color 0.18s;
     box-shadow: none !important;
 }
+
+@media (max-width: 768px) {
+    .player-btn {
+        font-size: 18px;
+        width: 32px;
+        height: 32px;
+    }
+}
 .player-btn:hover, .player-btn:focus {
     background: #3ed8ff33;
     color: #3ed8ff;
@@ -727,6 +761,14 @@ function SongPlay({ sidebarWidth = 0 }) {
     width: 48px;
     height: 48px;
     box-shadow: none !important;
+}
+
+@media (max-width: 768px) {
+    .player-btn.main {
+        font-size: 24px;
+        width: 40px;
+        height: 40px;
+    }
 }
 .player-btn.like.liked {
     color: #ff416c;
