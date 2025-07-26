@@ -14,6 +14,7 @@ import {
     Empty,
     Tooltip,
     Popconfirm,
+    message,
 } from "antd";
 import {
     FiUser,
@@ -269,6 +270,7 @@ export default function ArtistLayout({ children }) {
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [collapsed, setCollapsed] = useState(false);
     const [showProfile, setShowProfile] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
 
     // State cho switch role
     const [showRoleModal, setShowRoleModal] = useState(false);
@@ -284,7 +286,11 @@ export default function ArtistLayout({ children }) {
         const roles = JSON.parse(localStorage.getItem("roles") || "[]");
         setRoles(roles);
         if (!roles.includes("ROLE_ARTIST")) {
+            // Show a message before redirecting
+            message.error("You need to be logged in as an artist to access this page.");
             navigate("/");
+        } else {
+            setIsLoading(false);
         }
     }, [navigate]);
 
@@ -441,6 +447,21 @@ export default function ArtistLayout({ children }) {
             `}</style>
         </>
     );
+
+    if (isLoading) {
+        return (
+            <div style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                minHeight: "100vh",
+                background: "#181c2b",
+                color: "#3ed8ff"
+            }}>
+                <Spin size="large" />
+            </div>
+        );
+    }
 
     return (
         <Layout style={{ minHeight: "100vh", background: "#181c2b" }}>
