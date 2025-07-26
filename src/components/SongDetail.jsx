@@ -763,7 +763,7 @@ export default function SongDetail({ songId, onClose }) {
                     }
                 }
                 .progress-bar-wrap {
-                    display: none;
+                    display: none !important;
                 }
                 @media (max-width: 780px) {
                     .progress-bar-wrap {
