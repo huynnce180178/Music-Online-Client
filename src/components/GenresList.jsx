@@ -14,9 +14,16 @@ export default function GenresList() {
     const [genres, setGenres] = useState([]);
     const [visibleCounts, setVisibleCounts] = useState({});
     const [startIdxs, setStartIdxs] = useState({});
+    const [breakpoint, setBreakpoint] = useState(getBreakpoint());
     const playerCtx = useContext(PlayerContext) || {};
     const { playSong } = playerCtx;
     const { t } = useTranslation();
+
+    function getBreakpoint() {
+        if (window.innerWidth < 576) return "mobile";
+        if (window.innerWidth < 992) return "tablet";
+        return "desktop";
+    }
 
     useEffect(() => {
         axios.get(`${BASE_API_URL}/api/v1/guest/genre/genresViewMore?page=0&size=20&sortBy=id&sortDir=asc`)
@@ -26,6 +33,7 @@ export default function GenresList() {
 
     useEffect(() => {
         function handleResize() {
+            setBreakpoint(getBreakpoint());
             setVisibleCounts({});
             setStartIdxs({});
         }
@@ -64,10 +72,16 @@ export default function GenresList() {
     return (
         <div style={{
             background: "#181c2b",
-            padding: "0 0 48px 0",
-            minHeight: 360
+            padding: breakpoint === "mobile" ? "0 0 24px 0" : "0 0 48px 0",
+            minHeight: breakpoint === "mobile" ? 200 : 360,
+            width: "100%",
+            overflow: "visible"
         }}>
-            <div className="container-fluid" style={{ maxWidth: 1550, padding: "0 48px" }}>
+            <div className="container-fluid" style={{ 
+                maxWidth: 1550, 
+                padding: breakpoint === "mobile" ? "0 16px" : "0 48px",
+                width: "100%"
+            }}>
                 {genres.map((genre) => {
                     const visibleCount = getCount(genre.genreId);
                     const startIdx = getStartIdx(genre.genreId);
@@ -82,7 +96,7 @@ export default function GenresList() {
                                 <span style={{
                                     color: "#3ed8ff",
                                     fontWeight: 700,
-                                    fontSize: 28,
+                                    fontSize: breakpoint === "mobile" ? 20 : 28,
                                     fontFamily: "'Quicksand', 'Montserrat', sans-serif",
                                     letterSpacing: 1,
                                 }}>
@@ -97,7 +111,7 @@ export default function GenresList() {
                                         }}
                                         style={{
                                             color: "#fff",
-                                            fontSize: 16,
+                                            fontSize: breakpoint === "mobile" ? 14 : 16,
                                             fontWeight: 400,
                                             fontFamily: "'Quicksand', 'Montserrat', sans-serif",
                                             cursor: "pointer",
@@ -110,95 +124,104 @@ export default function GenresList() {
                                 )}
                             </div>
 
-                            {/* Arrow Left */}
-                            <button
-                                onClick={() => handlePrev(genre.genreId)}
-                                disabled={!canPrev}
-                                style={{
-                                    position: "absolute",
-                                    left: -40, // lồi ra ngoài
-                                    top: "50%",
-                                    transform: "translateY(-50%)",
-                                    background: "rgba(0,0,0,0.7)",
-                                    border: "none",
-                                    color: "#fff",
-                                    borderRadius: "50%",
-                                    width: 38,
-                                    height: 38,
-                                    fontSize: 22,
-                                    zIndex: 3,
-                                    cursor: canPrev ? "pointer" : "not-allowed",
-                                    opacity: canPrev ? 1 : 0.4,
-                                    display: "flex",
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                }}
-                                aria-label="Previous"
-                            >
-                                &#60;
-                            </button>
+                            {/* Arrow Left - Hidden on mobile */}
+                            {breakpoint !== "mobile" && (
+                                <button
+                                    onClick={() => handlePrev(genre.genreId)}
+                                    disabled={!canPrev}
+                                    style={{
+                                        position: "absolute",
+                                        left: -40,
+                                        top: "50%",
+                                        transform: "translateY(-50%)",
+                                        background: "rgba(0,0,0,0.7)",
+                                        border: "none",
+                                        color: "#fff",
+                                        borderRadius: "50%",
+                                        width: 38,
+                                        height: 38,
+                                        fontSize: 22,
+                                        zIndex: 3,
+                                        cursor: canPrev ? "pointer" : "not-allowed",
+                                        opacity: canPrev ? 1 : 0.4,
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                    }}
+                                    aria-label="Previous"
+                                >
+                                    &#60;
+                                </button>
+                            )}
 
-                            {/* Arrow Right */}
-                            <button
-                                onClick={() => handleNext(genre.genreId, genre.songs.length)}
-                                disabled={!canNext}
-                                style={{
-                                    position: "absolute",
-                                    right: -40, // lồi ra ngoài
-                                    top: "50%",
-                                    transform: "translateY(-50%)",
-                                    background: "rgba(0,0,0,0.7)",
-                                    border: "none",
-                                    color: "#fff",
-                                    borderRadius: "50%",
-                                    width: 38,
-                                    height: 38,
-                                    fontSize: 22,
-                                    zIndex: 3,
-                                    cursor: canNext ? "pointer" : "not-allowed",
-                                    opacity: canNext ? 1 : 0.4,
-                                    display: "flex",
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                }}
-                                aria-label="Next"
-                            >
-                                &#62;
-                            </button>
+                            {/* Arrow Right - Hidden on mobile */}
+                            {breakpoint !== "mobile" && (
+                                <button
+                                    onClick={() => handleNext(genre.genreId, genre.songs.length)}
+                                    disabled={!canNext}
+                                    style={{
+                                        position: "absolute",
+                                        right: -40,
+                                        top: "50%",
+                                        transform: "translateY(-50%)",
+                                        background: "rgba(0,0,0,0.7)",
+                                        border: "none",
+                                        color: "#fff",
+                                        borderRadius: "50%",
+                                        width: 38,
+                                        height: 38,
+                                        fontSize: 22,
+                                        zIndex: 3,
+                                        cursor: canNext ? "pointer" : "not-allowed",
+                                        opacity: canNext ? 1 : 0.4,
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                    }}
+                                    aria-label="Next"
+                                >
+                                    &#62;
+                                </button>
+                            )}
 
                             {/* Song Card Row */}
                             <div className="d-flex flex-row flex-grow-1" style={{
-                                gap: "30px",
-                                overflow: "hidden",
-                                // marginLeft: 56, // Để các card không bị nút trái che
-                                // marginRight: 56,
-                                minHeight: 220,
+                                gap: breakpoint === "mobile" ? "12px" : "30px",
+                                overflow: breakpoint === "mobile" ? "auto" : "hidden",
+                                minHeight: breakpoint === "mobile" ? 160 : 220,
+                                flexWrap: breakpoint === "mobile" ? "nowrap" : "nowrap",
+                                paddingBottom: breakpoint === "mobile" ? "8px" : "0",
                             }}>
                                 {songsToShow.map((song, idx) => (
                                     <div
                                         key={song.id}
                                         style={{
                                             background: "transparent",
-                                            borderRadius: 18,
+                                            borderRadius: breakpoint === "mobile" ? 12 : 18,
                                             transition: "transform 0.2s, box-shadow 0.2s",
                                             cursor: "pointer",
-                                            width: 180,
-                                            height: 200,
+                                            width: breakpoint === "mobile" ? 140 : 180,
+                                            height: breakpoint === "mobile" ? 160 : 200,
                                             boxShadow: "0 4px 24px #3ed8ff22",
                                             overflow: "hidden",
                                             position: "relative",
                                             display: "flex",
                                             flexDirection: "column",
                                             justifyContent: "flex-end",
+                                            flexShrink: 0,
                                         }}
                                         onClick={() => handleSelectSong(song.id, genre.songs.map(s => s.id))}
                                         onMouseEnter={e => {
-                                            e.currentTarget.style.transform = "translateY(-4px) scale(1.03)";
-                                            e.currentTarget.style.boxShadow = "0 6px 24px rgba(62,216,255,0.10)";
+                                            if (breakpoint !== "mobile") {
+                                                e.currentTarget.style.transform = "translateY(-4px) scale(1.03)";
+                                                e.currentTarget.style.boxShadow = "0 6px 24px rgba(62,216,255,0.10)";
+                                            }
                                         }}
                                         onMouseLeave={e => {
-                                            e.currentTarget.style.transform = "";
-                                            e.currentTarget.style.boxShadow = "0 4px 24px #3ed8ff22";
+                                            if (breakpoint !== "mobile") {
+                                                e.currentTarget.style.transform = "";
+                                                e.currentTarget.style.boxShadow = "0 4px 24px #3ed8ff22";
+                                            }
                                         }}
                                     >
                                         <img
@@ -230,27 +253,29 @@ export default function GenresList() {
                                             zIndex: 2,
                                             color: "#fff",
                                             fontWeight: 700,
-                                            fontSize: 18,
+                                            fontSize: breakpoint === "mobile" ? 14 : 18,
                                             fontFamily: "'Quicksand', 'Montserrat', sans-serif",
                                             textShadow: "0 2px 8px #181f2a88",
-                                            padding: "18px",
+                                            padding: breakpoint === "mobile" ? "12px" : "18px",
                                             wordBreak: "break-word",
-                                            minHeight: 60,
+                                            minHeight: breakpoint === "mobile" ? 40 : 60,
                                             display: "flex",
                                             flexDirection: "column",
                                             justifyContent: "flex-end",
                                         }}>
                                             <div style={{
                                                 marginBottom: 3,
-                                                display: '-webkit-box',
-                                                WebkitLineClamp: 2,
+                                                display: breakpoint === "mobile" ? 'block' : '-webkit-box',
+                                                WebkitLineClamp: breakpoint === "mobile" ? 1 : 2,
                                                 WebkitBoxOrient: 'vertical',
                                                 overflow: 'hidden',
                                                 textOverflow: 'ellipsis',
+                                                fontSize: breakpoint === "mobile" ? 12 : 14,
+                                                lineHeight: breakpoint === "mobile" ? 1.2 : 1.4,
                                             }}>{song.title}</div>
                                             <div style={{
                                                 fontWeight: 400,
-                                                fontSize: 14,
+                                                fontSize: breakpoint === "mobile" ? 10 : 14,
                                                 color: "#8ca0c6",
                                                 marginTop: 2,
                                             }}>

@@ -1,5 +1,5 @@
 import { useEffect, useState, useContext, useCallback } from "react";
-import { Tabs, Spin, message, Avatar, Button } from "antd";
+import { Tabs, Spin, message, Avatar, Button, Modal, Select, Input } from "antd";
 import axios from "axios";
 import PropTypes from "prop-types";
 import { PlayerContext } from "../context/PlayerContext";
@@ -7,6 +7,8 @@ import CommentTab from "./CommentTab";
 import { useNavigate } from "react-router-dom"; // Thêm import này
 import { useTranslation } from 'react-i18next';
 import BASE_API_URL from "../services/base.api.url";
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function SongDetail({ songId, onClose }) {
     const { t } = useTranslation();
@@ -17,6 +19,13 @@ export default function SongDetail({ songId, onClose }) {
     const [loading, setLoading] = useState(true);
     const [currentTime, setCurrentTime] = useState(0);
     const [viewed, setViewed] = useState(false);
+    
+    // Add to Playlist states
+    const [addToPlaylistModal, setAddToPlaylistModal] = useState(false);
+    const [userPlaylists, setUserPlaylists] = useState([]);
+    const [selectedPlaylistId, setSelectedPlaylistId] = useState(null);
+    const [newPlaylistName, setNewPlaylistName] = useState("");
+    const [showCreatePlaylist, setShowCreatePlaylist] = useState(false);
 
     const {
         adPlaying,
@@ -238,6 +247,75 @@ export default function SongDetail({ songId, onClose }) {
         const sec = Math.floor(secs % 60);
         return `${min}:${sec < 10 ? "0" : ""}${sec}`;
     }, []);
+
+    // Add to Playlist functions
+    const fetchUserPlaylists = async () => {
+        try {
+            const token = localStorage.getItem("accessToken");
+            if (!token) return;
+            
+            const response = await axios.get(`${BASE_API_URL}/api/v1/playlist/user`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setUserPlaylists(response.data || []);
+        } catch (error) {
+            console.error("Error fetching playlists:", error);
+            setUserPlaylists([]);
+        }
+    };
+
+    const handleAddToPlaylist = async () => {
+        if (!selectedPlaylistId) {
+            toast.error("Please select a playlist!");
+            return;
+        }
+
+        try {
+            const token = localStorage.getItem("accessToken");
+            const response = await axios.post(
+                `${BASE_API_URL}/api/v1/playlist/${selectedPlaylistId}/songs/${songId}`,
+                {},
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+            
+            if (response.status === 200) {
+                toast.success("Song added to playlist successfully!");
+                setAddToPlaylistModal(false);
+                setSelectedPlaylistId(null);
+            }
+        } catch (error) {
+            if (error.response?.status === 409) {
+                toast.error("Song already exists in this playlist!");
+            } else {
+                toast.error("Failed to add song to playlist!");
+            }
+        }
+    };
+
+    const handleCreatePlaylist = async () => {
+        if (!newPlaylistName.trim()) {
+            toast.error("Please enter a playlist name!");
+            return;
+        }
+
+        try {
+            const token = localStorage.getItem("accessToken");
+            const response = await axios.post(
+                `${BASE_API_URL}/api/v1/playlist`,
+                { name: newPlaylistName.trim() },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+            
+            if (response.status === 201) {
+                toast.success("Playlist created successfully!");
+                setNewPlaylistName("");
+                setShowCreatePlaylist(false);
+                await fetchUserPlaylists(); // Refresh playlists
+            }
+        } catch (error) {
+            toast.error("Failed to create playlist!");
+        }
+    };
 
     if (loading) return <Spin style={{ margin: 40 }} />;
     if (!song) return <div style={{ padding: 40 }}>Song not found.</div>;
@@ -899,6 +977,24 @@ export default function SongDetail({ songId, onClose }) {
                             >
                                 <span className="material-icons">file_download</span>
                             </button>
+                            <button
+                                className="player-btn"
+                                onClick={() => {
+                                    const token = localStorage.getItem("accessToken");
+                                    if (!token) {
+                                        toast.info("Please login to add songs to your playlist!", { autoClose: 2000 });
+                                        return;
+                                    }
+                                    fetchUserPlaylists();
+                                    setAddToPlaylistModal(true);
+                                    setSelectedPlaylistId(null);
+                                }}
+                                disabled={adPlaying}
+                                title={t("song_detail.add_to_playlist") || "Add to Playlist"}
+                                style={adPlaying ? { opacity: 0.5, pointerEvents: "none" } : {}}
+                            >
+                                <span className="material-icons">add_box</span>
+                            </button>
                             <div className="volume-control" style={{ 
                                 display: "flex", 
                                 alignItems: "center", 
@@ -1117,6 +1213,80 @@ export default function SongDetail({ songId, onClose }) {
                     />
                 </div>
             )}
+
+            {/* Add to Playlist Modal */}
+            <Modal
+                title="Add to Playlist"
+                open={addToPlaylistModal}
+                onCancel={() => {
+                    setAddToPlaylistModal(false);
+                    setSelectedPlaylistId(null);
+                }}
+                footer={[
+                    <Button key="cancel" onClick={() => {
+                        setAddToPlaylistModal(false);
+                        setSelectedPlaylistId(null);
+                    }}>
+                        Cancel
+                    </Button>,
+                    <Button key="create" type="dashed" onClick={() => setShowCreatePlaylist(true)}>
+                        Create New Playlist
+                    </Button>,
+                    <Button key="add" type="primary" onClick={handleAddToPlaylist} disabled={!selectedPlaylistId}>
+                        Add to Playlist
+                    </Button>
+                ]}
+                width={400}
+            >
+                <div style={{ marginBottom: 16 }}>
+                    <p>Select a playlist to add this song:</p>
+                    <Select
+                        style={{ width: "100%", marginTop: 8 }}
+                        placeholder="Choose a playlist"
+                        value={selectedPlaylistId}
+                        onChange={setSelectedPlaylistId}
+                        options={userPlaylists.map(playlist => ({
+                            label: playlist.name,
+                            value: playlist.id
+                        }))}
+                    />
+                </div>
+            </Modal>
+
+            {/* Create New Playlist Modal */}
+            <Modal
+                title="Create New Playlist"
+                open={showCreatePlaylist}
+                onCancel={() => {
+                    setShowCreatePlaylist(false);
+                    setNewPlaylistName("");
+                }}
+                footer={[
+                    <Button key="cancel" onClick={() => {
+                        setShowCreatePlaylist(false);
+                        setNewPlaylistName("");
+                    }}>
+                        Cancel
+                    </Button>,
+                    <Button key="create" type="primary" onClick={handleCreatePlaylist}>
+                        Create Playlist
+                    </Button>
+                ]}
+                width={400}
+            >
+                <div style={{ marginBottom: 16 }}>
+                    <p>Enter a name for your new playlist:</p>
+                    <Input
+                        style={{ marginTop: 8 }}
+                        placeholder="Playlist name"
+                        value={newPlaylistName}
+                        onChange={(e) => setNewPlaylistName(e.target.value)}
+                        onPressEnter={handleCreatePlaylist}
+                    />
+                </div>
+            </Modal>
+
+            <ToastContainer />
         </>
     );
 }

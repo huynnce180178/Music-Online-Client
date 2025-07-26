@@ -65,10 +65,11 @@ export default function TopGenres() {
         });
     }
 
-    // Responsive grid size
+    // Responsive grid size - Sửa lỗi chồng lên nhau
     const gridTemplate = gridTemplateAreas(breakpoint);
     const colCount = breakpoint === "mobile" ? 1 : (breakpoint === "tablet" ? 4 : 5);
-    const rowHeight = breakpoint === "mobile" ? 120 : (breakpoint === "tablet" ? 160 : 210);
+    const rowHeight = breakpoint === "mobile" ? 140 : (breakpoint === "tablet" ? 160 : 210);
+    const gap = breakpoint === "mobile" ? 16 : (breakpoint === "tablet" ? 20 : 28);
 
     return (
         <div style={{
@@ -79,13 +80,13 @@ export default function TopGenres() {
             <div style={{
                 maxWidth: 1550,
                 margin: "0 auto",
-                padding: breakpoint === "mobile" ? "0 8px" : "0 40px",
+                padding: breakpoint === "mobile" ? "0 12px" : "0 40px",
             }}>
                 <div style={{
                     display: "flex",
                     justifyContent: "space-between",
                     alignItems: "center",
-                    marginBottom: 24,
+                    marginBottom: breakpoint === "mobile" ? 20 : 24,
                 }}>
                     <span style={{
                         color: "#3ed8ff",
@@ -100,7 +101,7 @@ export default function TopGenres() {
                         to="/genres-viewmore"
                         style={{
                             color: "#fff",
-                            fontSize: 17,
+                            fontSize: breakpoint === "mobile" ? 14 : 17,
                             fontFamily: "'Quicksand', 'Montserrat', sans-serif",
                             fontWeight: 400,
                             cursor: "pointer",
@@ -116,15 +117,15 @@ export default function TopGenres() {
                     display: "grid",
                     gridTemplateAreas: gridTemplate,
                     gridTemplateColumns: `repeat(${colCount}, 1fr)`,
-                    gridAutoRows: rowHeight,
-                    gap: 28,
+                    gridAutoRows: `${rowHeight}px`,
+                    gap: `${gap}px`,
                     width: "100%",
-                    minHeight: rowHeight * 2.2,
+                    minHeight: `${rowHeight * 2.2}px`,
                 }}>
                     {genresWithFill.slice(0, 7).map((genre, idx) => {
                         let style = {
                             gridArea: areaNames[idx],
-                            borderRadius: 24,
+                            borderRadius: breakpoint === "mobile" ? 16 : 24,
                             overflow: "hidden",
                             position: "relative",
                             cursor: genre.isFill ? "default" : "pointer",
@@ -133,13 +134,22 @@ export default function TopGenres() {
                             transition: "transform 0.18s",
                             display: "flex",
                             alignItems: "flex-end",
-                            minHeight: 0,
+                            minHeight: `${rowHeight}px`,
                         };
-                        // Kích thước đặc biệt cho từng tile
-                        if (areaNames[idx] === "big") style.minHeight = rowHeight * 2 + 28;
-                        if (areaNames[idx] === "tall") style.minHeight = rowHeight * 2 + 28;
-                        if (areaNames[idx] === "wide") style.minWidth = "100%";
-                        if (areaNames[idx].startsWith("small")) style.minHeight = rowHeight;
+                        
+                        // Kích thước đặc biệt cho từng tile - Sửa lỗi chồng lên nhau
+                        if (areaNames[idx] === "big") {
+                            style.minHeight = `${(rowHeight * 2) + gap}px`;
+                        }
+                        if (areaNames[idx] === "tall") {
+                            style.minHeight = `${(rowHeight * 2) + gap}px`;
+                        }
+                        if (areaNames[idx] === "wide") {
+                            style.minWidth = "100%";
+                        }
+                        if (areaNames[idx].startsWith("small")) {
+                            style.minHeight = `${rowHeight}px`;
+                        }
 
                         return (
                             <div
@@ -179,12 +189,14 @@ export default function TopGenres() {
                                     zIndex: 2,
                                     color: "#fff",
                                     fontWeight: 700,
-                                    fontSize: areaNames[idx] === "big" ? 22 : 18,
+                                    fontSize: areaNames[idx] === "big" ? (breakpoint === "mobile" ? 18 : 22) : (breakpoint === "mobile" ? 14 : 18),
                                     fontFamily: "'Quicksand', 'Montserrat', sans-serif",
                                     textShadow: "0 2px 8px #181f2a99",
-                                    padding: areaNames[idx] === "big" ? "0 0 30px 30px" : "0 0 18px 18px",
+                                    padding: areaNames[idx] === "big" ? 
+                                        (breakpoint === "mobile" ? "0 0 20px 20px" : "0 0 30px 30px") : 
+                                        (breakpoint === "mobile" ? "0 0 12px 12px" : "0 0 18px 18px"),
                                     width: "100%",
-                                    minHeight: 36,
+                                    minHeight: breakpoint === "mobile" ? 28 : 36,
                                     display: "flex",
                                     justifyContent: "space-between",
                                     alignItems: "flex-end"
@@ -193,9 +205,9 @@ export default function TopGenres() {
                                         {t('genres.' + genre.name, genre.name)}
                                         <div style={{
                                             fontWeight: 400,
-                                            fontSize: 15,
+                                            fontSize: breakpoint === "mobile" ? 12 : 15,
                                             color: "#b9cbe8",
-                                            marginTop: 5,
+                                            marginTop: breakpoint === "mobile" ? 3 : 5,
                                             fontFamily: "'Quicksand', 'Montserrat', sans-serif",
                                         }}>
                                         </div>

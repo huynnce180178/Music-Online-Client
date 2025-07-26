@@ -388,13 +388,23 @@ function SongPlay({ sidebarWidth = 0 }) {
 
                 {}
                 <div className="player-actions">
-                    <span className="material-icons player-volume-icon">volume_up</span>
-                    <input type="range" min={0} max={1} step={0.01} value={volume} onChange={handleVolume}
-                        className="player-volume" />
-                    <button className="player-btn" title={t("song_detail.comments") || "Show Details"} onClick={() => setShowDetail(true)}>
-                        <span className="material-icons">expand_less</span>
-                    </button>
-                    {}
+                    {/* Volume control - Only show on large screens */}
+                    {window.innerWidth > 768 && (
+                        <>
+                            <span className="material-icons player-volume-icon">volume_up</span>
+                            <input type="range" min={0} max={1} step={0.01} value={volume} onChange={handleVolume}
+                                className="player-volume" />
+                        </>
+                    )}
+                    
+                    {/* Show Details button - Only show on large screens */}
+                    {window.innerWidth > 768 && (
+                        <button className="player-btn" title={t("song_detail.comments") || "Show Details"} onClick={() => setShowDetail(true)}>
+                            <span className="material-icons">expand_less</span>
+                        </button>
+                    )}
+                    
+                    {/* Download and Favorite buttons - Only show on large screens */}
                     {window.innerWidth > 1200 && (
                         <>
                             <button className={`player-btn like${liked ? " liked" : ""}`}
@@ -408,22 +418,28 @@ function SongPlay({ sidebarWidth = 0 }) {
                             </button>
                         </>
                     )}
-                    <button
-                        className="player-btn"
-                        title={t("song_detail.add_to_playlist") || "Add to Playlist"}
-                        onClick={() => {
-                            const token = localStorage.getItem("accessToken");
-                            if (!token) {
-                                toast.info(t("weekly_top_10.login_to_add_playlist") || "Please login to add songs to your playlist!", { autoClose: 2000 });
-                                return;
-                            }
-                            fetchUserPlaylists();
-                            setAddToPlaylistModal(true);
-                            setSelectedPlaylistId(null);
-                        }}
-                    >
-                        <span className="material-icons">add_box</span>
-                    </button>
+                    
+                    {/* Add to Playlist button - Only show on large screens */}
+                    {window.innerWidth > 768 && (
+                        <button
+                            className="player-btn"
+                            title={t("song_detail.add_to_playlist") || "Add to Playlist"}
+                            onClick={() => {
+                                const token = localStorage.getItem("accessToken");
+                                if (!token) {
+                                    toast.info(t("weekly_top_10.login_to_add_playlist") || "Please login to add songs to your playlist!", { autoClose: 2000 });
+                                    return;
+                                }
+                                fetchUserPlaylists();
+                                setAddToPlaylistModal(true);
+                                setSelectedPlaylistId(null);
+                            }}
+                        >
+                            <span className="material-icons">add_box</span>
+                        </button>
+                    )}
+                    
+                    {/* Close button - Always show */}
                     <button className="player-btn close" title={t("common.close") || "Close Player"} onClick={stopPlayer}>
                         <span className="material-icons">close</span>
                     </button>
