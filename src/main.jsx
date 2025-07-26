@@ -5,6 +5,7 @@ import './index.css'
 import 'antd/dist/reset.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './i18n';
+import 'bootstrap-icons/font/bootstrap-icons.css';
 
 
 ReactDOM.createRoot(document.getElementById('root')).render(
