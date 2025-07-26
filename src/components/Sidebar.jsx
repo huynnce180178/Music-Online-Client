@@ -292,12 +292,15 @@ export default function Sidebar({ collapsed, setCollapsed, visible, setVisible, 
                         color: "#181f2a",
                         borderRadius: "50%",
                         boxShadow: "0 2px 8px #3ed8ff55",
-                        width: 36,
-                        height: 36,
+                        width: 44,
+                        height: 44,
                         alignSelf: "center",
                         marginTop: "auto",
-                        fontSize: 20,
+                        fontSize: 22,
                         transition: "all 0.2s",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center"
                     }}
                 />
             </div>

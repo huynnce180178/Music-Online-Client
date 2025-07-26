@@ -183,10 +183,10 @@ function NotificationDropdown() {
                                             <Tooltip title="Mark as read" key="mark">
                                                 <Button
                                                     type="text"
-                                                    icon={<CheckCircleOutlined style={{ color: "#3ed8ff", fontSize: 18 }} />}
-                                                    size="small"
+                                                    icon={<CheckCircleOutlined style={{ color: "#3ed8ff", fontSize: 20 }} />}
+                                                    size="middle"
                                                     onClick={() => handleMarkAsRead(item.id)}
-                                                    style={{ borderRadius: 12 }}
+                                                    style={{ borderRadius: 12, minWidth: 40, minHeight: 40 }}
                                                 />
                                             </Tooltip>
                                         ),
@@ -194,9 +194,9 @@ function NotificationDropdown() {
                                             <Button
                                                 type="text"
                                                 danger
-                                                icon={<DeleteOutlined />}
-                                                size="small"
-                                                style={{ borderRadius: 12 }}
+                                                icon={<DeleteOutlined style={{ fontSize: 18 }} />}
+                                                size="middle"
+                                                style={{ borderRadius: 12, minWidth: 40, minHeight: 40 }}
                                                 onClick={() => handleDelete(item.id)}
                                             />
                                         </Tooltip>
@@ -508,14 +508,21 @@ export default function ArtistLayout({ children }) {
                         {isMobile && (
                             <Button
                                 type="text"
-                                icon={<FiMenu size={22} />}
-                                style={{ color: "#3ed8ff" }}
+                                icon={<FiMenu size={24} />}
+                                style={{ 
+                                    color: "#3ed8ff",
+                                    minWidth: 44,
+                                    minHeight: 44,
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center"
+                                }}
                                 onClick={() => setDrawerOpen(true)}
                             />
                         )}
                         <Button
                             type="text"
-                            icon={<FiArrowLeft size={20} />}
+                            icon={<FiArrowLeft size={22} />}
                             onClick={() => navigate("/")}
                             style={{
                                 color: "#3ed8ff",
@@ -527,7 +534,8 @@ export default function ArtistLayout({ children }) {
                                 background: "rgba(62,216,255,0.1)",
                                 borderRadius: 20,
                                 padding: "0 16px",
-                                height: 40,
+                                height: 44,
+                                minWidth: 44
                             }}
                         >
                             {!isMobile && t('sidebar.back_to_homepage')}

@@ -495,7 +495,7 @@ export default function PlaylistPage() {
                                                             >
                                                                 <Button
                                                                     shape="circle"
-                                                                    icon={<MoreOutlined />}
+                                                                    icon={<MoreOutlined style={{ fontSize: 18 }} />}
                                                                     size="middle"
                                                                     onClick={e => {
                                                                         e.stopPropagation();
@@ -507,7 +507,12 @@ export default function PlaylistPage() {
                                                                         color: "#23242e",
                                                                         boxShadow: "0 2px 12px #3ed8ff55",
                                                                         fontWeight: 700,
-                                                                        transition: "background 0.2s, color 0.2s"
+                                                                        transition: "background 0.2s, color 0.2s",
+                                                                        width: 44,
+                                                                        height: 44,
+                                                                        display: "flex",
+                                                                        alignItems: "center",
+                                                                        justifyContent: "center"
                                                                     }}
                                                                     className="playlist-action-btn"
                                                                     disabled={shareCodeModal.open}

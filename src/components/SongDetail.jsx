@@ -626,17 +626,17 @@ export default function SongDetail({ songId, onClose }) {
                 
                 @media (max-width: 768px) {
                     .player-btn {
-                        width: 36px;
-                        height: 36px;
-                        font-size: 14px;
+                        width: 48px !important;
+                        height: 48px !important;
+                        font-size: 20px !important;
                     }
                 }
                 
                 @media (max-width: 480px) {
                     .player-btn {
-                        width: 32px;
-                        height: 32px;
-                        font-size: 12px;
+                        width: 44px !important;
+                        height: 44px !important;
+                        font-size: 18px !important;
                     }
                 }
                 
@@ -666,17 +666,17 @@ export default function SongDetail({ songId, onClose }) {
                 
                 @media (max-width: 768px) {
                     .player-btn.main {
-                        width: 44px;
-                        height: 44px;
-                        font-size: 18px;
+                        width: 56px !important;
+                        height: 56px !important;
+                        font-size: 24px !important;
                     }
                 }
                 
                 @media (max-width: 480px) {
                     .player-btn.main {
-                        width: 40px;
-                        height: 40px;
-                        font-size: 16px;
+                        width: 52px !important;
+                        height: 52px !important;
+                        font-size: 22px !important;
                     }
                 }
                 
@@ -762,6 +762,14 @@ export default function SongDetail({ songId, onClose }) {
                         padding-bottom: max(0px, env(safe-area-inset-bottom));
                     }
                 }
+                .progress-bar-wrap {
+                    display: none;
+                }
+                @media (max-width: 1024px) {
+                    .progress-bar-wrap {
+                        display: block !important;
+                    }
+                }
             `}</style>
 
             <div className="song-detail-container"
@@ -802,7 +810,12 @@ export default function SongDetail({ songId, onClose }) {
                         cursor: "pointer",
                         border: "none",
                         outline: "none",
-                        boxShadow: "0 4px 16px rgba(0,0,0,0.3)"
+                        boxShadow: "0 4px 16px rgba(0,0,0,0.3)",
+                        width: 48,
+                        height: 48,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center"
                     }}
                     icon={<span className="material-icons">close</span>}
                     aria-label="Close"
@@ -818,7 +831,8 @@ export default function SongDetail({ songId, onClose }) {
                     padding: "48px 32px 0 32px",
                     gap: 48,
                     minHeight: "calc(100vh - 48px)",
-                    overflow: "auto"
+                    overflow: "auto",
+                    justifyContent: "center"
                 }}>
                     <div className="song-detail-left" style={{ 
                         flex: 1, 
@@ -1019,33 +1033,35 @@ export default function SongDetail({ songId, onClose }) {
                             </div>
                         </div>
 
-                        <div className="progress-container" style={{ 
-                            width: "100%", 
-                            maxWidth: 340
-                        }}>
-                            <input
-                                type="range"
-                                min={0}
-                                max={durationSec}
-                                value={currentTime}
-                                onChange={handleSeek}
-                                className="progress-bar"
-                                style={{
-                                    background: `linear-gradient(90deg, #3ed8ff ${(currentTime / durationSec) * 100}%, #23283e ${(currentTime / durationSec) * 100}%)`,
-                                    ...(adPlaying && { opacity: 0.5, pointerEvents: "none" })
-                                }}
-                                disabled={adPlaying}
-                                title="Seek"
-                            />
-                            <div className="time-display" style={{
-                                display: "flex",
-                                justifyContent: "space-between",
-                                color: "#8ca0c6",
-                                fontSize: 13,
-                                marginTop: 4
+                        <div className="progress-bar-wrap">
+                            <div className="progress-container" style={{ 
+                                width: "100%", 
+                                maxWidth: 340
                             }}>
-                                <span>{formatTime(currentTime)}</span>
-                                <span>{song?.duration}</span>
+                                <input
+                                    type="range"
+                                    min={0}
+                                    max={durationSec}
+                                    value={currentTime}
+                                    onChange={handleSeek}
+                                    className="progress-bar"
+                                    style={{
+                                        background: `linear-gradient(90deg, #3ed8ff ${(currentTime / durationSec) * 100}%, #23283e ${(currentTime / durationSec) * 100}%)`,
+                                        ...(adPlaying && { opacity: 0.5, pointerEvents: "none" })
+                                    }}
+                                    disabled={adPlaying}
+                                    title="Seek"
+                                />
+                                <div className="time-display" style={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                    color: "#8ca0c6",
+                                    fontSize: 13,
+                                    marginTop: 4
+                                }}>
+                                    <span>{formatTime(currentTime)}</span>
+                                    <span>{song?.duration}</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1057,7 +1073,8 @@ export default function SongDetail({ songId, onClose }) {
                         flexDirection: "column",
                         justifyContent: "flex-start",
                         height: "100vh",
-                        overflow: "visible"
+                        overflow: "visible",
+                        maxWidth: 600 // Add max width for right column
                     }}>
                         <Tabs
                             defaultActiveKey="lyrics"

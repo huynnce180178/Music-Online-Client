@@ -188,10 +188,10 @@ function NotificationDropdown() {
                                             <Tooltip title={t('notification.mark_as_read')} key="mark">
                                                 <Button
                                                     type="text"
-                                                    icon={<CheckCircleOutlined style={{ color: "#3ed8ff", fontSize: 18 }} />}
-                                                    size="small"
+                                                    icon={<CheckCircleOutlined style={{ color: "#3ed8ff", fontSize: 20 }} />}
+                                                    size="middle"
                                                     onClick={() => handleMarkAsRead(item.id)}
-                                                    style={{ borderRadius: 12 }}
+                                                    style={{ borderRadius: 12, minWidth: 40, minHeight: 40 }}
                                                 />
                                             </Tooltip>
                                         ),
@@ -199,9 +199,9 @@ function NotificationDropdown() {
                                             <Button
                                                 type="text"
                                                 danger
-                                                icon={<DeleteOutlined />}
-                                                size="small"
-                                                style={{ borderRadius: 12 }}
+                                                icon={<DeleteOutlined style={{ fontSize: 18 }} />}
+                                                size="middle"
+                                                style={{ borderRadius: 12, minWidth: 40, minHeight: 40 }}
                                                 onClick={() => handleDelete(item.id)}
                                             />
                                         </Tooltip>
@@ -479,9 +479,9 @@ function Header({ setModalType, onMenuClick, onSearch }) {
                                 background: "#232b3e",
                                 color: "#fff",
                                 border: "none",
-                                fontSize: 22,
-                                minWidth: 40,
-                                minHeight: 40,
+                                fontSize: 24,
+                                minWidth: 48,
+                                minHeight: 48,
                                 marginRight: 8,
                                 display: "flex",
                                 alignItems: "center",

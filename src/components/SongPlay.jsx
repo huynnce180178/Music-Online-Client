@@ -896,42 +896,166 @@ function SongPlay({ sidebarWidth = 0 }) {
         width: 28px;
     }
 }
-@media (max-width: 480px) {
+@media (max-width: 576px) {
     .songplay-root.improved-player {
-        min-height: 56px;
-        padding: 0 2px;
+        min-height: 100px !important;
+        padding: 0 12px !important;
     }
-    .player-btn { width: 28px; height: 28px; font-size: 12px; }
-    .player-btn.main { width: 32px; height: 32px; font-size: 14px; }
+    .player-btn {
+        width: 56px !important;
+        height: 56px !important;
+        font-size: 28px !important;
+        margin: 0 8px !important;
+    }
+    .player-btn.main {
+        width: 72px !important;
+        height: 72px !important;
+        font-size: 36px !important;
+    }
     .player-thumb-img {
-        width: 28px;
-        height: 28px;
-        border-radius: 6px;
+        width: 64px !important;
+        height: 64px !important;
+        border-radius: 12px !important;
+    }
+    .player-info {
+        padding: 0 12px 5px 12px !important;
     }
     .player-title {
-        font-size: 10px;
+        font-size: 16px !important;
+        font-weight: 600 !important;
     }
     .player-artist {
-        font-size: 8px;
+        font-size: 13px !important;
     }
     .player-controls {
-        gap: 4px;
+        flex: 0 0 120px !important;
+        gap: 12px !important;
     }
     .player-progress-wrap {
-        max-width: 80px;
-        padding: 0 2px;
+        max-width: 120px !important;
+        padding: 0 8px !important;
     }
     .player-time {
-        font-size: 8px;
+        font-size: 11px !important;
     }
     .player-actions {
-        gap: 2px;
+        flex: 0 0 100px !important;
+        margin-right: 8px !important;
+        gap: 8px !important;
     }
     .player-volume-icon {
-        font-size: 10px;
+        font-size: 18px !important;
     }
     .player-volume {
-        width: 16px;
+        width: 40px !important;
+    }
+}
+@media (max-width: 480px) {
+    .songplay-root.improved-player {
+        min-height: 90px !important;
+        padding: 0 8px !important;
+    }
+    .player-btn {
+        width: 48px !important;
+        height: 48px !important;
+        font-size: 24px !important;
+        margin: 0 6px !important;
+    }
+    .player-btn.main {
+        width: 60px !important;
+        height: 60px !important;
+        font-size: 30px !important;
+    }
+    .player-thumb-img {
+        width: 56px !important;
+        height: 56px !important;
+        border-radius: 10px !important;
+    }
+    .player-info {
+        padding: 0 10px 5px 10px !important;
+    }
+    .player-title {
+        font-size: 14px !important;
+        font-weight: 600 !important;
+    }
+    .player-artist {
+        font-size: 12px !important;
+    }
+    .player-controls {
+        flex: 0 0 100px !important;
+        gap: 10px !important;
+    }
+    .player-progress-wrap {
+        max-width: 100px !important;
+        padding: 0 6px !important;
+    }
+    .player-time {
+        font-size: 10px !important;
+    }
+    .player-actions {
+        flex: 0 0 90px !important;
+        margin-right: 6px !important;
+        gap: 6px !important;
+    }
+    .player-volume-icon {
+        font-size: 16px !important;
+    }
+    .player-volume {
+        width: 35px !important;
+    }
+}
+@media (max-width: 360px) {
+    .songplay-root.improved-player {
+        min-height: 80px !important;
+        padding: 0 6px !important;
+    }
+    .player-btn {
+        width: 44px !important;
+        height: 44px !important;
+        font-size: 22px !important;
+        margin: 0 4px !important;
+    }
+    .player-btn.main {
+        width: 56px !important;
+        height: 56px !important;
+        font-size: 28px !important;
+    }
+    .player-thumb-img {
+        width: 48px !important;
+        height: 48px !important;
+        border-radius: 8px !important;
+    }
+    .player-info {
+        padding: 0 8px 5px 8px !important;
+    }
+    .player-title {
+        font-size: 13px !important;
+        font-weight: 600 !important;
+    }
+    .player-artist {
+        font-size: 11px !important;
+    }
+    .player-controls {
+        flex: 0 0 90px !important;
+        gap: 8px !important;
+    }
+    .player-progress-wrap {
+        max-width: 80px !important;
+        padding: 0 4px !important;
+    }
+    .player-time {
+        font-size: 9px !important;
+    }
+    .player-actions {
+        flex: 0 0 80px !important;
+        margin-right: 4px !important;
+        gap: 4px !important;
+    }
+    .player-volume-icon {
+        font-size: 14px !important;
+    }
+    .player-volume {
+        width: 30px !important;
     }
 }
 `}</style>

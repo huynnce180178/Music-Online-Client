@@ -168,9 +168,18 @@ export default function SubscriptionModalPlan({ show, onClose }) {
                     border: 'none',
                     fontSize: 24,
                     color: '#fff',
-                    cursor: 'pointer'
+                    cursor: 'pointer',
+                    width: 48,
+                    height: 48,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    borderRadius: "50%",
+                    transition: "background 0.2s"
                 }}
                 aria-label="Close"
+                onMouseOver={e => e.currentTarget.style.background = "rgba(255,255,255,0.1)"}
+                onMouseOut={e => e.currentTarget.style.background = "transparent"}
             >
                 <AiOutlineClose />
             </button>

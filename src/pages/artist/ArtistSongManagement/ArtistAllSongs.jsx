@@ -342,13 +342,13 @@ export default function ArtistAllSongs() {
             key: "action",
             render: (_, song) => (
                 <Space>
-                    <Button icon={<PlusOutlined />} size="small" onClick={() => handleAddToAlbum(song.id)} />
+                    <Button icon={<PlusOutlined style={{ fontSize: 16 }} />} size="middle" onClick={() => handleAddToAlbum(song.id)} />
                     {song.albumId && (
-                        <Button danger size="small" onClick={() => handleRemoveFromAlbum(song.id, song.albumId)}>
-                            <DeleteOutlined />
+                        <Button danger size="middle" onClick={() => handleRemoveFromAlbum(song.id, song.albumId)}>
+                            <DeleteOutlined style={{ fontSize: 16 }} />
                         </Button>
                     )}
-                    <Button icon={<DeleteOutlined />} danger size="small" onClick={() => handleDelete(song.id)} />
+                    <Button icon={<DeleteOutlined style={{ fontSize: 16 }} />} danger size="middle" onClick={() => handleDelete(song.id)} />
                 </Space>
             ),
             width: 90,

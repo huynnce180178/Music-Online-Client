@@ -379,15 +379,16 @@ export default function BannerSection() {
                     <button
                         style={{ ...btnStyle, ...style.btnPrimary }}
                         tabIndex={0}
-                        onClick={() => navigate("/top-tracks")} // Thêm dòng này
+                        onClick={() => navigate("/top-tracks")}
+                        onTouchStart={() => {}} // Add touch support
                     >
                         {t('banner.listen_now')}
                     </button>
                     <button
                         style={{ ...btnStyle, ...style.btnOutline }}
                         tabIndex={0}
-                        onClick={() => navigate("/favourites")} // Thêm dòng này
-
+                        onClick={() => navigate("/favourites")}
+                        onTouchStart={() => {}} // Add touch support
                     >
                         {t('banner.add_to_queue')}
                     </button>
