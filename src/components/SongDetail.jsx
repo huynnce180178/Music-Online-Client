@@ -19,6 +19,7 @@ export default function SongDetail({ songId, onClose }) {
     const [loading, setLoading] = useState(true);
     const [currentTime, setCurrentTime] = useState(0);
     const [viewed, setViewed] = useState(false);
+    const [isMobile, setIsMobile] = useState(window.innerWidth <= 780);
     
     // Add to Playlist states
     const [addToPlaylistModal, setAddToPlaylistModal] = useState(false);
@@ -316,6 +317,16 @@ export default function SongDetail({ songId, onClose }) {
             toast.error("Failed to create playlist!");
         }
     };
+
+    // Handle window resize
+    useEffect(() => {
+        const handleResize = () => {
+            setIsMobile(window.innerWidth <= 780);
+        };
+        
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     if (loading) return <Spin style={{ margin: 40 }} />;
     if (!song) return <div style={{ padding: 40 }}>Song not found.</div>;
@@ -1033,7 +1044,9 @@ export default function SongDetail({ songId, onClose }) {
                             </div>
                         </div>
 
-                        <div className="progress-bar-wrap">
+                        <div className="progress-bar-wrap" style={{
+                            display: isMobile ? 'block' : 'none'
+                        }}>
                             <div className="progress-container" style={{ 
                                 width: "100%", 
                                 maxWidth: 340
