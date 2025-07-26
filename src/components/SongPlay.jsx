@@ -368,39 +368,46 @@ function SongPlay({ sidebarWidth = 0 }) {
                     </button>
                 </div>
 
-                {/* Progress */}
-                <div className="player-progress-wrap">
-                    <input
-                        type="range"
-                        min={0}
-                        max={durationSec}
-                        value={currentTime}
-                        onChange={handleSeek}
-                        className="player-progress"
-                    />
-                    <div className="player-time">
-                        <span>{formatTime(currentTime)}</span>
-                        <span>{song ? song.duration.substring(3) : "0:00"}</span>
+                {/* Progress - Only show on large screens */}
+                {window.innerWidth > 1200 && (
+                    <div className="player-progress-wrap">
+                        <input
+                            type="range"
+                            min={0}
+                            max={durationSec}
+                            value={currentTime}
+                            onChange={handleSeek}
+                            className="player-progress"
+                        />
+                        <div className="player-time">
+                            <span>{formatTime(currentTime)}</span>
+                            <span>{song ? song.duration.substring(3) : "0:00"}</span>
+                        </div>
                     </div>
-                </div>
+                )}
 
-                {/* Right Controls */}
+                {}
                 <div className="player-actions">
                     <span className="material-icons player-volume-icon">volume_up</span>
                     <input type="range" min={0} max={1} step={0.01} value={volume} onChange={handleVolume}
                         className="player-volume" />
-                    <button className={`player-btn like${liked ? " liked" : ""}`}
-                        title={t("favorite") || "Favorite"}
-                        onClick={toggleWishlist}
-                    >
-                        <span className="material-icons">{liked ? "favorite" : "favorite_border"}</span>
-                    </button>
-                    <button className="player-btn" title={t("song_detail.download_song") || "Download"} onClick={handleDownload}>
-                        <span className="material-icons">file_download</span>
-                    </button>
                     <button className="player-btn" title={t("song_detail.comments") || "Show Details"} onClick={() => setShowDetail(true)}>
                         <span className="material-icons">expand_less</span>
                     </button>
+                    {}
+                    {window.innerWidth > 1200 && (
+                        <>
+                            <button className={`player-btn like${liked ? " liked" : ""}`}
+                                title={t("favorite") || "Favorite"}
+                                onClick={toggleWishlist}
+                            >
+                                <span className="material-icons">{liked ? "favorite" : "favorite_border"}</span>
+                            </button>
+                            <button className="player-btn" title={t("song_detail.download_song") || "Download"} onClick={handleDownload}>
+                                <span className="material-icons">file_download</span>
+                            </button>
+                        </>
+                    )}
                     <button
                         className="player-btn"
                         title={t("song_detail.add_to_playlist") || "Add to Playlist"}
@@ -743,7 +750,64 @@ function SongPlay({ sidebarWidth = 0 }) {
     width: 60px;
     accent-color: #3ed8ff;
 }
+.player-btn {
+    background: rgba(255,255,255,0.12);
+    border: none;
+    border-radius: 50%;
+    color: #fff;
+    font-size: 22px;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.18s, color 0.18s, box-shadow 0.18s;
+    box-shadow: none;
+    outline: none;
+    margin: 0 2px;
+}
+.player-btn:hover, .player-btn:focus {
+    background: rgba(62,216,255,0.18);
+    color: #3ed8ff;
+    outline: none;
+    box-shadow: 0 2px 8px #3ed8ff33;
+}
+.player-btn:active {
+    background: rgba(62,216,255,0.28);
+    color: #3ed8ff;
+}
+.player-btn.main {
+    background: linear-gradient(135deg, #3ed8ff 60%, #1fa2ff 100%);
+    color: #23283e;
+    font-size: 28px;
+    width: 56px;
+    height: 56px;
+    box-shadow: 0 2px 12px #3ed8ff33;
+    border: none;
+}
+.player-btn.main:hover, .player-btn.main:focus {
+    background: linear-gradient(135deg, #29aaff 60%, #1890ff 100%);
+    color: #23283e;
+    box-shadow: 0 4px 16px #3ed8ff44;
+}
+.player-btn.like.liked {
+    color: #ff416c;
+    background: rgba(255,65,108,0.15);
+}
+.player-btn.close {
+    color: #fff9;
+    font-size: 20px;
+    margin-left: 8px;
+    background: rgba(255,255,255,0.10);
+}
+.player-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    box-shadow: none;
+}
 @media (max-width: 1024px) {
+    .player-btn { width: 40px; height: 40px; font-size: 18px; }
+    .player-btn.main { width: 48px; height: 48px; font-size: 22px; }
     .player-thumb-img {
         width: 60px;
         height: 60px;
@@ -777,6 +841,8 @@ function SongPlay({ sidebarWidth = 0 }) {
         min-height: 70px;
         padding: 0 8px;
     }
+    .player-btn { width: 32px; height: 32px; font-size: 15px; }
+    .player-btn.main { width: 40px; height: 40px; font-size: 18px; }
     .player-thumb-img {
         width: 40px;
         height: 40px;
@@ -819,6 +885,8 @@ function SongPlay({ sidebarWidth = 0 }) {
         min-height: 56px;
         padding: 0 2px;
     }
+    .player-btn { width: 28px; height: 28px; font-size: 12px; }
+    .player-btn.main { width: 32px; height: 32px; font-size: 14px; }
     .player-thumb-img {
         width: 28px;
         height: 28px;

@@ -367,6 +367,8 @@ export default function SongDetail({ songId, onClose }) {
                         flex-direction: column;
                         padding: 24px 16px 0 16px;
                         gap: 24px;
+                        overflow-y: auto;
+                        height: 100vh;
                     }
                     
                     .song-detail-image {
@@ -417,12 +419,16 @@ export default function SongDetail({ songId, onClose }) {
                     
                     .song-detail-right {
                         height: auto;
-                        min-height: 300px;
+                        min-height: 400px;
+                        flex: 1;
+                        overflow: visible;
                     }
                     
                     .lyrics-scroll {
                         font-size: 14px;
-                        height: 300px;
+                        height: 400px;
+                        overflow-y: auto;
+                        -webkit-overflow-scrolling: touch;
                     }
                     
                     .song-detail-tabs .ant-tabs-tab {
@@ -446,6 +452,8 @@ export default function SongDetail({ songId, onClose }) {
                     .song-detail-content {
                         padding: 16px 12px 0 12px;
                         gap: 16px;
+                        overflow-y: auto;
+                        height: 100vh;
                     }
                     
                     .song-detail-image {
@@ -492,9 +500,17 @@ export default function SongDetail({ songId, onClose }) {
                         font-size: 10px;
                     }
                     
+                    .song-detail-right {
+                        min-height: 350px;
+                        flex: 1;
+                        overflow: visible;
+                    }
+                    
                     .lyrics-scroll {
                         font-size: 12px;
-                        height: 250px;
+                        height: 350px;
+                        overflow-y: auto;
+                        -webkit-overflow-scrolling: touch;
                     }
                     
                     .song-detail-tabs .ant-tabs-tab {
@@ -724,7 +740,7 @@ export default function SongDetail({ songId, onClose }) {
                     padding: "48px 32px 0 32px",
                     gap: 48,
                     minHeight: "calc(100vh - 48px)",
-                    overflow: "hidden"
+                    overflow: "auto"
                 }}>
                     <div className="song-detail-left" style={{ 
                         flex: 1, 
@@ -945,7 +961,7 @@ export default function SongDetail({ songId, onClose }) {
                         flexDirection: "column",
                         justifyContent: "flex-start",
                         height: "100vh",
-                        overflow: "hidden"
+                        overflow: "visible"
                     }}>
                         <Tabs
                             defaultActiveKey="lyrics"
