@@ -20,7 +20,7 @@ export default function SongDetail({ songId, onClose }) {
     const [currentTime, setCurrentTime] = useState(0);
     const [viewed, setViewed] = useState(false);
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 780);
-    
+
     // Add to Playlist states
     const [addToPlaylistModal, setAddToPlaylistModal] = useState(false);
     const [userPlaylists, setUserPlaylists] = useState([]);
@@ -254,7 +254,7 @@ export default function SongDetail({ songId, onClose }) {
         try {
             const token = localStorage.getItem("accessToken");
             if (!token) return;
-            
+
             const response = await axios.get(`${BASE_API_URL}/api/v1/playlist/user`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
@@ -278,7 +278,7 @@ export default function SongDetail({ songId, onClose }) {
                 {},
                 { headers: { Authorization: `Bearer ${token}` } }
             );
-            
+
             if (response.status === 200) {
                 toast.success("Song added to playlist successfully!");
                 setAddToPlaylistModal(false);
@@ -306,7 +306,7 @@ export default function SongDetail({ songId, onClose }) {
                 { name: newPlaylistName.trim() },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
-            
+
             if (response.status === 201) {
                 toast.success("Playlist created successfully!");
                 setNewPlaylistName("");
@@ -325,13 +325,16 @@ export default function SongDetail({ songId, onClose }) {
             console.log('Window width:', window.innerWidth, 'Is mobile:', mobile);
             setIsMobile(mobile);
         };
-        
+
         // Call once on mount
         handleResize();
-        
+
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
     }, []);
+
+    // Debug: Log current state
+    console.log('Current isMobile state:', isMobile, 'Window width:', window.innerWidth);
 
     if (loading) return <Spin style={{ margin: 40 }} />;
     if (!song) return <div style={{ padding: 40 }}>Song not found.</div>;
@@ -343,14 +346,14 @@ export default function SongDetail({ songId, onClose }) {
         <>
             <style>{`
                 .lyrics-scroll::-webkit-scrollbar {
-                    display: none;
+                    display: none; /* Hide scrollbar for Webkit browsers by default */
                 }
                 .lyrics-scroll {
-                    -ms-overflow-style: none;
-                    scrollbar-width: none;
+                    -ms-overflow-style: none; /* Hide scrollbar for IE and Edge */
+                    scrollbar-width: none; /* Hide scrollbar for Firefox */
                 }
-                
-                /* Desktop styles (default) */
+
+                /* Desktop styles (default - no scrollbar) */
                 .song-detail-content {
                     flex-direction: row;
                 }
@@ -398,8 +401,14 @@ export default function SongDetail({ songId, onClose }) {
                 }
                 
                 .lyrics-scroll {
+                    color: #fff;
+                    white-space: pre-line;
                     font-size: 18px;
+                    font-family: inherit;
                     height: calc(100vh - 160px);
+                    overflow-y: auto; /* Allow scrolling but hide scrollbar by default */
+                    padding-right: 8px;
+                    line-height: 1.6;
                 }
                 
                 .song-detail-tabs .ant-tabs-tab {
@@ -416,9 +425,25 @@ export default function SongDetail({ songId, onClose }) {
                 .volume-slider {
                     width: 70px;
                 }
-                
-                /* Tablet styles */
+
+                /* Tablet and Mobile styles - show scrollbar when needed */
                 @media (max-width: 1024px) {
+                    .lyrics-scroll::-webkit-scrollbar {
+                        display: block; /* Show scrollbar for Webkit browsers */
+                        width: 8px;
+                    }
+                    .lyrics-scroll {
+                        -ms-overflow-style: auto; /* Show scrollbar for IE and Edge */
+                        scrollbar-width: thin; /* Show thin scrollbar for Firefox */
+                    }
+                    .lyrics-scroll::-webkit-scrollbar-thumb {
+                        background-color: rgba(255, 255, 255, 0.3);
+                        border-radius: 4px;
+                    }
+                    .lyrics-scroll::-webkit-scrollbar-track {
+                        background: transparent;
+                    }
+
                     .song-detail-image {
                         width: 280px;
                         height: 280px;
@@ -454,8 +479,7 @@ export default function SongDetail({ songId, onClose }) {
                         font-size: 16px;
                     }
                 }
-                
-                /* Mobile styles */
+
                 @media (max-width: 768px) {
                     .song-detail-content {
                         flex-direction: column;
@@ -474,11 +498,6 @@ export default function SongDetail({ songId, onClose }) {
                     
                     .song-detail-title {
                         font-size: 20px;
-                        padding: 0 8px;
-                    }
-                    
-                    .song-detail-artist {
-                        gap: 8px;
                         padding: 0 8px;
                     }
                     
@@ -522,7 +541,6 @@ export default function SongDetail({ songId, onClose }) {
                         font-size: 14px;
                         height: 400px;
                         overflow-y: auto;
-                        -webkit-overflow-scrolling: touch;
                     }
                     
                     .song-detail-tabs .ant-tabs-tab {
@@ -543,6 +561,13 @@ export default function SongDetail({ songId, onClose }) {
                 
                 /* Small mobile styles */
                 @media (max-width: 480px) {
+                    .lyrics-scroll::-webkit-scrollbar {
+                        width: 6px;
+                    }
+                    .lyrics-scroll::-webkit-scrollbar-thumb {
+                        background-color: rgba(255, 255, 255, 0.2);
+                    }
+
                     .song-detail-content {
                         padding: 16px 12px 0 12px;
                         gap: 16px;
@@ -559,11 +584,6 @@ export default function SongDetail({ songId, onClose }) {
                     
                     .song-detail-title {
                         font-size: 18px;
-                        padding: 0 4px;
-                    }
-                    
-                    .song-detail-artist {
-                        gap: 6px;
                         padding: 0 4px;
                     }
                     
@@ -604,7 +624,6 @@ export default function SongDetail({ songId, onClose }) {
                         font-size: 12px;
                         height: 350px;
                         overflow-y: auto;
-                        -webkit-overflow-scrolling: touch;
                     }
                     
                     .song-detail-tabs .ant-tabs-tab {
@@ -622,7 +641,8 @@ export default function SongDetail({ songId, onClose }) {
                         width: 40px;
                     }
                 }
-                
+
+                /* Player button styles */
                 .player-btn {
                     background: rgba(255,255,255,0.1);
                     border: none;
@@ -778,14 +798,6 @@ export default function SongDetail({ songId, onClose }) {
                         padding-bottom: max(0px, env(safe-area-inset-bottom));
                     }
                 }
-                .progress-bar-wrap {
-                    display: none !important;
-                }
-                @media (max-width: 780px) {
-                    .progress-bar-wrap {
-                        display: block !important;
-                    }
-                }
             `}</style>
 
             <div className="song-detail-container"
@@ -850,10 +862,10 @@ export default function SongDetail({ songId, onClose }) {
                     overflow: "auto",
                     justifyContent: "center"
                 }}>
-                    <div className="song-detail-left" style={{ 
-                        flex: 1, 
-                        display: "flex", 
-                        flexDirection: "column", 
+                    <div className="song-detail-left" style={{
+                        flex: 1,
+                        display: "flex",
+                        flexDirection: "column",
                         alignItems: "center",
                         minWidth: 0
                     }}>
@@ -886,11 +898,11 @@ export default function SongDetail({ songId, onClose }) {
                         {artist && (
                             <div
                                 className="song-detail-artist"
-                                style={{ 
-                                    display: "flex", 
-                                    alignItems: "center", 
-                                    gap: 12, 
-                                    marginBottom: 8, 
+                                style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: 12,
+                                    marginBottom: 8,
                                     cursor: "pointer"
                                 }}
                                 onClick={() => {
@@ -914,11 +926,11 @@ export default function SongDetail({ songId, onClose }) {
                                     size={40}
                                     className="artist-avatar"
                                 />
-                                <span className="artist-name" style={{ 
-                                    color: "#fff", 
-                                    fontWeight: 500, 
-                                    fontSize: 18, 
-                                    textDecoration: "underline" 
+                                <span className="artist-name" style={{
+                                    color: "#fff",
+                                    fontWeight: 500,
+                                    fontSize: 18,
+                                    textDecoration: "underline"
                                 }}>
                                     {(artist.firstName && artist.lastName)
                                         ? `${artist.firstName} ${artist.lastName}`
@@ -927,38 +939,38 @@ export default function SongDetail({ songId, onClose }) {
                             </div>
                         )}
 
-                        <div className="song-detail-info" style={{ 
-                            color: "#fff", 
-                            opacity: 0.85, 
-                            marginBottom: 4, 
+                        <div className="song-detail-info" style={{
+                            color: "#fff",
+                            opacity: 0.85,
+                            marginBottom: 4,
                             fontSize: 16,
                             textAlign: "center"
                         }}>
                             <b>{t('song_detail.album')}:</b> {album ? album.titleAlbum : song?.albumName || "—"}
                         </div>
-                        <div className="song-detail-info" style={{ 
-                            color: "#fff", 
-                            opacity: 0.85, 
-                            marginBottom: 4, 
+                        <div className="song-detail-info" style={{
+                            color: "#fff",
+                            opacity: 0.85,
+                            marginBottom: 4,
                             fontSize: 16,
                             textAlign: "center"
                         }}>
                             <b>{t('song_detail.views')}:</b> {song?.views?.toLocaleString()}
                         </div>
-                        <div className="song-detail-info" style={{ 
-                            color: "#fff", 
-                            opacity: 0.85, 
-                            fontSize: 16, 
+                        <div className="song-detail-info" style={{
+                            color: "#fff",
+                            opacity: 0.85,
+                            fontSize: 16,
                             marginBottom: 24,
                             textAlign: "center"
                         }}>
                             <b>{t('song_detail.duration')}:</b> {song?.duration}
                         </div>
 
-                        <div className="song-detail-controls" style={{ 
-                            display: "flex", 
-                            alignItems: "center", 
-                            gap: 18, 
+                        <div className="song-detail-controls" style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 18,
                             marginBottom: 16,
                             justifyContent: "center"
                         }}>
@@ -1025,14 +1037,14 @@ export default function SongDetail({ songId, onClose }) {
                             >
                                 <span className="material-icons">add_box</span>
                             </button>
-                            <div className="volume-control" style={{ 
-                                display: "flex", 
-                                alignItems: "center", 
-                                gap: 6 
+                            <div className="volume-control" style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 6
                             }}>
-                                <span className="material-icons" style={{ 
-                                    fontSize: 20, 
-                                    color: "#8ca0c6" 
+                                <span className="material-icons" style={{
+                                    fontSize: 20,
+                                    color: "#8ca0c6"
                                 }}>volume_up</span>
                                 <input
                                     type="range"
@@ -1051,8 +1063,8 @@ export default function SongDetail({ songId, onClose }) {
 
                         {isMobile && (
                             <div className="progress-bar-wrap">
-                                <div className="progress-container" style={{ 
-                                    width: "100%", 
+                                <div className="progress-container" style={{
+                                    width: "100%",
                                     maxWidth: 340
                                 }}>
                                     <input
