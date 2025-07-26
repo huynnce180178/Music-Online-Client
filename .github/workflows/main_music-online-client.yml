@@ -25,9 +25,9 @@ jobs:
       - name: Build Vite app
         run: npm run build
 
-      - name: Upload to Azure Web App
+      - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'music-online-client-gcfmcqhfbzakh5ac' # sửa chỗ này
+          app-name: 'music-online-client'  # hoặc đúng tên như Azure tạo
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
           package: ./dist
