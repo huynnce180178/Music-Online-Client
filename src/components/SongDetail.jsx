@@ -255,6 +255,264 @@ export default function SongDetail({ songId, onClose }) {
                     -ms-overflow-style: none;
                     scrollbar-width: none;
                 }
+                
+                /* Desktop styles (default) */
+                .song-detail-content {
+                    flex-direction: row;
+                }
+                
+                .song-detail-image {
+                    width: 330px;
+                    height: 330px;
+                    border-radius: 20px;
+                    margin-bottom: 32px;
+                }
+                
+                .song-detail-title {
+                    font-size: 36px;
+                }
+                
+                .artist-avatar {
+                    width: 40px !important;
+                    height: 40px !important;
+                }
+                
+                .artist-name {
+                    font-size: 18px;
+                }
+                
+                .song-detail-info {
+                    font-size: 16px;
+                    margin-bottom: 4px;
+                }
+                
+                .song-detail-controls {
+                    gap: 18px;
+                    flex-wrap: nowrap;
+                }
+                
+                .progress-container {
+                    max-width: 340px;
+                }
+                
+                .time-display {
+                    font-size: 13px;
+                }
+                
+                .song-detail-right {
+                    height: 100vh;
+                }
+                
+                .lyrics-scroll {
+                    font-size: 18px;
+                    height: calc(100vh - 160px);
+                }
+                
+                .song-detail-tabs .ant-tabs-tab {
+                    font-size: 18px;
+                    padding: 12px 16px;
+                }
+                
+                .close-btn {
+                    top: 32px;
+                    right: 48px;
+                    font-size: 20px;
+                }
+                
+                .volume-slider {
+                    width: 70px;
+                }
+                
+                /* Tablet styles */
+                @media (max-width: 1024px) {
+                    .song-detail-image {
+                        width: 280px;
+                        height: 280px;
+                        border-radius: 16px;
+                        margin-bottom: 24px;
+                    }
+                    
+                    .song-detail-title {
+                        font-size: 28px;
+                    }
+                    
+                    .artist-name {
+                        font-size: 16px;
+                    }
+                    
+                    .song-detail-info {
+                        font-size: 14px;
+                    }
+                    
+                    .song-detail-controls {
+                        gap: 14px;
+                    }
+                    
+                    .progress-container {
+                        max-width: 300px;
+                    }
+                    
+                    .lyrics-scroll {
+                        font-size: 16px;
+                    }
+                    
+                    .song-detail-tabs .ant-tabs-tab {
+                        font-size: 16px;
+                    }
+                }
+                
+                /* Mobile styles */
+                @media (max-width: 768px) {
+                    .song-detail-content {
+                        flex-direction: column;
+                        padding: 24px 16px 0 16px;
+                        gap: 24px;
+                    }
+                    
+                    .song-detail-image {
+                        width: 200px;
+                        height: 200px;
+                        border-radius: 12px;
+                        margin-bottom: 16px;
+                    }
+                    
+                    .song-detail-title {
+                        font-size: 20px;
+                        padding: 0 8px;
+                    }
+                    
+                    .song-detail-artist {
+                        gap: 8px;
+                        padding: 0 8px;
+                    }
+                    
+                    .artist-avatar {
+                        width: 32px !important;
+                        height: 32px !important;
+                    }
+                    
+                    .artist-name {
+                        font-size: 14px;
+                    }
+                    
+                    .song-detail-info {
+                        font-size: 12px;
+                        padding: 0 8px;
+                    }
+                    
+                    .song-detail-controls {
+                        gap: 10px;
+                        flex-wrap: wrap;
+                        justify-content: center;
+                    }
+                    
+                    .progress-container {
+                        max-width: 280px;
+                        padding: 0 16px;
+                    }
+                    
+                    .time-display {
+                        font-size: 11px;
+                    }
+                    
+                    .song-detail-right {
+                        height: auto;
+                        min-height: 300px;
+                    }
+                    
+                    .lyrics-scroll {
+                        font-size: 14px;
+                        height: 300px;
+                    }
+                    
+                    .song-detail-tabs .ant-tabs-tab {
+                        font-size: 14px;
+                        padding: 8px 12px;
+                    }
+                    
+                    .close-btn {
+                        top: 16px;
+                        right: 16px;
+                        font-size: 16px;
+                    }
+                    
+                    .volume-slider {
+                        width: 50px;
+                    }
+                }
+                
+                /* Small mobile styles */
+                @media (max-width: 480px) {
+                    .song-detail-content {
+                        padding: 16px 12px 0 12px;
+                        gap: 16px;
+                    }
+                    
+                    .song-detail-image {
+                        width: 160px;
+                        height: 160px;
+                        border-radius: 10px;
+                        margin-bottom: 12px;
+                    }
+                    
+                    .song-detail-title {
+                        font-size: 18px;
+                        padding: 0 4px;
+                    }
+                    
+                    .song-detail-artist {
+                        gap: 6px;
+                        padding: 0 4px;
+                    }
+                    
+                    .artist-avatar {
+                        width: 28px !important;
+                        height: 28px !important;
+                    }
+                    
+                    .artist-name {
+                        font-size: 12px;
+                    }
+                    
+                    .song-detail-info {
+                        font-size: 11px;
+                        padding: 0 4px;
+                    }
+                    
+                    .song-detail-controls {
+                        gap: 8px;
+                    }
+                    
+                    .progress-container {
+                        max-width: 240px;
+                        padding: 0 12px;
+                    }
+                    
+                    .time-display {
+                        font-size: 10px;
+                    }
+                    
+                    .lyrics-scroll {
+                        font-size: 12px;
+                        height: 250px;
+                    }
+                    
+                    .song-detail-tabs .ant-tabs-tab {
+                        font-size: 12px;
+                        padding: 6px 10px;
+                    }
+                    
+                    .close-btn {
+                        top: 12px;
+                        right: 12px;
+                        font-size: 14px;
+                    }
+                    
+                    .volume-slider {
+                        width: 40px;
+                    }
+                }
+                
                 .player-btn {
                     background: rgba(255,255,255,0.1);
                     border: none;
@@ -271,6 +529,23 @@ export default function SongDetail({ songId, onClose }) {
                     outline: none;
                     box-shadow: none;
                 }
+                
+                @media (max-width: 768px) {
+                    .player-btn {
+                        width: 36px;
+                        height: 36px;
+                        font-size: 14px;
+                    }
+                }
+                
+                @media (max-width: 480px) {
+                    .player-btn {
+                        width: 32px;
+                        height: 32px;
+                        font-size: 12px;
+                    }
+                }
+                
                 .player-btn:hover {
                     background: rgba(255,255,255,0.2);
                     transform: scale(1.05);
@@ -294,6 +569,23 @@ export default function SongDetail({ songId, onClose }) {
                     font-size: 24px;
                     color: #23283e;
                 }
+                
+                @media (max-width: 768px) {
+                    .player-btn.main {
+                        width: 44px;
+                        height: 44px;
+                        font-size: 18px;
+                    }
+                }
+                
+                @media (max-width: 480px) {
+                    .player-btn.main {
+                        width: 40px;
+                        height: 40px;
+                        font-size: 16px;
+                    }
+                }
+                
                 .player-btn.main:hover {
                     background: linear-gradient(135deg, #29aaff 60%, #1890ff 100%);
                     color: #23283e;
@@ -343,7 +635,6 @@ export default function SongDetail({ songId, onClose }) {
                     cursor: not-allowed;
                 }
                 .volume-slider {
-                    width: 70px;
                     height: 4px;
                     border-radius: 2px;
                     background: #23283e;
@@ -370,6 +661,13 @@ export default function SongDetail({ songId, onClose }) {
                 .song-detail-container {
                     animation: fadeInUp 0.4s ease-out;
                 }
+                
+                /* Safe area support */
+                @supports (padding: max(0px)) {
+                    .song-detail-container {
+                        padding-bottom: max(0px, env(safe-area-inset-bottom));
+                    }
+                }
             `}</style>
 
             <div className="song-detail-container"
@@ -379,8 +677,8 @@ export default function SongDetail({ songId, onClose }) {
                     display: "flex",
                     flexDirection: "column",
                     position: "relative",
-                    minHeight: "100vh", // Đảm bảo chiều cao tối thiểu
-                    overflow: "hidden"  // Ngăn cuộn dọc không cần thiết ở container chính
+                    minHeight: "100vh",
+                    overflow: "hidden"
                 }}>
                 <div style={{
                     position: "fixed",
@@ -398,6 +696,7 @@ export default function SongDetail({ songId, onClose }) {
                     type="text"
                     shape="circle"
                     size="large"
+                    className="close-btn"
                     style={{
                         position: "fixed",
                         top: 32,
@@ -415,7 +714,7 @@ export default function SongDetail({ songId, onClose }) {
                     aria-label="Close"
                 />
 
-                <div style={{
+                <div className="song-detail-content" style={{
                     display: "flex",
                     flex: 1,
                     zIndex: 1,
@@ -424,13 +723,20 @@ export default function SongDetail({ songId, onClose }) {
                     width: "100%",
                     padding: "48px 32px 0 32px",
                     gap: 48,
-                    minHeight: "calc(100vh - 48px)", // Đảm bảo chiều cao tối thiểu cho flex
-                    overflow: "hidden" // Ngăn cuộn dọc ở vùng flex chính
+                    minHeight: "calc(100vh - 48px)",
+                    overflow: "hidden"
                 }}>
-                    <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center" }}>
+                    <div className="song-detail-left" style={{ 
+                        flex: 1, 
+                        display: "flex", 
+                        flexDirection: "column", 
+                        alignItems: "center",
+                        minWidth: 0
+                    }}>
                         <img
                             src={song?.profilePicUrl}
                             alt={song?.title}
+                            className="song-detail-image"
                             style={{
                                 width: 330,
                                 height: 330,
@@ -441,7 +747,7 @@ export default function SongDetail({ songId, onClose }) {
                                 transition: "transform 0.3s, box-shadow 0.3s"
                             }}
                         />
-                        <h1 style={{
+                        <h1 className="song-detail-title" style={{
                             color: "#fff",
                             fontWeight: 700,
                             fontSize: 36,
@@ -455,12 +761,18 @@ export default function SongDetail({ songId, onClose }) {
 
                         {artist && (
                             <div
-                                style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 8, cursor: "pointer" }}
+                                className="song-detail-artist"
+                                style={{ 
+                                    display: "flex", 
+                                    alignItems: "center", 
+                                    gap: 12, 
+                                    marginBottom: 8, 
+                                    cursor: "pointer"
+                                }}
                                 onClick={() => {
                                     const token = localStorage.getItem("accessToken");
                                     if (token) {
-                                        if (onClose) onClose(); // Đóng modal detail trước
-                                        // Điều hướng sang trang profile nghệ sĩ
+                                        if (onClose) onClose();
                                         navigate(`/artist/${artist.id || artist.artistId}`);
                                     } else {
                                         message.info("Please login to view artist profile!");
@@ -476,8 +788,14 @@ export default function SongDetail({ songId, onClose }) {
                                         "/img/default-cover.png"
                                     }
                                     size={40}
+                                    className="artist-avatar"
                                 />
-                                <span style={{ color: "#fff", fontWeight: 500, fontSize: 18, textDecoration: "underline" }}>
+                                <span className="artist-name" style={{ 
+                                    color: "#fff", 
+                                    fontWeight: 500, 
+                                    fontSize: 18, 
+                                    textDecoration: "underline" 
+                                }}>
                                     {(artist.firstName && artist.lastName)
                                         ? `${artist.firstName} ${artist.lastName}`
                                         : artist.artistName || ""}
@@ -485,17 +803,41 @@ export default function SongDetail({ songId, onClose }) {
                             </div>
                         )}
 
-                        <div style={{ color: "#fff", opacity: 0.85, marginBottom: 4, fontSize: 16 }}>
+                        <div className="song-detail-info" style={{ 
+                            color: "#fff", 
+                            opacity: 0.85, 
+                            marginBottom: 4, 
+                            fontSize: 16,
+                            textAlign: "center"
+                        }}>
                             <b>{t('song_detail.album')}:</b> {album ? album.titleAlbum : song?.albumName || "—"}
                         </div>
-                        <div style={{ color: "#fff", opacity: 0.85, marginBottom: 4, fontSize: 16 }}>
+                        <div className="song-detail-info" style={{ 
+                            color: "#fff", 
+                            opacity: 0.85, 
+                            marginBottom: 4, 
+                            fontSize: 16,
+                            textAlign: "center"
+                        }}>
                             <b>{t('song_detail.views')}:</b> {song?.views?.toLocaleString()}
                         </div>
-                        <div style={{ color: "#fff", opacity: 0.85, fontSize: 16, marginBottom: 24 }}>
+                        <div className="song-detail-info" style={{ 
+                            color: "#fff", 
+                            opacity: 0.85, 
+                            fontSize: 16, 
+                            marginBottom: 24,
+                            textAlign: "center"
+                        }}>
                             <b>{t('song_detail.duration')}:</b> {song?.duration}
                         </div>
 
-                        <div style={{ display: "flex", alignItems: "center", gap: 18, marginBottom: 16 }}>
+                        <div className="song-detail-controls" style={{ 
+                            display: "flex", 
+                            alignItems: "center", 
+                            gap: 18, 
+                            marginBottom: 16,
+                            justifyContent: "center"
+                        }}>
                             <button
                                 className="player-btn"
                                 onClick={safePrevSong}
@@ -541,8 +883,15 @@ export default function SongDetail({ songId, onClose }) {
                             >
                                 <span className="material-icons">file_download</span>
                             </button>
-                            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                                <span className="material-icons" style={{ fontSize: 20, color: "#8ca0c6" }}>volume_up</span>
+                            <div className="volume-control" style={{ 
+                                display: "flex", 
+                                alignItems: "center", 
+                                gap: 6 
+                            }}>
+                                <span className="material-icons" style={{ 
+                                    fontSize: 20, 
+                                    color: "#8ca0c6" 
+                                }}>volume_up</span>
                                 <input
                                     type="range"
                                     min={0}
@@ -558,7 +907,10 @@ export default function SongDetail({ songId, onClose }) {
                             </div>
                         </div>
 
-                        <div style={{ width: "100%", maxWidth: 340 }}>
+                        <div className="progress-container" style={{ 
+                            width: "100%", 
+                            maxWidth: 340
+                        }}>
                             <input
                                 type="range"
                                 min={0}
@@ -573,7 +925,7 @@ export default function SongDetail({ songId, onClose }) {
                                 disabled={adPlaying}
                                 title="Seek"
                             />
-                            <div style={{
+                            <div className="time-display" style={{
                                 display: "flex",
                                 justifyContent: "space-between",
                                 color: "#8ca0c6",
@@ -586,14 +938,14 @@ export default function SongDetail({ songId, onClose }) {
                         </div>
                     </div>
 
-                    <div style={{
+                    <div className="song-detail-right" style={{
                         flex: 1,
                         minWidth: 0,
                         display: "flex",
                         flexDirection: "column",
                         justifyContent: "flex-start",
                         height: "100vh",
-                        overflow: "hidden" // Ngăn cuộn dọc ở vùng phải
+                        overflow: "hidden"
                     }}>
                         <Tabs
                             defaultActiveKey="lyrics"

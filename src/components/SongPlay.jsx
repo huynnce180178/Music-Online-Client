@@ -324,56 +324,21 @@ function SongPlay({ sidebarWidth = 0 }) {
     return (
         <>
             <div className="songplay-root improved-player"
-                style={{
-                    background: 'rgba(24,28,43,0.85)',
-                    backdropFilter: 'blur(12px)',
-                    width: `calc(100vw - ${sidebarWidth}px)`,
-                    minHeight: 90,
-                    padding: window.innerWidth <= 768 ? '0 16px' : '0 32px',
-                    position: 'fixed',
-                    left: sidebarWidth,
-                    bottom: 0,
-                    zIndex: 1100,
-                    boxShadow: '0 8px 32px #3ed8ff33',
-                    display: 'flex',
-                    alignItems: 'center',
-                    overflow: "hidden",
-                    transition: "box-shadow 0.2s, background 0.2s"
-                }}>
+                >
                 {/* Thumbnail */}
-                <div className="player-thumb">
+                <div className="player-thumb" onClick={() => setShowDetail(true)} style={{ cursor: 'pointer' }}>
                     <img src={song?.profilePicUrl} alt={song?.title}
-                        style={{
-                            width: window.innerWidth <= 768 ? 60 : 72, 
-                            height: window.innerWidth <= 768 ? 60 : 72, 
-                            borderRadius: window.innerWidth <= 768 ? 12 : 16,
-                            objectFit: "cover", boxShadow: "0 2px 16px #29aaff44"
-                        }} />
+                        className="player-thumb-img" />
                 </div>
 
                 {/* Song Info */}
-                <div className="player-info" style={{
-                    flex: 1, padding: window.innerWidth <= 768 ? "0 16px 5px 12px" : "0 24px 5px 18px", overflow: "hidden"
-                }}>
-                    <div className="player-title" style={{
-                        color: "#fff", fontWeight: 700, fontSize: window.innerWidth <= 768 ? 18 : 22,
-                        textShadow: "0 1px 8px #0006", overflow: "hidden",
-                        display: "-webkit-box", WebkitLineClamp: 1, WebkitBoxOrient: "vertical"
-                    }}>{song?.title}</div>
-                    <div className="player-artist" style={{
-                        color: "#8ca0c6", fontWeight: 400, fontSize: window.innerWidth <= 768 ? 13 : 15,
-                        opacity: 0.95, marginTop: 2, whiteSpace: "nowrap",
-                        overflow: "hidden", textOverflow: "ellipsis"
-                    }}>{song?.artistName || song?.albumName}</div>
+                <div className="player-info">
+                    <div className="player-title">{song?.title}</div>
+                    <div className="player-artist">{song?.artistName || song?.albumName}</div>
                 </div>
 
                 {/* Controls */}
-                <div className="player-controls" style={{
-                    flex: window.innerWidth <= 768 ? "0 0 140px" : "0 0 170px", 
-                    display: 'flex', 
-                    gap: window.innerWidth <= 768 ? 12 : 18, 
-                    alignItems: "center"
-                }}>
+                <div className="player-controls">
                     <button
                         className="player-btn"
                         onClick={() => !adPlaying && handleSongChange("prev")}
@@ -404,11 +369,7 @@ function SongPlay({ sidebarWidth = 0 }) {
                 </div>
 
                 {/* Progress */}
-                <div className="player-progress-wrap" style={{
-                    flex: window.innerWidth <= 768 ? "1 1 200px" : "2 2 320px", 
-                    maxWidth: window.innerWidth <= 768 ? 200 : 340, 
-                    padding: window.innerWidth <= 768 ? "0 12px" : "0 24px"
-                }}>
+                <div className="player-progress-wrap">
                     <input
                         type="range"
                         min={0}
@@ -416,30 +377,18 @@ function SongPlay({ sidebarWidth = 0 }) {
                         value={currentTime}
                         onChange={handleSeek}
                         className="player-progress"
-                        style={{
-                            width: "100%",
-                            accentColor: "#3ed8ff",
-                            background: `linear-gradient(90deg, #3ed8ff ${(currentTime / durationSec) * 100}%, #23283e ${(currentTime / durationSec) * 100}%)`,
-                            height: 6, borderRadius: 4
-                        }}
                     />
-                    <div className="d-flex justify-content-between mt-1" style={{ color: "#8ca0c6", fontSize: window.innerWidth <= 768 ? 11 : 13 }}>
+                    <div className="player-time">
                         <span>{formatTime(currentTime)}</span>
                         <span>{song ? song.duration.substring(3) : "0:00"}</span>
                     </div>
                 </div>
 
                 {/* Right Controls */}
-                <div className="player-actions" style={{
-                    flex: window.innerWidth <= 768 ? "0 0 120px" : "0 0 160px", 
-                    marginRight: window.innerWidth <= 768 ? '5px' : '10px', 
-                    display: "flex", 
-                    gap: window.innerWidth <= 768 ? 8 : 12, 
-                    alignItems: "center"
-                }}>
-                    <span className="material-icons" style={{ fontSize: window.innerWidth <= 768 ? 16 : 19, color: "#8ca0c6" }}>volume_up</span>
+                <div className="player-actions">
+                    <span className="material-icons player-volume-icon">volume_up</span>
                     <input type="range" min={0} max={1} step={0.01} value={volume} onChange={handleVolume}
-                        style={{ width: window.innerWidth <= 768 ? 40 : 60, accentColor: "#3ed8ff" }} />
+                        className="player-volume" />
                     <button className={`player-btn like${liked ? " liked" : ""}`}
                         title={t("favorite") || "Favorite"}
                         onClick={toggleWishlist}
@@ -704,105 +653,202 @@ function SongPlay({ sidebarWidth = 0 }) {
             ) : null}
 
             <style>{`
-.improved-player {
-    animation: fadeInUp 0.4s;
-}
-
-/* iPhone safe area support */
-@supports (padding: max(0px)) {
-    .improved-player {
-        padding-bottom: max(0px, env(safe-area-inset-bottom));
-    }
-}
-
-/* Ensure player doesn't get cut off on mobile */
-@media (max-width: 768px) {
-    .improved-player {
-        min-height: 80px;
-        padding-bottom: max(8px, env(safe-area-inset-bottom));
-    }
-}
-@keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(40px);}
-    to { opacity: 1; transform: translateY(0);}
-}
-.player-btn {
-    background: none;
-    border: none;
-    color: #fff;
-    font-size: 22px;
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
+.songplay-root.improved-player {
+    background: rgba(24,28,43,0.85);
+    backdrop-filter: blur(12px);
+    width: 100vw;
+    min-height: 90px;
+    padding: 0 32px;
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    z-index: 1100;
+    box-shadow: 0 8px 32px #3ed8ff33;
     display: flex;
     align-items: center;
-    justify-content: center;
-    transition: background 0.18s, color 0.18s;
-    box-shadow: none !important;
+    overflow: hidden;
+    transition: box-shadow 0.2s, background 0.2s;
 }
-
-@media (max-width: 768px) {
-    .player-btn {
-        font-size: 18px;
-        width: 32px;
-        height: 32px;
-    }
+.player-thumb-img {
+    width: 72px;
+    height: 72px;
+    border-radius: 16px;
+    object-fit: cover;
+    box-shadow: 0 2px 16px #29aaff44;
 }
-.player-btn:hover, .player-btn:focus {
-    background: #3ed8ff33;
-    color: #3ed8ff;
-    outline: none;
-    box-shadow: none !important;
+.player-info {
+    flex: 1;
+    padding: 0 24px 5px 18px;
+    overflow: hidden;
 }
-.player-btn.main {
-    background: linear-gradient(135deg, #3ed8ff 60%, #1fa2ff 100%);
-    color: #23283e;
-    font-size: 28px;
-    width: 48px;
-    height: 48px;
-    box-shadow: none !important;
+.player-title {
+    color: #fff;
+    font-weight: 700;
+    font-size: 22px;
+    text-shadow: 0 1px 8px #0006;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
 }
-
-@media (max-width: 768px) {
-    .player-btn.main {
-        font-size: 24px;
-        width: 40px;
-        height: 40px;
-    }
+.player-artist {
+    color: #8ca0c6;
+    font-weight: 400;
+    font-size: 15px;
+    opacity: 0.95;
+    margin-top: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
-.player-btn.like.liked {
-    color: #ff416c;
-    background: #fff1;
+.player-controls {
+    flex: 0 0 170px;
+    display: flex;
+    gap: 18px;
+    align-items: center;
 }
-.player-btn.close {
-    color: #fff9;
-    font-size: 20px;
-    margin-left: 8px;
-}
-.player-progress::-webkit-slider-thumb {
-    background: #3ed8ff;
-    border-radius: 50%;
-    width: 16px;
-    height: 16px;
-    box-shadow: none !important;
-    border: none;
+.player-progress-wrap {
+    flex: 2 2 320px;
+    max-width: 340px;
+    padding: 0 24px;
 }
 .player-progress {
-    outline: none;
-    border-radius: 4px;
+    width: 100%;
+    accent-color: #3ed8ff;
+    background: linear-gradient(90deg, #3ed8ff 0%, #23283e 0%);
     height: 6px;
-    background: #23283e;
-    transition: background 0.2s;
-    box-shadow: none !important;
+    border-radius: 4px;
+    outline: none;
     border: none;
 }
-.player-thumb img {
-    transition: box-shadow 0.2s, transform 0.2s;
-    box-shadow: none !important;
+.player-time {
+    display: flex;
+    justify-content: space-between;
+    color: #8ca0c6;
+    font-size: 13px;
+    margin-top: 4px;
 }
-.player-thumb img:hover {
-    box-shadow: none !important;
-    transform: scale(1.04);
+.player-actions {
+    flex: 0 0 160px;
+    margin-right: 10px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+.player-volume-icon {
+    font-size: 19px;
+    color: #8ca0c6;
+}
+.player-volume {
+    width: 60px;
+    accent-color: #3ed8ff;
+}
+@media (max-width: 1024px) {
+    .player-thumb-img {
+        width: 60px;
+        height: 60px;
+        border-radius: 12px;
+    }
+    .player-title {
+        font-size: 18px;
+    }
+    .player-artist {
+        font-size: 13px;
+    }
+    .player-controls {
+        gap: 12px;
+    }
+    .player-progress-wrap {
+        max-width: 280px;
+        padding: 0 12px;
+    }
+    .player-time {
+        font-size: 11px;
+    }
+    .player-actions {
+        gap: 8px;
+    }
+    .player-volume {
+        width: 40px;
+    }
+}
+@media (max-width: 768px) {
+    .songplay-root.improved-player {
+        min-height: 70px;
+        padding: 0 8px;
+    }
+    .player-thumb-img {
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+    }
+    .player-info {
+        padding: 0 8px 5px 8px;
+    }
+    .player-title {
+        font-size: 14px;
+    }
+    .player-artist {
+        font-size: 11px;
+    }
+    .player-controls {
+        flex: 0 0 80px;
+        gap: 8px;
+    }
+    .player-progress-wrap {
+        max-width: 160px;
+        padding: 0 4px;
+    }
+    .player-time {
+        font-size: 10px;
+    }
+    .player-actions {
+        flex: 0 0 80px;
+        margin-right: 5px;
+        gap: 6px;
+    }
+    .player-volume-icon {
+        font-size: 14px;
+    }
+    .player-volume {
+        width: 28px;
+    }
+}
+@media (max-width: 480px) {
+    .songplay-root.improved-player {
+        min-height: 56px;
+        padding: 0 2px;
+    }
+    .player-thumb-img {
+        width: 28px;
+        height: 28px;
+        border-radius: 6px;
+    }
+    .player-title {
+        font-size: 10px;
+    }
+    .player-artist {
+        font-size: 8px;
+    }
+    .player-controls {
+        gap: 4px;
+    }
+    .player-progress-wrap {
+        max-width: 80px;
+        padding: 0 2px;
+    }
+    .player-time {
+        font-size: 8px;
+    }
+    .player-actions {
+        gap: 2px;
+    }
+    .player-volume-icon {
+        font-size: 10px;
+    }
+    .player-volume {
+        width: 16px;
+    }
 }
 `}</style>
         </>
