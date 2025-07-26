@@ -345,15 +345,36 @@ export default function SongDetail({ songId, onClose }) {
     return (
         <>
             <style>{`
-                .lyrics-scroll::-webkit-scrollbar {
-                    display: none; /* Hide scrollbar for Webkit browsers by default */
+                /* Ẩn toàn bộ thanh cuộn trên desktop (giao diện lớn) */
+                .song-detail-container::-webkit-scrollbar,
+                .song-detail-content::-webkit-scrollbar,
+                .lyrics-scroll::-webkit-scrollbar,
+                *::-webkit-scrollbar {
+                    display: none !important; /* Ẩn hoàn toàn thanh cuộn cho Webkit browsers */
                 }
+                
+                .song-detail-container,
+                .song-detail-content,
+                .lyrics-scroll,
+                * {
+                    -ms-overflow-style: none !important; /* Ẩn hoàn toàn thanh cuộn cho IE và Edge */
+                    scrollbar-width: none !important; /* Ẩn hoàn toàn thanh cuộn cho Firefox */
+                }
+                
+                /* Đảm bảo tất cả element có thể cuộn nhưng không hiển thị thanh cuộn */
+                .song-detail-container {
+                    overflow: auto;
+                }
+                
+                .song-detail-content {
+                    overflow: auto;
+                }
+                
                 .lyrics-scroll {
-                    -ms-overflow-style: none; /* Hide scrollbar for IE and Edge */
-                    scrollbar-width: none; /* Hide scrollbar for Firefox */
+                    overflow-y: auto;
                 }
 
-                /* Desktop styles (default - no scrollbar) */
+                /* Kiểu cho desktop (mặc định - không có thanh cuộn) */
                 .song-detail-content {
                     flex-direction: row;
                 }
@@ -406,7 +427,7 @@ export default function SongDetail({ songId, onClose }) {
                     font-size: 18px;
                     font-family: inherit;
                     height: calc(100vh - 160px);
-                    overflow-y: auto; /* Allow scrolling but hide scrollbar by default */
+                    overflow-y: auto; /* Cho phép cuộn nhưng thanh cuộn bị ẩn */
                     padding-right: 8px;
                     line-height: 1.6;
                 }
@@ -426,15 +447,36 @@ export default function SongDetail({ songId, onClose }) {
                     width: 70px;
                 }
 
-                /* Tablet and Mobile styles - show scrollbar when needed */
+                /* Kiểu cho tablet và mobile - hiển thị thanh cuộn khi cần */
                 @media (max-width: 1024px) {
+                    .song-detail-container::-webkit-scrollbar,
+                    .song-detail-content::-webkit-scrollbar {
+                        display: block; /* Hiển thị thanh cuộn cho Webkit browsers */
+                        width: 8px;
+                    }
+                    .song-detail-container,
+                    .song-detail-content {
+                        -ms-overflow-style: auto; /* Hiển thị thanh cuộn cho IE và Edge */
+                        scrollbar-width: thin; /* Hiển thị thanh cuộn mỏng cho Firefox */
+                    }
+                    .song-detail-container::-webkit-scrollbar-thumb,
+                    .song-detail-content::-webkit-scrollbar-thumb {
+                        background-color: rgba(255, 255, 255, 0.3);
+                        border-radius: 4px;
+                    }
+                    .song-detail-container::-webkit-scrollbar-track,
+                    .song-detail-content::-webkit-scrollbar-track {
+                        background: transparent;
+                    }
+                    
+                    /* Hiển thị thanh cuộn cho lyrics trên tablet */
                     .lyrics-scroll::-webkit-scrollbar {
-                        display: block; /* Show scrollbar for Webkit browsers */
+                        display: block; /* Hiển thị thanh cuộn cho Webkit browsers */
                         width: 8px;
                     }
                     .lyrics-scroll {
-                        -ms-overflow-style: auto; /* Show scrollbar for IE and Edge */
-                        scrollbar-width: thin; /* Show thin scrollbar for Firefox */
+                        -ms-overflow-style: auto; /* Hiển thị thanh cuộn cho IE và Edge */
+                        scrollbar-width: thin; /* Hiển thị thanh cuộn mỏng cho Firefox */
                     }
                     .lyrics-scroll::-webkit-scrollbar-thumb {
                         background-color: rgba(255, 255, 255, 0.3);
@@ -485,8 +527,25 @@ export default function SongDetail({ songId, onClose }) {
                         flex-direction: column;
                         padding: 24px 16px 0 16px;
                         gap: 24px;
-                        overflow-y: auto;
+                        overflow-y: auto; /* Cho phép cuộn khi cần */
                         height: 100vh;
+                    }
+                    
+                    /* Hiển thị thanh cuộn cho lyrics trên mobile */
+                    .lyrics-scroll::-webkit-scrollbar {
+                        display: block; /* Hiển thị thanh cuộn cho Webkit browsers */
+                        width: 6px;
+                    }
+                    .lyrics-scroll {
+                        -ms-overflow-style: auto; /* Hiển thị thanh cuộn cho IE và Edge */
+                        scrollbar-width: thin; /* Hiển thị thanh cuộn mỏng cho Firefox */
+                    }
+                    .lyrics-scroll::-webkit-scrollbar-thumb {
+                        background-color: rgba(255, 255, 255, 0.2);
+                        border-radius: 3px;
+                    }
+                    .lyrics-scroll::-webkit-scrollbar-track {
+                        background: transparent;
                     }
                     
                     .song-detail-image {
@@ -559,13 +618,21 @@ export default function SongDetail({ songId, onClose }) {
                     }
                 }
                 
-                /* Small mobile styles */
+                /* Kiểu cho mobile nhỏ */
                 @media (max-width: 480px) {
-                    .lyrics-scroll::-webkit-scrollbar {
+                    .song-detail-container::-webkit-scrollbar {
                         width: 6px;
                     }
-                    .lyrics-scroll::-webkit-scrollbar-thumb {
+                    .song-detail-container::-webkit-scrollbar-thumb {
                         background-color: rgba(255, 255, 255, 0.2);
+                    }
+                    
+                    /* Hiển thị thanh cuộn cho lyrics trên mobile nhỏ */
+                    .lyrics-scroll::-webkit-scrollbar {
+                        width: 4px;
+                    }
+                    .lyrics-scroll::-webkit-scrollbar-thumb {
+                        background-color: rgba(255, 255, 255, 0.15);
                     }
 
                     .song-detail-content {
@@ -642,7 +709,7 @@ export default function SongDetail({ songId, onClose }) {
                     }
                 }
 
-                /* Player button styles */
+                /* Kiểu nút player */
                 .player-btn {
                     background: rgba(255,255,255,0.1);
                     border: none;
@@ -792,7 +859,7 @@ export default function SongDetail({ songId, onClose }) {
                     animation: fadeInUp 0.4s ease-out;
                 }
                 
-                /* Safe area support */
+                /* Hỗ trợ vùng an toàn */
                 @supports (padding: max(0px)) {
                     .song-detail-container {
                         padding-bottom: max(0px, env(safe-area-inset-bottom));
