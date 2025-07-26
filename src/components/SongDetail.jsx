@@ -321,8 +321,13 @@ export default function SongDetail({ songId, onClose }) {
     // Handle window resize
     useEffect(() => {
         const handleResize = () => {
-            setIsMobile(window.innerWidth <= 780);
+            const mobile = window.innerWidth <= 780;
+            console.log('Window width:', window.innerWidth, 'Is mobile:', mobile);
+            setIsMobile(mobile);
         };
+        
+        // Call once on mount
+        handleResize();
         
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
@@ -1044,39 +1049,39 @@ export default function SongDetail({ songId, onClose }) {
                             </div>
                         </div>
 
-                        <div className="progress-bar-wrap" style={{
-                            display: isMobile ? 'block' : 'none'
-                        }}>
-                            <div className="progress-container" style={{ 
-                                width: "100%", 
-                                maxWidth: 340
-                            }}>
-                                <input
-                                    type="range"
-                                    min={0}
-                                    max={durationSec}
-                                    value={currentTime}
-                                    onChange={handleSeek}
-                                    className="progress-bar"
-                                    style={{
-                                        background: `linear-gradient(90deg, #3ed8ff ${(currentTime / durationSec) * 100}%, #23283e ${(currentTime / durationSec) * 100}%)`,
-                                        ...(adPlaying && { opacity: 0.5, pointerEvents: "none" })
-                                    }}
-                                    disabled={adPlaying}
-                                    title="Seek"
-                                />
-                                <div className="time-display" style={{
-                                    display: "flex",
-                                    justifyContent: "space-between",
-                                    color: "#8ca0c6",
-                                    fontSize: 13,
-                                    marginTop: 4
+                        {isMobile && (
+                            <div className="progress-bar-wrap">
+                                <div className="progress-container" style={{ 
+                                    width: "100%", 
+                                    maxWidth: 340
                                 }}>
-                                    <span>{formatTime(currentTime)}</span>
-                                    <span>{song?.duration}</span>
+                                    <input
+                                        type="range"
+                                        min={0}
+                                        max={durationSec}
+                                        value={currentTime}
+                                        onChange={handleSeek}
+                                        className="progress-bar"
+                                        style={{
+                                            background: `linear-gradient(90deg, #3ed8ff ${(currentTime / durationSec) * 100}%, #23283e ${(currentTime / durationSec) * 100}%)`,
+                                            ...(adPlaying && { opacity: 0.5, pointerEvents: "none" })
+                                        }}
+                                        disabled={adPlaying}
+                                        title="Seek"
+                                    />
+                                    <div className="time-display" style={{
+                                        display: "flex",
+                                        justifyContent: "space-between",
+                                        color: "#8ca0c6",
+                                        fontSize: 13,
+                                        marginTop: 4
+                                    }}>
+                                        <span>{formatTime(currentTime)}</span>
+                                        <span>{song?.duration}</span>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        )}
                     </div>
 
                     <div className="song-detail-right" style={{
