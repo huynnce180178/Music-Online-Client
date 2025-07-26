@@ -28,6 +28,6 @@ jobs:
       - name: Upload to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'music-online-client'
+          app-name: 'music-online-client-gcfmcqhfbzakh5ac' # sửa chỗ này
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
           package: ./dist
