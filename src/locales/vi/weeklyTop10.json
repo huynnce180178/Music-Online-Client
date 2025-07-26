@@ -1,0 +1,17 @@
+{
+  "weekly_top_10.title": "Top 10 hàng tuần",
+  "weekly_top_10.plays": "lượt nghe",
+  "weekly_top_10.download": "Tải về",
+  "weekly_top_10.add_to_playlist": "Thêm vào danh sách phát",
+  "weekly_top_10.login_to_download": "Vui lòng đăng nhập để tải xuống",
+  "weekly_top_10.download_success": "Tải xuống thành công",
+  "weekly_top_10.download_failed": "Tải xuống thất bại",
+  "weekly_top_10.login_to_add_playlist": "Vui lòng đăng nhập để thêm vào danh sách phát",
+  "weekly_top_10.get_playlist_failed": "Không thể lấy danh sách phát",
+  "weekly_top_10.select_playlist_warning": "Vui lòng chọn một danh sách phát",
+  "weekly_top_10.added_to_playlist": "Đã thêm vào danh sách phát",
+  "weekly_top_10.add_to_playlist_failed": "Thêm vào danh sách phát thất bại",
+  "weekly_top_10.add": "Thêm",
+  "weekly_top_10.cancel": "Hủy",
+  "weekly_top_10.select_playlist": "Chọn danh sách phát"
+}

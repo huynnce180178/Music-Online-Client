@@ -1,0 +1,22 @@
+{
+  "admin_upgrades.id": "ID",
+  "admin_upgrades.name": "Tên gói",
+  "admin_upgrades.type": "Loại",
+  "admin_upgrades.price": "Giá",
+  "admin_upgrades.duration": "Thời hạn",
+  "admin_upgrades.days": "ngày",
+  "admin_upgrades.duration_days": "Thời hạn (ngày)",
+  "admin_upgrades.description": "Mô tả",
+  "admin_upgrades.action": "Thao tác",
+  "admin_upgrades.edit": "Sửa",
+  "admin_upgrades.delete": "Xóa",
+  "admin_upgrades.delete_confirm": "Bạn có chắc chắn muốn xóa gói này?",
+  "admin_upgrades.cancel": "Hủy",
+  "admin_upgrades.add_plan": "Thêm gói",
+  "admin_upgrades.edit_plan": "Sửa gói đăng ký",
+  "admin_upgrades.plan_name": "Tên gói",
+  "admin_upgrades.plan_type": "Loại gói",
+  "admin_upgrades.plan_type_premium": "Premium",
+  "admin_upgrades.plan_type_artist": "Nghệ sĩ",
+  "admin_upgrades.save": "Lưu"
+} 

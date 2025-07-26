@@ -1,0 +1,13 @@
+{
+  "login": "Đăng nhập",
+  "email": "Email",
+  "password": "Mật khẩu",
+  "please_enter_email": "Vui lòng nhập email!",
+  "invalid_email": "Email không hợp lệ!",
+  "enter_email": "Nhập email",
+  "please_enter_password": "Vui lòng nhập mật khẩu!",
+  "enter_password": "Nhập mật khẩu",
+  "forgot_password": "Quên mật khẩu?",
+  "no_account": "Chưa có tài khoản?",
+  "register_here": "Đăng ký ngay"
+} 

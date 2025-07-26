@@ -1,0 +1,20 @@
+{
+  "admin_albums.cover": "Ảnh bìa",
+  "admin_albums.album_name": "Tên album",
+  "admin_albums.release_date": "Ngày phát hành",
+  "admin_albums.type": "Loại",
+  "admin_albums.actions": "Thao tác",
+  "admin_albums.preview": "Xem trước",
+  "admin_albums.no_albums": "Không có album nào",
+  "admin_albums.delete": "Xóa",
+  "admin_albums.delete_reason_title": "Lý do xóa album",
+  "admin_albums.delete_reason_placeholder": "Lý do xóa (ví dụ: vi phạm bản quyền, nội dung không phù hợp)",
+  "admin_albums.cancel": "Hủy",
+  "admin_albums.confirm_delete": "Xác nhận xóa",
+  "admin_albums.restore": "Khôi phục",
+  "admin_albums.approve": "Duyệt",
+  "admin_albums.reject": "Từ chối",
+  "admin_albums.reject_reason_title": "Lý do từ chối album",
+  "admin_albums.reject_reason_placeholder": "Lý do từ chối (ví dụ: nội dung không phù hợp)",
+  "admin_albums.confirm_reject": "Xác nhận từ chối"
+} 

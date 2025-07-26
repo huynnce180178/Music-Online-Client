@@ -1,0 +1,18 @@
+{
+  "register": "Đăng ký",
+  "first_name": "Họ",
+  "last_name": "Tên",
+  "please_enter_first_name": "Vui lòng nhập họ!",
+  "please_enter_last_name": "Vui lòng nhập tên!",
+  "please_enter_email": "Vui lòng nhập email!",
+  "invalid_email": "Email không hợp lệ!",
+  "enter_email": "Nhập email",
+  "password": "Mật khẩu",
+  "please_enter_password": "Vui lòng nhập mật khẩu!",
+  "enter_password": "Nhập mật khẩu",
+  "register_now": "Đăng ký ngay",
+  "already_have_account": "Đã có tài khoản?",
+  "login_here": "Đăng nhập",
+  "choose_image": "Chọn ảnh",
+  "please_upload_profile_picture": "Vui lòng tải lên ảnh đại diện!"
+} 

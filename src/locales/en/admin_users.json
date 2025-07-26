@@ -1,0 +1,17 @@
+{
+  "admin_users.avatar": "Avatar",
+  "admin_users.full_name": "Full Name",
+  "admin_users.email": "Email",
+  "admin_users.bio": "Bio",
+  "admin_users.roles": "Roles",
+  "admin_users.role_artist": "Artist",
+  "admin_users.role_user": "User",
+  "admin_users.role_admin": "Admin",
+  "admin_users.role_premium": "Premium",
+  "admin_users.status": "Status",
+  "admin_users.status_verify": "Verify",
+  "admin_users.status_active": "Active",
+  "admin_users.status_blocked": "Blocked",
+  "admin_users.action": "Action",
+  "admin_users.search_placeholder": "Search users"
+} 

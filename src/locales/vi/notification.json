@@ -1,0 +1,12 @@
+{
+  "notification.title": "Thông báo",
+  "notification.clear_all_confirm": "Xóa tất cả thông báo?",
+  "notification.clear": "Xóa",
+  "notification.cancel": "Hủy",
+  "notification.unread": "Bạn có {{count}} thông báo chưa đọc",
+  "notification.no_new": "Không có thông báo mới",
+  "notification.empty": "Không có thông báo nào",
+  "notification.mark_as_read": "Đánh dấu đã đọc",
+  "notification.delete": "Xóa",
+  "notification.default_title": "Thông báo"
+} 

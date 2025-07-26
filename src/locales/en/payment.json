@@ -1,0 +1,20 @@
+{
+  "payment.need_login": "You need to login to pay.",
+  "payment.cannot_load_package": "Unable to download upgrade package information.",
+  "payment.loading": "Loading package information...",
+  "payment.from_only": "From only {{price}} USD / Month",
+  "payment.special_privileges": "Special privileges:",
+  "payment.payment_method": "Payment method:",
+  "payment.paypal": "Paypal",
+  "payment.vnpay": "VNPay",
+  "payment.zalopay": "ZaloPay",
+  "payment.processing": "Processing...",
+  "payment.buy_now": "BUY NOW",
+  "payment.zalopay_error": "ZaloPay payment failed.",
+  "payment.vnpay_error": "VNPay payment failed.",
+  "payment.paypal_error": "Paypal payment failed.",
+  "payment.payment_error": "An error occurred during payment. Please try again!",
+  "payment.upgrade_title": "Upgrade Your Listening Experience",
+  "payment.upgrade_desc": "Enjoy uninterrupted music, exclusive content, and more premium benefits.",
+  "payment.secure_payment": "All payments are securely processed via PayPal or your preferred method."
+} 

@@ -1,0 +1,18 @@
+{
+  "welcome": "Welcome to Music Online!",
+  "login": "Login",
+  "register": "Register",
+  "logout": "Logout",
+  "search": "Search",
+  "home": "Home",
+  "profile": "Profile",
+  "favorite": "Favorite",
+  "history": "History",
+  "download": "Download",
+  "playlist": "Playlist",
+  "album": "Album",
+  "artist": "Artist",
+  "genres": "Genres",
+  "top_tracks": "Top Tracks",
+  "new_releases": "New Releases"
+} 

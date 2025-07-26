@@ -1,0 +1,18 @@
+{
+  "admin_genres.genre_name": "Genre Name",
+  "admin_genres.image": "Image",
+  "admin_genres.actions": "Actions",
+  "admin_genres.edit": "Edit",
+  "admin_genres.delete": "Delete",
+  "admin_genres.delete_confirm": "Delete this genre?",
+  "admin_genres.cancel": "Cancel",
+  "admin_genres.save": "Save",
+  "admin_genres.update_genre": "Update Genre",
+  "admin_genres.add_genre": "Add Genre",
+  "admin_genres.select_image": "Select Image",
+  "admin_genres.old_cover": "Old cover",
+  "admin_genres.genre_name_required": "Please enter genre name!",
+  "admin_genres.image_required": "Please select an image!",
+  "admin_genres.no_genres": "No genres found",
+  "admin_genres.search_placeholder": "Search genres"
+} 

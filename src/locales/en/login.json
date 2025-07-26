@@ -1,0 +1,13 @@
+{
+  "login": "Login",
+  "email": "Email",
+  "password": "Password",
+  "please_enter_email": "Please enter your email!",
+  "invalid_email": "Invalid email!",
+  "enter_email": "Enter your email",
+  "please_enter_password": "Please enter your password!",
+  "enter_password": "Enter your password",
+  "forgot_password": "Forgot password?",
+  "no_account": "Don't have an account?",
+  "register_here": "Register here"
+} 

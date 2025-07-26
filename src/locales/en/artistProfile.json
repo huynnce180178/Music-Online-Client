@@ -1,0 +1,13 @@
+{
+  "artist_profile.songs": "Songs",
+  "artist_profile.albums": "Albums",
+  "artist_profile.follow": "Follow",
+  "artist_profile.views": "Views",
+  "artist_profile.duration": "Duration",
+  "artist_profile.no_songs_available": "No songs available.",
+  "artist_profile.released": "Released",
+  "artist_profile.type": "Type",
+  "artist_profile.loading_songs": "Loading songs...",
+  "artist_profile.no_songs_in_album": "No songs in this album.",
+  "artist_profile.no_albums_available": "No albums available."
+} 

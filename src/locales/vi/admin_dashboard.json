@@ -1,0 +1,16 @@
+{
+  "admin_dashboard.title": "Bảng điều khiển quản trị viên",
+  "admin_dashboard.user": "Người dùng",
+  "admin_dashboard.artist": "Nghệ sĩ",
+  "admin_dashboard.premium": "Tài khoản Premium",
+  "admin_dashboard.statistics": "Thống kê",
+  "admin_dashboard.album": "Album",
+  "admin_dashboard.song": "Bài hát",
+  "admin_dashboard.genre": "Thể loại",
+  "admin_dashboard.comment": "Bình luận",
+  "admin_dashboard.total_users": "Tổng người dùng",
+  "admin_dashboard.total_subscriptions": "Tổng lượt đăng ký",
+  "admin_dashboard.total_system_stats": "Tổng số liệu hệ thống",
+  "admin_dashboard.start_date": "Ngày bắt đầu",
+  "admin_dashboard.end_date": "Ngày kết thúc"
+} 

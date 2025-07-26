@@ -1,0 +1,20 @@
+{
+  "payment.need_login": "Bạn cần đăng nhập để thanh toán.",
+  "payment.cannot_load_package": "Không thể tải thông tin gói nâng cấp.",
+  "payment.loading": "Đang tải thông tin gói...",
+  "payment.from_only": "Chỉ từ {{price}}₫/tháng",
+  "payment.special_privileges": "Đặc quyền nổi bật:",
+  "payment.payment_method": "Phương thức thanh toán:",
+  "payment.paypal": "Paypal",
+  "payment.vnpay": "VNPay",
+  "payment.zalopay": "ZaloPay",
+  "payment.processing": "Đang xử lý...",
+  "payment.buy_now": "MUA NGAY",
+  "payment.zalopay_error": "Thanh toán qua ZaloPay thất bại.",
+  "payment.vnpay_error": "Thanh toán qua VNPay thất bại.",
+  "payment.paypal_error": "Thanh toán qua Paypal thất bại.",
+  "payment.payment_error": "Có lỗi xảy ra khi thanh toán. Vui lòng thử lại!",
+  "payment.upgrade_title": "Nâng cấp trải nghiệm nghe nhạc",
+  "payment.upgrade_desc": "Thưởng thức âm nhạc không gián đoạn, nội dung độc quyền và nhiều đặc quyền cao cấp hơn.",
+  "payment.secure_payment": "Mọi thanh toán đều được bảo mật qua PayPal hoặc phương thức bạn chọn."
+} 

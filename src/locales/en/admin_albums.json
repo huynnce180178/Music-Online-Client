@@ -1,0 +1,20 @@
+{
+  "admin_albums.cover": "Cover",
+  "admin_albums.album_name": "Album Name",
+  "admin_albums.release_date": "Release Date",
+  "admin_albums.type": "Type",
+  "admin_albums.actions": "Actions",
+  "admin_albums.preview": "Preview",
+  "admin_albums.no_albums": "No albums found",
+  "admin_albums.delete": "Delete",
+  "admin_albums.delete_reason_title": "Reason for Deletion",
+  "admin_albums.delete_reason_placeholder": "Reason for deletion (e.g., copyright issue, inappropriate content)",
+  "admin_albums.cancel": "Cancel",
+  "admin_albums.confirm_delete": "Confirm Delete",
+  "admin_albums.restore": "Restore",
+  "admin_albums.approve": "Approve",
+  "admin_albums.reject": "Reject",
+  "admin_albums.reject_reason_title": "Reason for Rejection",
+  "admin_albums.reject_reason_placeholder": "Reason for rejection (e.g., inappropriate content)",
+  "admin_albums.confirm_reject": "Confirm Reject"
+} 

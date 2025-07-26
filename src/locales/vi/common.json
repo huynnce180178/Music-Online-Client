@@ -1,0 +1,18 @@
+{
+  "welcome": "Chào mừng đến với Music Online!",
+  "login": "Đăng nhập",
+  "register": "Đăng ký",
+  "logout": "Đăng xuất",
+  "search": "Tìm kiếm",
+  "home": "Trang chủ",
+  "profile": "Hồ sơ",
+  "favorite": "Yêu thích",
+  "history": "Lịch sử",
+  "download": "Tải về",
+  "playlist": "Danh sách phát",
+  "album": "Album",
+  "artist": "Nghệ sĩ",
+  "genres": "Thể loại",
+  "top_tracks": "Bài hát nổi bật",
+  "new_releases": "Phát hành mới"
+} 

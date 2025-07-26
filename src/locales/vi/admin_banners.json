@@ -1,0 +1,18 @@
+{
+  "admin_banners.position": "Vị trí",
+  "admin_banners.banner_image": "Ảnh banner",
+  "admin_banners.preview": "Xem trước",
+  "admin_banners.actions": "Thao tác",
+  "admin_banners.edit": "Sửa",
+  "admin_banners.delete": "Xóa",
+  "admin_banners.delete_confirm": "Bạn có chắc chắn muốn xóa banner này?",
+  "admin_banners.cancel": "Hủy",
+  "admin_banners.add_banner": "Thêm banner",
+  "admin_banners.update_banner": "Cập nhật banner",
+  "admin_banners.add_new_banner": "Thêm banner mới",
+  "admin_banners.update": "Cập nhật",
+  "admin_banners.save": "Lưu",
+  "admin_banners.position_required": "Vui lòng nhập vị trí!",
+  "admin_banners.image_required": "Vui lòng chọn ảnh!",
+  "admin_banners.select_image": "Chọn ảnh"
+} 

@@ -1,0 +1,17 @@
+{
+  "admin_users.avatar": "Ảnh đại diện",
+  "admin_users.full_name": "Họ tên",
+  "admin_users.email": "Email",
+  "admin_users.bio": "Tiểu sử",
+  "admin_users.roles": "Vai trò",
+  "admin_users.role_artist": "Nghệ sĩ",
+  "admin_users.role_user": "Người dùng",
+  "admin_users.role_admin": "Quản trị viên",
+  "admin_users.role_premium": "Tài khoản Premium",
+  "admin_users.status": "Trạng thái",
+  "admin_users.status_verify": "Chờ xác thực",
+  "admin_users.status_active": "Hoạt động",
+  "admin_users.status_blocked": "Bị khóa",
+  "admin_users.action": "Thao tác",
+  "admin_users.search_placeholder": "Tìm kiếm người dùng"
+} 

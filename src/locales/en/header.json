@@ -1,0 +1,11 @@
+{
+  "header.profile": "Profile",
+  "header.switch_role": "Switch Role",
+  "header.logout": "Logout",
+  "header.login": "Login",
+  "header.register": "Register",
+  "languages": "Languages",
+  "header.vi": "Vietnamese",
+  "header.en": "English",
+  "header.upgrade_now": "Upgrade Now!"
+} 

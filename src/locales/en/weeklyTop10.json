@@ -1,0 +1,17 @@
+{
+  "weekly_top_10.title": "Weekly Top 10",
+  "weekly_top_10.plays": "plays",
+  "weekly_top_10.download": "Download",
+  "weekly_top_10.add_to_playlist": "Add to Playlist",
+  "weekly_top_10.login_to_download": "Please login to download",
+  "weekly_top_10.download_success": "Download successful",
+  "weekly_top_10.download_failed": "Download failed",
+  "weekly_top_10.login_to_add_playlist": "Please login to add to playlist",
+  "weekly_top_10.get_playlist_failed": "Failed to get playlists",
+  "weekly_top_10.select_playlist_warning": "Please select a playlist",
+  "weekly_top_10.added_to_playlist": "Added to playlist",
+  "weekly_top_10.add_to_playlist_failed": "Failed to add to playlist",
+  "weekly_top_10.add": "Add",
+  "weekly_top_10.cancel": "Cancel",
+  "weekly_top_10.select_playlist": "Select playlist"
+}

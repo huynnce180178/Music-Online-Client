@@ -1,0 +1,22 @@
+{
+  "admin_upgrades.id": "ID",
+  "admin_upgrades.name": "Name",
+  "admin_upgrades.type": "Type",
+  "admin_upgrades.price": "Price",
+  "admin_upgrades.duration": "Duration",
+  "admin_upgrades.days": "days",
+  "admin_upgrades.duration_days": "Duration (days)",
+  "admin_upgrades.description": "Description",
+  "admin_upgrades.action": "Action",
+  "admin_upgrades.edit": "Edit",
+  "admin_upgrades.delete": "Delete",
+  "admin_upgrades.delete_confirm": "Delete this plan?",
+  "admin_upgrades.cancel": "Cancel",
+  "admin_upgrades.add_plan": "Add Plan",
+  "admin_upgrades.edit_plan": "Edit Subscription Plan",
+  "admin_upgrades.plan_name": "Plan Name",
+  "admin_upgrades.plan_type": "Plan Type",
+  "admin_upgrades.plan_type_premium": "Premium",
+  "admin_upgrades.plan_type_artist": "Artist",
+  "admin_upgrades.save": "Save"
+} 

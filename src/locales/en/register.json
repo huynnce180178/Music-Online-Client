@@ -1,0 +1,18 @@
+{
+  "register": "Register",
+  "first_name": "First Name",
+  "last_name": "Last Name",
+  "please_enter_first_name": "Please enter your first name!",
+  "please_enter_last_name": "Please enter your last name!",
+  "please_enter_email": "Please enter your email!",
+  "invalid_email": "Invalid email!",
+  "enter_email": "Enter your email",
+  "password": "Password",
+  "please_enter_password": "Please enter your password!",
+  "enter_password": "Enter your password",
+  "register_now": "Register Now",
+  "already_have_account": "Already have an account?",
+  "login_here": "Login here",
+  "choose_image": "Choose Image",
+  "please_upload_profile_picture": "Please upload your profile picture!"
+} 

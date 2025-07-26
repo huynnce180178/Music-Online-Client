@@ -1,0 +1,14 @@
+{
+  "welcome": "Welcome to Artist Dashboard!",
+  "total_songs": "Total Songs",
+  "total_albums": "Total Albums",
+  "advertisements": "Advertisements",
+  "total_revenue": "Total Revenue",
+  "song_name": "Song Name",
+  "plays": "Plays",
+  "likes": "Likes",
+  "status": "Status",
+  "performance_overview": "Performance Overview",
+  "recent_songs": "Recent Songs",
+  "no_data": "No data"
+} 

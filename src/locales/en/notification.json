@@ -1,0 +1,12 @@
+{
+  "notification.title": "Notifications",
+  "notification.clear_all_confirm": "Clear all notifications?",
+  "notification.clear": "Clear",
+  "notification.cancel": "Cancel",
+  "notification.unread": "You have {{count}} unread",
+  "notification.no_new": "No new notifications",
+  "notification.empty": "No notification",
+  "notification.mark_as_read": "Mark as read",
+  "notification.delete": "Delete",
+  "notification.default_title": "Notification"
+} 

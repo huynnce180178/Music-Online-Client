@@ -1,0 +1,18 @@
+{
+  "admin_genres.genre_name": "Tên thể loại",
+  "admin_genres.image": "Ảnh",
+  "admin_genres.actions": "Thao tác",
+  "admin_genres.edit": "Sửa",
+  "admin_genres.delete": "Xóa",
+  "admin_genres.delete_confirm": "Bạn có chắc chắn muốn xóa thể loại này?",
+  "admin_genres.cancel": "Hủy",
+  "admin_genres.save": "Lưu",
+  "admin_genres.update_genre": "Cập nhật thể loại",
+  "admin_genres.add_genre": "Thêm thể loại",
+  "admin_genres.select_image": "Chọn ảnh",
+  "admin_genres.old_cover": "Ảnh cũ",
+  "admin_genres.genre_name_required": "Vui lòng nhập tên thể loại!",
+  "admin_genres.image_required": "Vui lòng chọn ảnh!",
+  "admin_genres.no_genres": "Không có thể loại nào",
+  "admin_genres.search_placeholder": "Tìm kiếm thể loại"
+} 

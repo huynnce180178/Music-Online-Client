@@ -1,0 +1,13 @@
+{
+  "artist_profile.songs": "Bài hát",
+  "artist_profile.albums": "Album",
+  "artist_profile.follow": "Theo dõi",
+  "artist_profile.views": "Lượt nghe",
+  "artist_profile.duration": "Thời lượng",
+  "artist_profile.no_songs_available": "Chưa có bài hát nào.",
+  "artist_profile.released": "Phát hành",
+  "artist_profile.type": "Thể loại",
+  "artist_profile.loading_songs": "Đang tải bài hát...",
+  "artist_profile.no_songs_in_album": "Không có bài hát nào trong album này.",
+  "artist_profile.no_albums_available": "Chưa có album nào."
+} 

@@ -1,0 +1,16 @@
+{
+  "admin_dashboard.title": "Admin Dashboard",
+  "admin_dashboard.user": "User",
+  "admin_dashboard.artist": "Artist",
+  "admin_dashboard.premium": "Premium",
+  "admin_dashboard.statistics": "Statistics",
+  "admin_dashboard.album": "Album",
+  "admin_dashboard.song": "Song",
+  "admin_dashboard.genre": "Genre",
+  "admin_dashboard.comment": "Comment",
+  "admin_dashboard.total_users": "Total Users",
+  "admin_dashboard.total_subscriptions": "Total Subscriptions",
+  "admin_dashboard.total_system_stats": "Total System Stats",
+  "admin_dashboard.start_date": "Start date",
+  "admin_dashboard.end_date": "End date"
+} 

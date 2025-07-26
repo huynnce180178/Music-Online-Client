@@ -1,0 +1,15 @@
+{
+  "song_detail.album": "Album",
+  "song_detail.views": "Lượt nghe",
+  "song_detail.duration": "Thời lượng",
+  "song_detail.lyrics": "Lời bài hát",
+  "song_detail.comments": "Bình luận",
+  "song_detail.add_to_playlist": "Thêm vào danh sách phát",
+  "song_detail.download_song": "Tải bài hát",
+  "song_detail.download_success": "Tải bài hát thành công!",
+  "song_detail.add": "Thêm",
+  "song_detail.select_playlist": "Chọn danh sách phát",
+  "song_detail.sponsored_audio_break": "Quảng cáo âm thanh",
+  "song_detail.advertisement": "Quảng cáo",
+  "song_detail.learn_more": "Tìm hiểu thêm"
+} 

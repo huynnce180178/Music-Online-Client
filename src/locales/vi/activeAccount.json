@@ -1,0 +1,6 @@
+{
+  "active_account.account_activated": "Kích hoạt tài khoản thành công",
+  "active_account.activation_failed": "Kích hoạt tài khoản thất bại",
+  "active_account.resend_activation_email": "Gửi lại email kích hoạt",
+  "active_account.go_to_login": "Về trang đăng nhập"
+} 

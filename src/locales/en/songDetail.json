@@ -1,0 +1,15 @@
+{
+  "song_detail.album": "Album",
+  "song_detail.views": "Views",
+  "song_detail.duration": "Duration",
+  "song_detail.lyrics": "Lyrics",
+  "song_detail.comments": "Comments",
+  "song_detail.add_to_playlist": "Add to Playlist",
+  "song_detail.download_song": "Download Song",
+  "song_detail.download_success": "Song download successful!",
+  "song_detail.add": "Add",
+  "song_detail.select_playlist": "Select playlist",
+  "song_detail.sponsored_audio_break": "Sponsored Audio Break",
+  "song_detail.advertisement": "Advertisement",
+  "song_detail.learn_more": "Learn more"
+} 
