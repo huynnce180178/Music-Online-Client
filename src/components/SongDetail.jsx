@@ -411,7 +411,7 @@ export default function SongDetail({ songId, onClose }) {
                         outline: "none",
                         boxShadow: "0 4px 16px rgba(0,0,0,0.3)"
                     }}
-                    icon={<i className="bi bi-x-lg"></i>}
+                    icon={<span className="material-icons">close</span>}
                     aria-label="Close"
                 />
 
@@ -503,7 +503,7 @@ export default function SongDetail({ songId, onClose }) {
                                 title="Previous Song"
                                 style={adPlaying ? { opacity: 0.5, pointerEvents: "none" } : {}}
                             >
-                                <i className="bi bi-skip-backward-fill"></i>
+                                <span className="material-icons">skip_previous</span>
                             </button>
                             <button
                                 className="player-btn main"
@@ -512,7 +512,7 @@ export default function SongDetail({ songId, onClose }) {
                                 title={isPlaying ? "Pause" : "Play"}
                                 style={adPlaying ? { opacity: 0.5, pointerEvents: "none" } : {}}
                             >
-                                <i className={isPlaying ? "bi bi-pause-fill" : "bi bi-play-fill"}></i>
+                                <span className="material-icons">{isPlaying ? "pause" : "play_arrow"}</span>
                             </button>
                             <button
                                 className="player-btn"
@@ -521,7 +521,7 @@ export default function SongDetail({ songId, onClose }) {
                                 title="Next Song"
                                 style={adPlaying ? { opacity: 0.5, pointerEvents: "none" } : {}}
                             >
-                                <i className="bi bi-skip-forward-fill"></i>
+                                <span className="material-icons">skip_next</span>
                             </button>
                             <button
                                 className={`player-btn like${liked ? " liked" : ""}`}
@@ -530,7 +530,7 @@ export default function SongDetail({ songId, onClose }) {
                                 title={liked ? "Remove from Favorites" : "Add to Favorites"}
                                 style={adPlaying ? { opacity: 0.5, pointerEvents: "none" } : {}}
                             >
-                                <i className={liked ? "bi bi-heart-fill" : "bi bi-heart"}></i>
+                                <span className="material-icons">{liked ? "favorite" : "favorite_border"}</span>
                             </button>
                             <button
                                 className="player-btn"
@@ -539,10 +539,10 @@ export default function SongDetail({ songId, onClose }) {
                                 title={t('song_detail.download_song')}
                                 style={adPlaying ? { opacity: 0.5, pointerEvents: "none" } : {}}
                             >
-                                <i className="bi bi-download"></i>
+                                <span className="material-icons">file_download</span>
                             </button>
                             <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                                <i className="bi bi-volume-up" style={{ fontSize: 20, color: "#8ca0c6" }}></i>
+                                <span className="material-icons" style={{ fontSize: 20, color: "#8ca0c6" }}>volume_up</span>
                                 <input
                                     type="range"
                                     min={0}

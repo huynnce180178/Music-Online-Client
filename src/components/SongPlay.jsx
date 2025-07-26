@@ -381,7 +381,7 @@ function SongPlay({ sidebarWidth = 0 }) {
                         disabled={adPlaying}
                         style={adPlaying ? { opacity: 0.5, pointerEvents: "none" } : {}}
                     >
-                        <i className="bi bi-skip-backward-fill"></i>
+                        <span className="material-icons">skip_previous</span>
                     </button>
                     <button
                         className="player-btn main"
@@ -390,7 +390,7 @@ function SongPlay({ sidebarWidth = 0 }) {
                         disabled={adPlaying}
                         style={adPlaying ? { opacity: 0.5, pointerEvents: "none" } : {}}
                     >
-                        <i className={isPlaying ? "bi bi-pause-fill" : "bi bi-play-fill"}></i>
+                        <span className="material-icons">{isPlaying ? "pause" : "play_arrow"}</span>
                     </button>
                     <button
                         className="player-btn"
@@ -399,7 +399,7 @@ function SongPlay({ sidebarWidth = 0 }) {
                         disabled={adPlaying}
                         style={adPlaying ? { opacity: 0.5, pointerEvents: "none" } : {}}
                     >
-                        <i className="bi bi-skip-forward-fill"></i>
+                        <span className="material-icons">skip_next</span>
                     </button>
                 </div>
 
@@ -437,20 +437,20 @@ function SongPlay({ sidebarWidth = 0 }) {
                     gap: window.innerWidth <= 768 ? 8 : 12, 
                     alignItems: "center"
                 }}>
-                    <i className="bi bi-volume-up" style={{ fontSize: window.innerWidth <= 768 ? 16 : 19, color: "#8ca0c6" }}></i>
+                    <span className="material-icons" style={{ fontSize: window.innerWidth <= 768 ? 16 : 19, color: "#8ca0c6" }}>volume_up</span>
                     <input type="range" min={0} max={1} step={0.01} value={volume} onChange={handleVolume}
                         style={{ width: window.innerWidth <= 768 ? 40 : 60, accentColor: "#3ed8ff" }} />
                     <button className={`player-btn like${liked ? " liked" : ""}`}
                         title={t("favorite") || "Favorite"}
                         onClick={toggleWishlist}
                     >
-                        <i className={liked ? "bi bi-heart-fill" : "bi bi-heart"}></i>
+                        <span className="material-icons">{liked ? "favorite" : "favorite_border"}</span>
                     </button>
                     <button className="player-btn" title={t("song_detail.download_song") || "Download"} onClick={handleDownload}>
-                        <i className="bi bi-download"></i>
+                        <span className="material-icons">file_download</span>
                     </button>
                     <button className="player-btn" title={t("song_detail.comments") || "Show Details"} onClick={() => setShowDetail(true)}>
-                        <i className="bi bi-chevron-up"></i>
+                        <span className="material-icons">expand_less</span>
                     </button>
                     <button
                         className="player-btn"
@@ -466,10 +466,10 @@ function SongPlay({ sidebarWidth = 0 }) {
                             setSelectedPlaylistId(null);
                         }}
                     >
-                        <i className="bi bi-plus-square"></i>
+                        <span className="material-icons">add_box</span>
                     </button>
                     <button className="player-btn close" title={t("common.close") || "Close Player"} onClick={stopPlayer}>
-                        <i className="bi bi-x-lg"></i>
+                        <span className="material-icons">close</span>
                     </button>
                 </div>
 

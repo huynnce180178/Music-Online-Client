@@ -76,7 +76,7 @@ export default function FreeDownloads() {
                     <div className="col-12 text-center text-light">Loading...</div>
                 ) : downloads.length === 0 ? (
                     <div className="col-12 text-center mt-4">
-                        <i className="bi bi-cloud-arrow-down" style={{ fontSize: 42, color: "#bbb" }}></i>
+                        <span className="material-icons" style={{ fontSize: 42, color: "#bbb" }}>cloud_download</span>
                         <p style={{ color: "#ccc", fontSize: 18, marginTop: 12 }}>
                             {t('downloads.no_songs')}
                         </p>

@@ -135,7 +135,7 @@ export default function DownloadNow() {
                     </div>
                 ) : songsToShow.length === 0 ? (
                     <div className="w-100 text-center mt-4 mb-5" style={{ minHeight: 160 }}>
-                        <i className="bi bi-cloud-arrow-down" style={{ fontSize: 42, color: "#bbb" }}></i>
+                        <span className="material-icons" style={{ fontSize: 42, color: "#bbb" }}>cloud_download</span>
                         <p style={{ color: "#ccc", fontSize: 18, marginTop: 12 }}>
                             {t('downloads.noSongsToDownload')}
                         </p>
