@@ -19,7 +19,7 @@ export default function ArtistRejectedAlbums() {
     const fetchAlbums = async () => {
         setLoading(true);
         try {
-            const res = await axios.get(`${BASE_API_URL}/artist/album/my-rejected`, config);
+            const res = await axios.get(`${BASE_API_URL}/api/v1/artist/album/my-rejected`, config);
             setAlbums(res.data.data || []);
         } catch {
             setAlbums([]);

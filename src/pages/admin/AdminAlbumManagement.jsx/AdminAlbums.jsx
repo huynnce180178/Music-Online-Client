@@ -23,7 +23,7 @@ export default function AdminAlbums() {
         setLoading(true);
         try {
             const token = localStorage.getItem("accessToken");
-            const res = await axios.get(`${BASE_API_URL}/admin/albums/all`, {
+            const res = await axios.get(`${BASE_API_URL}/api/v1/admin/albums/all`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setAlbums(res.data || []);

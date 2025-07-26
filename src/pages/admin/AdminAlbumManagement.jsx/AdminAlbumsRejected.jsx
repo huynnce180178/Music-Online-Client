@@ -20,7 +20,7 @@ export default function AdminAlbumsRejected() {
         setLoading(true);
         try {
             const token = localStorage.getItem("accessToken");
-            const res = await axios.get(`${BASE_API_URL}/admin/albums/rejected`, {
+            const res = await axios.get(`${BASE_API_URL}/api/v1/admin/albums/rejected`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setAlbums(res.data || []);

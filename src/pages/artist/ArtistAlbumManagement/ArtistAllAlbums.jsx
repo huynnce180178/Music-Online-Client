@@ -24,7 +24,7 @@ export default function ArtistAllAlbums() {
         setLoading(true);
         try {
             const res = await axios.get(
-                `${BASE_API_URL}/artist/album/${artistId}`,
+                `${BASE_API_URL}/api/v1/artist/album/${artistId}`,
                 config
             );
             setAlbums(res.data.data || []);

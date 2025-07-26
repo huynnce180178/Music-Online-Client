@@ -94,7 +94,7 @@ export default function AdminGenres() {
     const fetchGenres = async () => {
         setLoading(true);
         try {
-            const res = await axios.get(`${BASE_API_URL}/genres`, {
+            const res = await axios.get(`${BASE_API_URL}/api/v1/genres`, {
                 params: {
                     page: pagination.current - 1,
                     size: pagination.pageSize,
@@ -158,12 +158,12 @@ export default function AdminGenres() {
             }
 
             if (editingGenre) {
-                await axios.put(`${BASE_API_URL}/admin/genre/update/${editingGenre.id}`, formData, {
+                await axios.put(`${BASE_API_URL}/api/v1/admin/genre/update/${editingGenre.id}`, formData, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 message.success("Genre updated successfully!");
             } else {
-                await axios.post(`${BASE_API_URL}/admin/genres/add`, formData, {
+                await axios.post(`${BASE_API_URL}/api/v1/admin/genres/add`, formData, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 message.success("Genre added successfully!");
@@ -182,7 +182,7 @@ export default function AdminGenres() {
 
     const handleDelete = async (id) => {
         try {
-            await axios.delete(`${BASE_API_URL}/admin/genre/delete/${id}`, {
+            await axios.delete(`${BASE_API_URL}/api/v1/admin/genre/delete/${id}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             message.success("Genre deleted successfully!");

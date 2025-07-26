@@ -85,7 +85,7 @@ export default function AdminDashboard() {
             const params = {};
             if (start) params.start = start;
             if (end) params.end = end;
-            const res = await axios.get(`${BASE_API_URL}/admin/statistic/userStatistic`, {
+            const res = await axios.get(`${BASE_API_URL}/api/v1/admin/statistic/userStatistic`, {
                 headers: { Authorization: `Bearer ${token}` },
                 params
             });
@@ -97,7 +97,7 @@ export default function AdminDashboard() {
             const params = {};
             if (start) params.start = start;
             if (end) params.end = end;
-            const res = await axios.get(`${BASE_API_URL}/admin/statistic/albumStatistic`, {
+            const res = await axios.get(`${BASE_API_URL}/api/v1/admin/statistic/albumStatistic`, {
                 headers: { Authorization: `Bearer ${token}` },
                 params
             });
@@ -109,7 +109,7 @@ export default function AdminDashboard() {
             const params = {};
             if (start) params.start = start;
             if (end) params.end = end;
-            const res = await axios.get(`${BASE_API_URL}/admin/statistic/songStatistic`, {
+            const res = await axios.get(`${BASE_API_URL}/api/v1/admin/statistic/songStatistic`, {
                 headers: { Authorization: `Bearer ${token}` },
                 params
             });
@@ -118,7 +118,7 @@ export default function AdminDashboard() {
     };
     const fetchGenreStats = async () => {
         try {
-            const res = await axios.get(`${BASE_API_URL}/admin/statistic/genreStatistic`, {
+            const res = await axios.get(`${BASE_API_URL}/api/v1/admin/statistic/genreStatistic`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setGenreCount(res.data.data);
@@ -129,7 +129,7 @@ export default function AdminDashboard() {
             const params = {};
             if (start) params.start = start;
             if (end) params.end = end;
-            const res = await axios.get(`${BASE_API_URL}/admin/statistic/commentStatistic`, {
+            const res = await axios.get(`${BASE_API_URL}/api/v1/admin/statistic/commentStatistic`, {
                 headers: { Authorization: `Bearer ${token}` },
                 params
             });
@@ -141,7 +141,7 @@ export default function AdminDashboard() {
             const params = {};
             if (start) params.start = start;
             if (end) params.end = end;
-            const res = await axios.get(`${BASE_API_URL}/admin/statistic/subscriptionStatistic`, {
+            const res = await axios.get(`${BASE_API_URL}/api/v1/admin/statistic/subscriptionStatistic`, {
                 headers: { Authorization: `Bearer ${token}` },
                 params
             });

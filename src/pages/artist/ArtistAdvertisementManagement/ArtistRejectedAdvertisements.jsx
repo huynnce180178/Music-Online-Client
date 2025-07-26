@@ -66,7 +66,7 @@ export default function ArtistRejectedAdvertisements() {
     const fetchRejectedAds = async () => {
         setLoading(true);
         try {
-            const res = await axios.get(`${BASE_API_URL}/artist/advertisements/rejected`, config);
+            const res = await axios.get(`${BASE_API_URL}/api/v1/artist/advertisements/rejected`, config);
             setAds(res.data || []);
         } catch {
             message.error(t('artist_ad.unable_to_load_approved_advertisements'));

@@ -64,7 +64,7 @@ export default function AdminPendingAdvertisements() {
         setLoading(true);
         try {
             const token = localStorage.getItem("accessToken");
-            const res = await axios.get(`${BASE_API_URL}/admin/advertisements/pending`, {
+            const res = await axios.get(`${BASE_API_URL}/api/v1/admin/advertisements/pending`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             const list = Array.isArray(res.data) ? res.data : res.data.data || [];

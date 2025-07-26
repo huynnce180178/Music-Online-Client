@@ -81,7 +81,7 @@ export default function AdminBanners() {
         setLoading(true);
         try {
             const token = localStorage.getItem("accessToken");
-            const res = await axios.get(`${BASE_API_URL}/admin/banner`, {
+            const res = await axios.get(`${BASE_API_URL}/api/v1/admin/banner`, {
                 params: {
                     page: pagination.current - 1,
                     limit: pagination.pageSize,
@@ -104,7 +104,7 @@ export default function AdminBanners() {
     const handleDelete = async (id) => {
         try {
             const token = localStorage.getItem("accessToken");
-            await axios.delete(`${BASE_API_URL}/admin/banner/delete/${id}`, {
+            await axios.delete(`${BASE_API_URL}/api/v1/admin/banner/delete/${id}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             message.success("Banner deleted successfully!");
@@ -136,7 +136,7 @@ export default function AdminBanners() {
             if (editingBanner) {
                 // Update
                 await axios.post(
-                    `${BASE_API_URL}/admin/banner/update/${editingBanner.id}`,
+                    `${BASE_API_URL}/api/v1/admin/banner/update/${editingBanner.id}`,
                     formData,
                     {
                         headers: {
@@ -150,7 +150,7 @@ export default function AdminBanners() {
             } else {
                 // Add new
                 await axios.post(
-                    `${BASE_API_URL}/admin/banner/add`,
+                    `${BASE_API_URL}/api/v1/admin/banner/add`,
                     formData,
                     {
                         headers: {

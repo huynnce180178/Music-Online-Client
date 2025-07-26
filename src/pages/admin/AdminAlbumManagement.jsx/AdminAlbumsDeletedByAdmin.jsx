@@ -20,7 +20,7 @@ export default function AdminAlbumsDeletedByAdmin() {
         setLoading(true);
         try {
             const token = localStorage.getItem("accessToken");
-            const res = await axios.get(`${BASE_API_URL}/admin/albums/deleted-by-admin`, {
+            const res = await axios.get(`${BASE_API_URL}/api/v1/admin/albums/deleted-by-admin`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setAlbums(res.data || []);

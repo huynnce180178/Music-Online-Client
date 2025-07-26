@@ -52,7 +52,7 @@ export default function AdminSongsDeletedByArtist() {
         setLoading(true);
         try {
             const token = localStorage.getItem("accessToken");
-            const res = await axios.get(`${BASE_API_URL}/admin/songs/deleted-by-artist`, {
+            const res = await axios.get(`${BASE_API_URL}/api/v1/admin/songs/deleted-by-artist`, {
                 headers: { Authorization: `Bearer ${token}` },
                 params: {
                     page: pagination.current - 1,
@@ -74,7 +74,7 @@ export default function AdminSongsDeletedByArtist() {
         setDeleteLoading(true);
         try {
             const token = localStorage.getItem("accessToken");
-            await axios.delete(`${BASE_API_URL}/admin/songs/${deleteId}/delete`, {
+            await axios.delete(`${BASE_API_URL}/api/v1/admin/songs/${deleteId}/delete`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             message.success("The song has been deleted and artist has been notified.");

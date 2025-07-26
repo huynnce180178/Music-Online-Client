@@ -78,7 +78,7 @@ export default function AdminSongs() {
         setLoading(true);
         try {
             const token = localStorage.getItem("accessToken");
-            const res = await axios.get(`${BASE_API_URL}/admin/songs/all`, {
+            const res = await axios.get(`${BASE_API_URL}/api/v1/admin/songs/all`, {
                 headers: { Authorization: `Bearer ${token}` },
                 params: { page: pagination.current - 1, limit: pagination.pageSize },
             });
@@ -110,7 +110,7 @@ export default function AdminSongs() {
         setDeleteLoading(true);
         try {
             const token = localStorage.getItem("accessToken");
-            await axios.delete(`${BASE_API_URL}/admin/songs/${deleteId}/delete`, {
+            await axios.delete(`${BASE_API_URL}/api/v1/admin/songs/${deleteId}/delete`, {
                 data: { reason: deleteReason },
                 headers: { Authorization: `Bearer ${token}` },
             });

@@ -96,7 +96,7 @@ export default function AdminUsers() {
     const fetchUsers = async (params = {}) => {
         setLoading(true);
         try {
-            const res = await axios.get(`${BASE_API_URL}/admin/user`, {
+            const res = await axios.get(`${BASE_API_URL}/api/v1/admin/user`, {
                 headers: { Authorization: `Bearer ${token}` },
                 params: {
                     page: (params.current || 1) - 1,
@@ -166,7 +166,7 @@ export default function AdminUsers() {
     const handleChangeStatus = async (id, status) => {
         try {
             await axios.patch(
-                `${BASE_API_URL}/admin/user/changeStatus/${id}?status=${status}`,
+                `${BASE_API_URL}/api/v1/admin/user/changeStatus/${id}?status=${status}`,
                 {},
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -192,7 +192,7 @@ export default function AdminUsers() {
     const handleSetRole = async () => {
         try {
             await axios.patch(
-                `${BASE_API_URL}/admin/role/setRole/${editUserId}`,
+                `${BASE_API_URL}/api/v1/admin/role/setRole/${editUserId}`,
                 editRoleIds,
                 { headers: { Authorization: `Bearer ${token}` } }
             );

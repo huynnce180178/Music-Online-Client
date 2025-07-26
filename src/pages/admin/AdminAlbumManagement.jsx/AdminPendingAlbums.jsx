@@ -26,7 +26,7 @@ export default function AdminPendingAlbums() {
         setLoading(true);
         try {
             const token = localStorage.getItem("accessToken");
-            const res = await axios.get(`${BASE_API_URL}/admin/albums/pending`, {
+            const res = await axios.get(`${BASE_API_URL}/api/v1/admin/albums/pending`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setAlbums(res.data || []);

@@ -116,7 +116,7 @@ export default function AdminAdvertisement() {
         setLoading(true);
         try {
             const token = localStorage.getItem("accessToken");
-            const res = await axios.get(`${BASE_API_URL}/admin/advertisements`, {
+            const res = await axios.get(`${BASE_API_URL}/api/v1/admin/advertisements`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setAds(Array.isArray(res.data) ? res.data : res.data.data || []);
@@ -140,7 +140,7 @@ export default function AdminAdvertisement() {
         setDeleteLoading(true);
         try {
             const token = localStorage.getItem("accessToken");
-            await axios.delete(`${BASE_API_URL}/admin/advertisements/${deleteId}/delete`, {
+            await axios.delete(`${BASE_API_URL}/api/v1/admin/advertisements/${deleteId}/delete`, {
                 params: { reason: deleteReason },
                 headers: { Authorization: `Bearer ${token}` },
             });

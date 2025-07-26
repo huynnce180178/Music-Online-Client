@@ -47,7 +47,7 @@ export default function AdminSongsDeletedByAdmin() {
         setLoading(true);
         try {
             const token = localStorage.getItem("accessToken");
-            const res = await axios.get(`${BASE_API_URL}/admin/songs/deleted-by-admin`, {
+            const res = await axios.get(`${BASE_API_URL}/api/v1/admin/songs/deleted-by-admin`, {
                 headers: { Authorization: `Bearer ${token}` },
                 params: {
                     page: pagination.current - 1,

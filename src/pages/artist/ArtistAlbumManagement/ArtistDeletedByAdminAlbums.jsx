@@ -33,7 +33,7 @@ export default function ArtistDeletedByAdminAlbums() {
     const fetchAlbums = async () => {
         setLoading(true);
         try {
-            const res = await axios.get(`${BASE_API_URL}/artist/album/my-deleted-by-admin`, config);
+            const res = await axios.get(`${BASE_API_URL}/api/v1/artist/album/my-deleted-by-admin`, config);
             setAlbums(res.data.data || []);
         } catch {
             setAlbums([]);

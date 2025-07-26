@@ -74,7 +74,7 @@ export default function AdminPendingSongs() {
         setLoading(true);
         try {
             const token = localStorage.getItem("accessToken");
-            const res = await axios.get(`${BASE_API_URL}/admin/songs/pending`, {
+            const res = await axios.get(`${BASE_API_URL}/api/v1/admin/songs/pending`, {
                 headers: { Authorization: `Bearer ${token}` },
                 params: { page: pagination.current - 1, limit: pagination.pageSize },
             });
@@ -92,7 +92,7 @@ export default function AdminPendingSongs() {
     const handleApprove = async (id) => {
         try {
             const token = localStorage.getItem("accessToken");
-            await axios.put(`${BASE_API_URL}/admin/songs/${id}/approve`, {}, {
+            await axios.put(`${BASE_API_URL}/api/v1/admin/songs/${id}/approve`, {}, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             message.success("Song approved!");

@@ -33,7 +33,7 @@ export default function ArtistPendingAlbums() {
     const fetchAlbums = async () => {
         setLoading(true);
         try {
-            const res = await axios.get(`${BASE_API_URL}/artist/albums/my-pending`, config);
+            const res = await axios.get(`${BASE_API_URL}/api/v1/artist/albums/my-pending`, config);
             setAlbums(res.data.data || []);
         } catch {
             setAlbums([]);
