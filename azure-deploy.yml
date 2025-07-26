@@ -1,32 +1,37 @@
-name: Deploy React App to Azure
+name: Build and Deploy React App to Azure
 
 on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout source code
+        uses: actions/checkout@v4
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: 20
 
       - name: Install dependencies
         run: npm install
 
-      - name: Build the project
+      - name: Build React app
         run: npm run build
 
-      - name: Deploy to Azure Web App
-        uses: azure/webapps-deploy@v2
+      - name: Azure Login
+        uses: azure/login@v1
         with:
-          app-name: music-online-client
-          slot-name: Production
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-          package: ./dist
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: 'music-online-client' 
+          package: './dist'                 

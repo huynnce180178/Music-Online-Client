@@ -622,7 +622,7 @@ export default function ArtistLayout({ children }) {
 
                 <Content
                     style={{
-                        padding: 30,
+                        padding: isMobile ? "16px" : 30,
                         background: "#101426",
                         minHeight: "calc(100vh - 64px - 48px)",
                         boxShadow: "0 4px 24px 0 rgba(62,216,255,0.08)",

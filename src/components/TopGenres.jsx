@@ -37,13 +37,27 @@ export default function TopGenres() {
         fetch(`${BASE_API_URL}/api/v1/guest/Top10Genre`)
             .then(res => res.json())
             .then(data => {
-                // Đảm bảo 7 tile luôn được lấp đầy
-                const mapped = data.slice(0, 7).map((genre, idx) => ({
-                    name: genre.genreName,
-                    image: genre.genreImage || "/img/default-cover.png",
-                    totalViews: genre.totalViews,
-                }));
-                setGenres(mapped);
+                // Check if data is an array and has content
+                if (Array.isArray(data) && data.length > 0) {
+                    // Đảm bảo 7 tile luôn được lấp đầy
+                    const mapped = data.slice(0, 7).map((genre, idx) => ({
+                        name: genre.genreName,
+                        image: genre.genreImage || "/img/default-cover.png",
+                        totalViews: genre.totalViews,
+                    }));
+                    setGenres(mapped);
+                } else if (data && Array.isArray(data.data)) {
+                    // Handle case where data is wrapped in a data property
+                    const mapped = data.data.slice(0, 7).map((genre, idx) => ({
+                        name: genre.genreName,
+                        image: genre.genreImage || "/img/default-cover.png",
+                        totalViews: genre.totalViews,
+                    }));
+                    setGenres(mapped);
+                } else {
+                    console.warn("Top genres data is not in expected format:", data);
+                    setGenres([]);
+                }
             })
             .catch(() => setGenres([]));
     }, []);

@@ -90,18 +90,30 @@ export default function Top15Albums() {
         fetch(`${BASE_API_URL}/api/v1/guest/album/top15`)
             .then((res) => res.json())
             .then((data) => {
-                setAlbums(data);
+                // Check if data is an array and has content
+                if (Array.isArray(data) && data.length > 0) {
+                    setAlbums(data);
+                } else if (data && Array.isArray(data.data)) {
+                    // Handle case where data is wrapped in a data property
+                    setAlbums(data.data);
+                } else {
+                    console.warn("Top 15 albums data is not in expected format:", data);
+                    setAlbums([]);
+                }
                 setLoading(false);
             })
             .catch((error) => {
                 console.error("Lỗi khi lấy dữ liệu:", error);
+                setAlbums([]);
                 setLoading(false);
             });
     }, []);
 
     // Chia album thành 3 cột
     const columns = [[], [], []];
-    albums.forEach((album, i) => columns[i % 3].push({ ...album, i }));
+    if (Array.isArray(albums)) {
+        albums.forEach((album, i) => columns[i % 3].push({ ...album, i }));
+    }
 
     const handleAlbumClick = (albumId) => {
         navigate(`/album/${albumId}`);

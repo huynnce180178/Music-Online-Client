@@ -514,11 +514,11 @@ function Header({ setModalType, onMenuClick, onSearch }) {
                             </Space>
                         }
                         style={{
-                            width: isMobile ? 160 : 320,
+                            width: isMobile ? 200 : 320,
                             borderRadius: 24,
                             background: "#232b3e",
                             color: "#fff",
-                            fontSize: isMobile ? 13 : 16
+                            fontSize: isMobile ? 14 : 16
                         }}
                         className="custom-input"
                         aria-label="Search"

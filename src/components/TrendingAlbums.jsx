@@ -29,13 +29,28 @@ export default function TrendingAlbums() {
         fetch(`${BASE_API_URL}/api/v1/guest/Top10Album`)
             .then(res => res.json())
             .then(data => {
-                const mapped = data.map(album => ({
-                    id: album.albumId,
-                    title: album.albumName,
-                    artist: album.totalViews + " views",
-                    cover: album.albumImage || "/img/default-cover.png",
-                }));
-                setAlbums(mapped);
+                // Check if data is an array and has content
+                if (Array.isArray(data) && data.length > 0) {
+                    const mapped = data.map(album => ({
+                        id: album.albumId,
+                        title: album.albumName,
+                        artist: album.totalViews + " views",
+                        cover: album.albumImage || "/img/default-cover.png",
+                    }));
+                    setAlbums(mapped);
+                } else if (data && Array.isArray(data.data)) {
+                    // Handle case where data is wrapped in a data property
+                    const mapped = data.data.map(album => ({
+                        id: album.albumId,
+                        title: album.albumName,
+                        artist: album.totalViews + " views",
+                        cover: album.albumImage || "/img/default-cover.png",
+                    }));
+                    setAlbums(mapped);
+                } else {
+                    console.warn("Trending albums data is not in expected format:", data);
+                    setAlbums([]);
+                }
             })
             .catch(() => setAlbums([]));
     }, []);

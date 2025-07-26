@@ -29,13 +29,28 @@ export default function AlbumsByArtists() {
         fetch(`${BASE_API_URL}/api/v1/guest/album/all`)
             .then(res => res.json())
             .then(data => {
-                const mapped = data.map(album => ({
-                    id: album.id,
-                    title: album.title,
-                    artist: album.artistName,
-                    cover: album.coverUrl || "/img/default-cover.png",
-                }));
-                setAlbums(mapped);
+                // Check if data is an array and has content
+                if (Array.isArray(data) && data.length > 0) {
+                    const mapped = data.map(album => ({
+                        id: album.id,
+                        title: album.title,
+                        artist: album.artistName,
+                        cover: album.coverUrl || "/img/default-cover.png",
+                    }));
+                    setAlbums(mapped);
+                } else if (data && Array.isArray(data.data)) {
+                    // Handle case where data is wrapped in a data property
+                    const mapped = data.data.map(album => ({
+                        id: album.id,
+                        title: album.title,
+                        artist: album.artistName,
+                        cover: album.coverUrl || "/img/default-cover.png",
+                    }));
+                    setAlbums(mapped);
+                } else {
+                    console.warn("Albums by artists data is not in expected format:", data);
+                    setAlbums([]);
+                }
             })
             .catch(() => setAlbums([]));
     }, []);

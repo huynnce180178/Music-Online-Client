@@ -26,16 +26,31 @@ export default function FeaturedAlbums() {
     const [startIdx, setStartIdx] = useState(0);
 
     useEffect(() => {
-        fetch(`${BASE_API_URL}/api/v1/guest/album/featured`)
+        fetch(`${BASE_API_URL}/api/v1/guest/ablum/featured`)
             .then(res => res.json())
             .then(data => {
-                const mapped = data.map(album => ({
-                    id: album.id,
-                    title: album.title,
-                    artist: album.totalViews + " views",
-                    cover: album.coverUrl || "/img/default-cover.png",
-                }));
-                setAlbums(mapped);
+                // Check if data is an array and has content
+                if (Array.isArray(data) && data.length > 0) {
+                    const mapped = data.map(album => ({
+                        id: album.id,
+                        title: album.title,
+                        artist: album.totalViews + " views",
+                        cover: album.coverUrl || "/img/default-cover.png",
+                    }));
+                    setAlbums(mapped);
+                } else if (data && Array.isArray(data.data)) {
+                    // Handle case where data is wrapped in a data property
+                    const mapped = data.data.map(album => ({
+                        id: album.id,
+                        title: album.title,
+                        artist: album.totalViews + " views",
+                        cover: album.coverUrl || "/img/default-cover.png",
+                    }));
+                    setAlbums(mapped);
+                } else {
+                    console.warn("Featured albums data is not in expected format:", data);
+                    setAlbums([]);
+                }
             })
             .catch(() => setAlbums([]));
     }, []);

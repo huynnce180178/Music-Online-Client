@@ -50,7 +50,11 @@ export default function ArtistDashboard() {
     ];
 
     return (
-        <div style={{ padding: 24, background: "#181c2b", minHeight: "100vh" }}>
+        <div style={{ 
+            padding: window.innerWidth < 768 ? "16px" : 24, 
+            background: "#181c2b", 
+            minHeight: "100vh" 
+        }}>
             <Title level={2} style={{ marginBottom: 24, color: "#3ed8ff", fontWeight: 800 }}>
                 {t('welcome')}
             </Title>

@@ -17,7 +17,7 @@ export default function TopGenres() {
     const { t } = useTranslation();
 
     useEffect(() => {
-        axios.get(`${BASE_API_URL}/api/v1/genres?page=0&size=1000&sortBy=id&sortDir=asc`)
+        axios.get(`${BASE_API_URL}/api/v1/guest/genre/genresViewMore?page=0&size=1000&sortBy=id&sortDir=asc`)
             .then(res => setGenres(Array.isArray(res.data.data) ? res.data.data : []))
             .catch(() => setGenres([]));
     }, []);
