@@ -215,7 +215,7 @@ function AppRoutes(props) {
           <Route path="songs/deleted" element={<ArtistDeletedSongs />} />
           <Route path="songs/deleted-by-admin" element={<ArtistDeletedByAdminSongs />} />
           <Route path="advertisements/approved" element={<ArtistAdvertisement />} />
-          <Route path="/artist/rejected" element={<ArtistRejectedAdvertisements />} />
+          <Route path="advertisements/rejected" element={<ArtistRejectedAdvertisements />} />
         </Route>
 
         <Route
