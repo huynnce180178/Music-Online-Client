@@ -55,7 +55,7 @@ export default function AdminAdvertisement() {
             if (createForm.mediaFile) formData.append('mediaFile', createForm.mediaFile);
             const adminEmail = localStorage.getItem('userName') || localStorage.getItem('email') || '';
             formData.append('adminEmail', adminEmail);
-            await axios.post(`${BASE_API_URL}/admin/advertisements/create`, formData, {
+            await axios.post(`${BASE_API_URL}/api/v1/admin/advertisements/create`, formData, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             message.success('Advertisement created successfully!');
@@ -254,7 +254,7 @@ export default function AdminAdvertisement() {
             formData.append("redirectUrl", values.redirectUrl || "");
             formData.append("adminEmail", values.adminEmail);
             const token = localStorage.getItem("accessToken");
-            await axios.post(`${BASE_API_URL}/admin/advertisements/create`, formData, {
+            await axios.post(`${BASE_API_URL}/api/v1/admin/advertisements/create`, formData, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             message.success('Advertisement created successfully!');

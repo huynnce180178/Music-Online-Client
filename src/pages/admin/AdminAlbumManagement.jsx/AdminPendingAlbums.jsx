@@ -74,7 +74,7 @@ export default function AdminPendingAlbums() {
         setDeleteLoading(true);
         try {
             const token = localStorage.getItem("accessToken");
-            await axios.delete(`${BASE_API_URL}/admin/albums/${deleteId}/delete`, {
+            await axios.delete(`${BASE_API_URL}/api/v1/admin/albums/${deleteId}/delete`, {
                 params: { reason: deleteReason },
                 headers: { Authorization: `Bearer ${token}` }
             });
@@ -95,7 +95,7 @@ export default function AdminPendingAlbums() {
         setRejectLoading(true);
         try {
             const token = localStorage.getItem("accessToken");
-            await axios.put(`${BASE_API_URL}/admin/albums/${rejectId}/reject`, null, {
+            await axios.put(`${BASE_API_URL}/api/v1/admin/albums/${rejectId}/reject`, null, {
                 params: { reason: rejectReason },
                 headers: { Authorization: `Bearer ${token}` }
             });
@@ -111,7 +111,7 @@ export default function AdminPendingAlbums() {
     const handleApprove = async (id) => {
         try {
             const token = localStorage.getItem("accessToken");
-            await axios.put(`${BASE_API_URL}/admin/albums/${id}/approve`, {}, {
+            await axios.put(`${BASE_API_URL}/api/v1/admin/albums/${id}/approve`, {}, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             message.success("Album approved!");

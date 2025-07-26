@@ -27,7 +27,7 @@ export default function NewReleases() {
     const { t } = useTranslation();
 
     useEffect(() => {
-        fetch(`${BASE_API_URL}/api/v1/guest/ablum/new-releases`)
+        fetch(`${BASE_API_URL}/api/v1/guest/album/new-releases`)
             .then(res => res.json())
             .then(data => {
                 const mapped = data.map(album => ({

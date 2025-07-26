@@ -21,9 +21,9 @@ export default function ArtistDashboard() {
             try {
                 const token = localStorage.getItem("accessToken");
                 const [statsRes, songsRes, chartRes] = await Promise.all([
-                    axios.get(`${BASE_API_URL}/api/v1/artist/stats`, { headers: { Authorization: `Bearer ${token}` } }),
-                    axios.get(`${BASE_API_URL}/api/v1/artist/recent-songs`, { headers: { Authorization: `Bearer ${token}` } }),
-                    axios.get(`${BASE_API_URL}/api/v1/artist/chart`, { headers: { Authorization: `Bearer ${token}` } }),
+                    axios.get(`${BASE_API_URL}/api/v1/artist/dashboard/stats`, { headers: { Authorization: `Bearer ${token}` } }),
+                    axios.get(`${BASE_API_URL}/api/v1/artist/dashboard/recent-songs`, { headers: { Authorization: `Bearer ${token}` } }),
+                    axios.get(`${BASE_API_URL}/api/v1/artist/dashboard/chart`, { headers: { Authorization: `Bearer ${token}` } }),
                 ]);
                 setStats(statsRes.data);
                 setRecentSongs(songsRes.data);

@@ -70,7 +70,7 @@ export default function AdminAlbums() {
         setDeleteLoading(true);
         try {
             const token = localStorage.getItem("accessToken");
-            await axios.delete(`${BASE_API_URL}/admin/albums/${deleteId}/delete`, {
+            await axios.delete(`${BASE_API_URL}/api/v1/admin/albums/${deleteId}/delete`, {
                 params: { reason: deleteReason },
                 headers: { Authorization: `Bearer ${token}` }
             });

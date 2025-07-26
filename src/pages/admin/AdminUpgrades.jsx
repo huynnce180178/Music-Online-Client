@@ -87,7 +87,7 @@ export default function AdminUpgrades() {
     const fetchPlans = async () => {
         setLoading(true);
         try {
-            const res = await axios.get(`${BASE_API_URL}/subscriptionPlan`, {
+            const res = await axios.get(`${BASE_API_URL}/api/v1/subscriptionPlan`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setPlans(res.data.data || []);
@@ -113,7 +113,7 @@ export default function AdminUpgrades() {
     const handleDelete = async (id) => {
         setLoading(true);
         try {
-            await axios.delete(`${BASE_API_URL}/admin/subscriptionPlan/delete/${id}`, {
+            await axios.delete(`${BASE_API_URL}/api/v1/admin/subscriptionPlan/delete/${id}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             message.success("Deleted!");
@@ -137,7 +137,7 @@ export default function AdminUpgrades() {
             // Đảm bảo gửi đúng kiểu dữ liệu JSON
             if (editingPlan) {
                 await axios.post(
-                    `${BASE_API_URL}/admin/subscriptionPlan/update/${editingPlan.id}`,
+                    `${BASE_API_URL}/api/v1/admin/subscriptionPlan/update/${editingPlan.id}`,
                     JSON.stringify(payload),
                     {
                         headers: {
@@ -149,7 +149,7 @@ export default function AdminUpgrades() {
                 message.success("Updated!");
             } else {
                 await axios.post(
-                    `${BASE_API_URL}/admin/subscriptionPlan/add`,
+                    `${BASE_API_URL}/api/v1/admin/subscriptionPlan/add`,
                     JSON.stringify(payload),
                     {
                         headers: {

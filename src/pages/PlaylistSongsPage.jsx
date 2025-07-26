@@ -27,7 +27,7 @@ export default function PlaylistSongsPage() {
                 let ownerFlag = false;
                 // Kiểm tra quyền sở hữu playlist
                 if (token) {
-                    const userRes = await axios.get(`${BASE_API_URL}/user/playlist`, {
+                    const userRes = await axios.get(`${BASE_API_URL}/api/v1/user/playlist`, {
                         headers: { Authorization: `Bearer ${token}` }
                     });
                     found = (userRes.data.data || []).find(p => p.id === Number(id));
@@ -38,7 +38,7 @@ export default function PlaylistSongsPage() {
                 }
                 if (!ownerFlag) {
                     // Nếu không phải playlist của mình, lấy từ community
-                    const res = await axios.get(`${BASE_API_URL}/guest/public/playlists`);
+                    const res = await axios.get(`${BASE_API_URL}/api/v1/guest/public/playlists`);
                     found = (res.data.data || []).find(p => p.id === Number(id));
                     setPlaylist(found);
                 }
@@ -47,11 +47,11 @@ export default function PlaylistSongsPage() {
                 // Gọi API lấy danh sách bài hát theo quyền sở hữu
                 let songsRes;
                 if (ownerFlag && token) {
-                    songsRes = await axios.get(`${BASE_API_URL}/user/playlist/${id}/songs`, {
+                    songsRes = await axios.get(`${BASE_API_URL}/api/v1/user/playlist/${id}/songs`, {
                         headers: { Authorization: `Bearer ${token}` }
                     });
                 } else {
-                    songsRes = await axios.get(`${BASE_API_URL}/guest/playlist/${id}/songs`);
+                    songsRes = await axios.get(`${BASE_API_URL}/api/v1/guest/playlist/${id}/songs`);
                 }
                 setSongs(songsRes.data.data || []);
             } catch {
@@ -82,7 +82,7 @@ export default function PlaylistSongsPage() {
     const handleRemoveSong = async (songId) => {
         try {
             const token = localStorage.getItem("accessToken");
-            await axios.delete(`${BASE_API_URL}/user/playlist/remove-song`, {
+            await axios.delete(`${BASE_API_URL}/api/v1/user/playlist/remove-song`, {
                 params: { playlistId: id, songId },
                 headers: { Authorization: `Bearer ${token}` }
             });

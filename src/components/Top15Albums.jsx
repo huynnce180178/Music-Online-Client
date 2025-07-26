@@ -87,7 +87,7 @@ export default function Top15Albums() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        fetch(`${BASE_API_URL}/api/v1/guest/ablum/top15`)
+        fetch(`${BASE_API_URL}/api/v1/guest/album/top15`)
             .then((res) => res.json())
             .then((data) => {
                 setAlbums(data);

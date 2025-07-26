@@ -26,7 +26,7 @@ export default function FeaturedAlbums() {
     const [startIdx, setStartIdx] = useState(0);
 
     useEffect(() => {
-        fetch(`${BASE_API_URL}/api/v1/guest/ablum/featured`)
+        fetch(`${BASE_API_URL}/api/v1/guest/album/featured`)
             .then(res => res.json())
             .then(data => {
                 const mapped = data.map(album => ({

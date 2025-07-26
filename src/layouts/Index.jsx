@@ -198,7 +198,7 @@ function AppRoutes(props) {
           <Route path="comments/rejected" element={<AdminRejectedComments />} />
           <Route path="upgrades" element={<AdminUpgrades />} />
           <Route path="banners" element={<AdminBanners />} />
-          <Route path="Advertisements" element={<AdminAdvertisement />} />
+          <Route path="advertisements" element={<AdminAdvertisement />} />
           <Route path="advertisements/pending" element={<AdminPendingAdvertisements />} />
         </Route>
 

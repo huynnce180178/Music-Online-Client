@@ -26,7 +26,7 @@ export default function AlbumsByArtists() {
     const [startIdx, setStartIdx] = useState(0);
 
     useEffect(() => {
-        fetch(`${BASE_API_URL}/api/v1/guest/ablum/all`)
+        fetch(`${BASE_API_URL}/api/v1/guest/album/all`)
             .then(res => res.json())
             .then(data => {
                 const mapped = data.map(album => ({

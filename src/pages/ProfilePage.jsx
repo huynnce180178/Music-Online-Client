@@ -52,7 +52,7 @@ export default function ProfilePage({ isDrawer }) {
     const fetchProfile = async () => {
         setLoading(true);
         try {
-            const res = await axios.get(`${BASE_API_URL}/user/profile`, {
+            const res = await axios.get(`${BASE_API_URL}/api/v1/user/profile`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             const data = res.data.data;
@@ -65,7 +65,7 @@ export default function ProfilePage({ isDrawer }) {
 
     const fetchSubscription = async () => {
         try {
-            const res = await axios.get(`${BASE_API_URL}/user/subscription`, {
+            const res = await axios.get(`${BASE_API_URL}/api/v1/user/subscription`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             // Use the new response structure
@@ -77,7 +77,7 @@ export default function ProfilePage({ isDrawer }) {
 
     const checkHasPassword = async () => {
         try {
-            const res = await axios.get(`${BASE_API_URL}/user/profile/hasPassword`, {
+            const res = await axios.get(`${BASE_API_URL}/api/v1/user/profile/hasPassword`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setHasPassword(res.data.data);
@@ -102,7 +102,7 @@ export default function ProfilePage({ isDrawer }) {
             if (values.dateOfBirth) {
                 formData.append("dateOfBirth", moment(values.dateOfBirth).format("YYYY-MM-DD"));
             }
-            await axios.post(`${BASE_API_URL}/user/profile/update`, formData, {
+            await axios.post(`${BASE_API_URL}/api/v1/user/profile/update`, formData, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             message.success(t('profile.update_success'));
@@ -118,7 +118,7 @@ export default function ProfilePage({ isDrawer }) {
     const handleChangePassword = async (values) => {
         setPassLoading(true);
         try {
-            await axios.patch(`${BASE_API_URL}/user/profile/changePassWord`, null, {
+            await axios.patch(`${BASE_API_URL}/api/v1/user/profile/changePassWord`, null, {
                 params: {
                     oldPassword: values.oldPassword,
                     newPassword: values.newPassword
@@ -137,7 +137,7 @@ export default function ProfilePage({ isDrawer }) {
     const handleSetPassword = async (values) => {
         setSetPassModalLoading(true);
         try {
-            await axios.patch(`${BASE_API_URL}/user/profile/setPassword`, null, {
+            await axios.patch(`${BASE_API_URL}/api/v1/user/profile/setPassword`, null, {
                 params: { newPassword: values.newPassword },
                 headers: { Authorization: `Bearer ${token}` }
             });

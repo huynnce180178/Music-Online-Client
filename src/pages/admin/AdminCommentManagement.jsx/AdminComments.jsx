@@ -24,10 +24,10 @@ export default function AdminComments({ statusDefault }) {
         try {
             const token = localStorage.getItem("accessToken");
             const config = { headers: { Authorization: `Bearer ${token}` } };
-            let url = `${BASE_API_URL}/admin/commentReport/getAll`;
+            let url = `${BASE_API_URL}/api/v1/admin/commentReport/getAll`;
             let params = { page: 0, limit: 100, sortBy: "id", orderBy: "asc" };
             if (status !== "ALL") {
-                url = `${BASE_API_URL}/admin/commentReport/getAllByStatus`;
+                url = `${BASE_API_URL}/api/v1/admin/commentReport/getAllByStatus`;
                 params = { status };
             }
             const res = await axios.get(url, {
@@ -131,7 +131,7 @@ export default function AdminComments({ statusDefault }) {
             const token = localStorage.getItem("accessToken");
             let status = actionType === "approve" ? "RESOLVED" : "REJECTED";
             await axios.patch(
-                `${BASE_API_URL}/admin/commentReport/updateCommentReport/${actionId}`,
+                `${BASE_API_URL}/api/v1/admin/commentReport/updateCommentReport/${actionId}`,
                 {},
                 { headers: { Authorization: `Bearer ${token}` }, params: { status } }
             );

@@ -110,7 +110,7 @@ export default function AdminPendingSongs() {
         setRejectLoading(true);
         try {
             const token = localStorage.getItem("accessToken");
-            await axios.put(`${BASE_API_URL}/admin/songs/${rejectId}/reject`, {}, {
+            await axios.put(`${BASE_API_URL}/api/v1/admin/songs/${rejectId}/reject`, {}, {
                 headers: { Authorization: `Bearer ${token}` },
                 params: { reason: rejectReason },
             });

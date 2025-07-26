@@ -60,7 +60,7 @@ export default function AdminAlbumsDeletedByAdmin() {
     const handleRestore = async (id) => {
         try {
             const token = localStorage.getItem("accessToken");
-            await axios.put(`${BASE_API_URL}/admin/albums/${id}/restore`, {}, {
+            await axios.put(`${BASE_API_URL}/api/v1/admin/albums/${id}/restore`, {}, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             message.success("Album restored!");

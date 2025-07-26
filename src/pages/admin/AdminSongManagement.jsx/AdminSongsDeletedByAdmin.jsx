@@ -70,7 +70,7 @@ export default function AdminSongsDeletedByAdmin() {
         setRestoringId(id);
         try {
             const token = localStorage.getItem("accessToken");
-            await axios.put(`${BASE_API_URL}/admin/songs/${id}/restore`, {}, {
+            await axios.put(`${BASE_API_URL}/api/v1/admin/songs/${id}/restore`, {}, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             message.success("The song has been restored to pending status!");

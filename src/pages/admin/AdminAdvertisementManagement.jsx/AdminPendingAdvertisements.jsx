@@ -78,7 +78,7 @@ export default function AdminPendingAdvertisements() {
     const handleApprove = async (id) => {
         try {
             const token = localStorage.getItem("accessToken");
-            await axios.post(`${BASE_API_URL}/admin/advertisements/approve/${id}`, {}, {
+            await axios.post(`${BASE_API_URL}/api/v1/admin/advertisements/approve/${id}`, {}, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             message.success("Advertisement approved!");
@@ -97,7 +97,7 @@ export default function AdminPendingAdvertisements() {
         try {
             const token = localStorage.getItem("accessToken");
             await axios.post(
-                `${BASE_API_URL}/admin/advertisements/reject/${rejectId}`,
+                `${BASE_API_URL}/api/v1/admin/advertisements/reject/${rejectId}`,
                 {},
                 {
                     headers: { Authorization: `Bearer ${token}` },
