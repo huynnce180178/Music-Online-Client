@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState, useRef, useCallback } from "react";
 import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "bootstrap-icons/font/bootstrap-icons.css";
+
 import { PlayerContext } from "../context/PlayerContext";
 import SubscriptionModalPlan from "./SubscriptionModalPlan";
 import SongDetail from "./SongDetail";
