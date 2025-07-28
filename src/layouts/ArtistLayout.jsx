@@ -550,7 +550,6 @@ export default function ArtistLayout({ children }) {
                                 height: isMobile ? 32 : 40,
                             }}
                         >
-                            {!isMobile && t('sidebar.back_to_homepage')}
                         </Button>
                     </div>
                     <div style={{ display: "flex", alignItems: "center", gap: isMobile ? 6 : 12 }}>

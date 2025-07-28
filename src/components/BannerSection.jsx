@@ -209,6 +209,53 @@ const style = {
     navDotsMobile: {
         gap: 6,
         marginTop: 8,
+    },
+    // Tablet responsive
+    sectionTablet: {
+        flexDirection: "column",
+        minHeight: 0,
+        padding: "0 0 24px 0",
+    },
+    imageWrapTablet: {
+        marginLeft: 0,
+        marginTop: 24,
+        marginBottom: 12,
+        height: 260,
+        flex: "0 0 260px",
+    },
+    imgTablet: {
+        width: 320,
+        height: 200,
+        borderRadius: 16,
+    },
+    contentTablet: {
+        padding: "0 24px",
+        minHeight: 0,
+        alignItems: "center",
+        textAlign: "center",
+    },
+    titleTablet: {
+        fontSize: 26,
+        marginBottom: 10,
+    },
+    descTablet: {
+        fontSize: 15,
+        marginBottom: 14,
+        maxWidth: 480,
+    },
+    infoTablet: {
+        gap: 16,
+        fontSize: 14,
+        marginBottom: 14,
+    },
+    btnTablet: {
+        fontSize: 15,
+        padding: "7px 18px",
+        borderRadius: 10,
+    },
+    navDotsTablet: {
+        gap: 8,
+        marginTop: 10,
     }
 };
 
@@ -309,33 +356,52 @@ export default function BannerSection() {
 
     // Responsive style
     const isMobile = breakpoint === "mobile";
+    const isTablet = breakpoint === "tablet";
     const sectionStyle = isMobile
         ? { ...style.section, ...style.sectionMobile }
-        : style.section;
+        : isTablet
+            ? { ...style.section, ...style.sectionTablet }
+            : style.section;
     const imageWrapStyle = isMobile
         ? { ...style.imageWrap, ...style.imageWrapMobile }
-        : style.imageWrap;
+        : isTablet
+            ? { ...style.imageWrap, ...style.imageWrapTablet }
+            : style.imageWrap;
     const imgStyle = isMobile
         ? { ...style.img, ...style.imgMobile }
-        : style.img;
+        : isTablet
+            ? { ...style.img, ...style.imgTablet }
+            : style.img;
     const contentStyle = isMobile
         ? { ...style.content, ...style.contentMobile }
-        : style.content;
+        : isTablet
+            ? { ...style.content, ...style.contentTablet }
+            : style.content;
     const titleStyle = isMobile
         ? { ...style.title, ...style.titleMobile }
-        : style.title;
+        : isTablet
+            ? { ...style.title, ...style.titleTablet }
+            : style.title;
     const descStyle = isMobile
         ? { ...style.desc, ...style.descMobile }
-        : style.desc;
+        : isTablet
+            ? { ...style.desc, ...style.descTablet }
+            : style.desc;
     const infoStyle = isMobile
         ? { ...style.info, ...style.infoMobile }
-        : style.info;
+        : isTablet
+            ? { ...style.info, ...style.infoTablet }
+            : style.info;
     const btnStyle = isMobile
         ? { ...style.btn, ...style.btnMobile }
-        : style.btn;
+        : isTablet
+            ? { ...style.btn, ...style.btnTablet }
+            : style.btn;
     const navDotsStyle = isMobile
         ? { ...style.navDots, ...style.navDotsMobile }
-        : style.navDots;
+        : isTablet
+            ? { ...style.navDots, ...style.navDotsTablet }
+            : style.navDots;
 
     // Loading skeleton
     if (loading) {

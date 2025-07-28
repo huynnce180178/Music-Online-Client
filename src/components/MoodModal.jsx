@@ -113,11 +113,30 @@ export default function MoodModal({ open, onClose, onMoodSelected }) {
             closable={false}
             maskClosable={false}
             title={t('mood_modal.title')}
+            bodyStyle={{ padding: 0 }}
+            style={{ maxWidth: 420, width: "95vw" }}
         >
-            {/* Chia moodOptions thành 2 hàng, mỗi hàng 4 icon */}
-            <div style={{ margin: 25, display: "flex", flexDirection: "column", gap: 16, alignItems: "center" }}>
+            <div
+                style={{
+                    margin: 25,
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 16,
+                    alignItems: "center",
+                    padding: 0,
+                }}
+            >
                 {[0, 1].map(row => (
-                    <div key={row} style={{ display: "flex", gap: 16, justifyContent: "center" }}>
+                    <div
+                        key={row}
+                        style={{
+                            display: "flex",
+                            gap: 16,
+                            justifyContent: "center",
+                            width: "100%",
+                            flexWrap: "wrap"
+                        }}
+                    >
                         {moodOptions.slice(row * 4, row * 4 + 4).map(opt => (
                             <Button
                                 key={opt.emoji}
@@ -127,6 +146,8 @@ export default function MoodModal({ open, onClose, onMoodSelected }) {
                                     borderRadius: 16,
                                     width: 56,
                                     height: 56,
+                                    minWidth: 48,
+                                    minHeight: 48,
                                     display: "flex",
                                     alignItems: "center",
                                     justifyContent: "center",
@@ -146,15 +167,15 @@ export default function MoodModal({ open, onClose, onMoodSelected }) {
                     </div>
                 ))}
             </div>
-            <div style={{ textAlign: "center", minHeight: 28, color: "#21A8C5", fontWeight: 600 }}>
+            <div style={{ textAlign: "center", minHeight: 28, color: "#21A8C5", fontWeight: 600, fontSize: 16 }}>
                 {selectedMood ? t(`mood_modal.${toSnakeCase(selectedMood.text)}`) : ''}
             </div>
-            <div style={{ display: "flex", gap: 8, marginTop: 24 }}>
+            <div style={{ display: "flex", gap: 8, marginTop: 24, flexWrap: "wrap" }}>
                 <Button
                     block
                     size="large"
                     onClick={onClose}
-                    style={{ borderRadius: 24, fontWeight: 700, flex: 1 }}
+                    style={{ borderRadius: 24, fontWeight: 700, flex: 1, minWidth: 120 }}
                     disabled={submitting}
                 >
                     {t('mood_modal.skip')}
@@ -165,13 +186,12 @@ export default function MoodModal({ open, onClose, onMoodSelected }) {
                     size="large"
                     loading={submitting}
                     onClick={handleSubmit}
-                    style={{ borderRadius: 24, fontWeight: 700, flex: 1 }}
+                    style={{ borderRadius: 24, fontWeight: 700, flex: 1, minWidth: 120 }}
                     disabled={hasTodayMood}
                 >
                     {t('mood_modal.submit')}
                 </Button>
             </div>
-            {/* Hiệu ứng động khi submitting */}
             {submitting && (
                 <div style={{
                     marginTop: 32,
@@ -196,12 +216,45 @@ export default function MoodModal({ open, onClose, onMoodSelected }) {
                     <span>{typedMsg}</span>
                 </div>
             )}
-            {/* Thêm keyframes cho hiệu ứng bounce */}
             <style>
                 {`
                 @keyframes bounce {
                     0%, 100% { transform: translateY(0);}
                     50% { transform: translateY(-12px);}
+                }
+                @media (max-width: 600px) {
+                    .ant-modal {
+                        width: 98vw !important;
+                        max-width: 98vw !important;
+                        margin: 0 !important;
+                        padding: 0 !important;
+                    }
+                    .ant-modal-content {
+                        padding: 10px 4vw 18px 4vw !important;
+                        border-radius: 16px !important;
+                    }
+                    .ant-modal-title {
+                        font-size: 18px !important;
+                        padding: 8px 0 !important;
+                    }
+                    .ant-modal-body {
+                        padding: 0 !important;
+                    }
+                }
+                @media (max-width: 400px) {
+                    .ant-modal {
+                        width: 100vw !important;
+                        max-width: 100vw !important;
+                        min-width: 0 !important;
+                    }
+                    .ant-modal-content {
+                        padding: 6px 2vw 12px 2vw !important;
+                        border-radius: 10px !important;
+                    }
+                    .ant-modal-title {
+                        font-size: 15px !important;
+                        padding: 6px 0 !important;
+                    }
                 }
                 `}
             </style>

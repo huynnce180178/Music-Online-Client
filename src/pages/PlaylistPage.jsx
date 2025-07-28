@@ -1034,7 +1034,6 @@ export default function PlaylistPage() {
                 .playlist-card:hover .playlist-img {
                     filter: none;
                 }
-                /* Làm mờ và giảm nổi bật playlist private */
                 .playlist-card-private {
                     opacity: 0.6;
                     filter: grayscale(0.3) brightness(0.85);
@@ -1086,6 +1085,102 @@ export default function PlaylistPage() {
                 .ant-tabs-tab-active .playlist-tab-label {
                     color: #3ed8ff !important;
                     text-shadow: 0 2px 8px #3ed8ff22;
+                }
+
+                /* Responsive styles */
+                @media (max-width: 1200px) {
+                    .playlist-card {
+                        width: 240px !important;
+                        height: 240px !important;
+                        border-radius: 18px !important;
+                    }
+                    .playlist-card .playlist-play-btn {
+                        display: none !important;
+                    }
+                }
+                @media (max-width: 900px) {
+                    .playlist-card {
+                        width: 180px !important;
+                        height: 180px !important;
+                        border-radius: 14px !important;
+                    }
+                    .playlist-card .playlist-play-btn {
+                        font-size: 28px !important;
+                        display: none !important;
+                    }
+                    .ant-tabs-tab {
+                        font-size: 16px !important;
+                    }
+                }
+                @media (max-width: 600px) {
+                    .playlist-card {
+                        width: 98vw !important;
+                        max-width: 340px !important;
+                        height: 120px !important;
+                        min-height: 100px !important;
+                        border-radius: 10px !important;
+                        margin: 0 auto 16px auto !important;
+                        flex-direction: row !important;
+                        display: flex !important;
+                        align-items: center !important;
+                    }
+                    .playlist-card img.playlist-img {
+                        width: 100px !important;
+                        height: 100px !important;
+                        border-radius: 10px !important;
+                        margin: 10px !important;
+                        object-fit: cover !important;
+                    }
+                    .playlist-card .playlist-play-btn {
+                        display: none !important;
+                    }
+                    .playlist-card > div[style*="position: absolute"][style*="bottom: 0"] {
+                        position: static !important;
+                        background: none !important;
+                        padding: 10px 10px 10px 0 !important;
+                        font-size: 15px !important;
+                        text-align: left !important;
+                        box-shadow: none !important;
+                    }
+                    .playlist-card .playlist-action-btn {
+                        top: 10px !important;
+                        right: 10px !important;
+                        font-size: 18px !important;
+                    }
+                    .playlist-card .playlist-img {
+                        margin: 0 !important;
+                    }
+                    .add-playlist-fab {
+                        right: 16px !important;
+                        bottom: 16px !important;
+                        width: 48px !important;
+                        height: 48px !important;
+                        font-size: 20px !important;
+                    }
+                    .ant-tabs-tab {
+                        font-size: 13px !important;
+                        padding: 0 8px !important;
+                    }
+                    .ant-tabs-nav {
+                        padding-left: 8px !important;
+                    }
+                }
+                @media (max-width: 400px) {
+                    .playlist-card {
+                        width: 98vw !important;
+                        max-width: 98vw !important;
+                        height: 90px !important;
+                        min-height: 80px !important;
+                    }
+                    .playlist-card img.playlist-img {
+                        width: 60px !important;
+                        height: 60px !important;
+                        border-radius: 8px !important;
+                    }
+                    .playlist-card > div[style*="position: absolute"][style*="bottom: 0"] {
+                        font-size: 12px !important;
+                        padding: 6px 6px 6px 0 !important;
+                    }
                 }
             `}</style>
         </div>

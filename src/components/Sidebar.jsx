@@ -168,6 +168,70 @@ export default function Sidebar({ collapsed, setCollapsed, visible, setVisible, 
                         transform: scale(1.05);
                         transition: all 0.2s;
                     }
+                    /* Responsive styles */
+                    @media (max-width: 1200px) {
+                        .sidebar-menu .ant-menu-item {
+                            font-size: 15px !important;
+                        }
+                        .sidebar-logo {
+                            width: 48px !important;
+                            height: 48px !important;
+                        }
+                    }
+                    @media (max-width: 900px) {
+                        .sidebar-menu .ant-menu-item {
+                            font-size: 14px !important;
+                        }
+                        .sidebar-logo {
+                            width: 40px !important;
+                            height: 40px !important;
+                        }
+                        .sidebar-brand-text {
+                            font-size: 15px !important;
+                        }
+                    }
+                    @media (max-width: 600px) {
+                        .sidebar-menu .ant-menu-item {
+                            font-size: 13px !important;
+                            padding: 0 8px !important;
+                        }
+                        .sidebar-logo {
+                            width: 32px !important;
+                            height: 32px !important;
+                        }
+                        .sidebar-brand-text {
+                            font-size: 12px !important;
+                        }
+                        .sidebar-toggle-btn {
+                            width: 28px !important;
+                            height: 28px !important;
+                            font-size: 16px !important;
+                            margin: 10px !important;
+                        }
+                        .sidebar-menu {
+                            padding-top: 0 !important;
+                        }
+                        .sidebar-menu .ant-menu-item {
+                            margin: 0 2px !important;
+                        }
+                        .sidebar-menu .anticon {
+                            font-size: 18px !important;
+                        }
+                    }
+                    @media (max-width: 400px) {
+                        .sidebar-logo {
+                            width: 22px !important;
+                            height: 22px !important;
+                        }
+                        .sidebar-brand-text {
+                            font-size: 10px !important;
+                        }
+                        .sidebar-toggle-btn {
+                            width: 20px !important;
+                            height: 20px !important;
+                            font-size: 12px !important;
+                        }
+                    }
                     `}
                 </style>
                 {/* Logo và tiêu đề */}
