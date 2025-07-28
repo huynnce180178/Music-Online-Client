@@ -3,6 +3,8 @@ import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom"; // Thêm dòng này
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from 'react-i18next';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import BASE_API_URL from "../services/base.api.url";
 
 const style = {
@@ -217,7 +219,12 @@ export default function BannerSection() {
     const [current, setCurrent] = useState(0);
     const [loading, setLoading] = useState(true);
     const fadeRef = useRef();
-    const navigate = useNavigate(); // Thêm dòng này
+    const navigate = useNavigate();
+
+    function isLoggedIn() {
+        // Sửa lại để kiểm tra đúng key token bạn dùng
+        return !!(localStorage.getItem('accessToken') || localStorage.getItem('token'));
+    }
 
     function getBreakpoint() {
         if (window.innerWidth < 600) return "mobile";
@@ -380,15 +387,19 @@ export default function BannerSection() {
                         style={{ ...btnStyle, ...style.btnPrimary }}
                         tabIndex={0}
                         onClick={() => navigate("/top-tracks")}
-                        onTouchStart={() => {}} // Add touch support
                     >
                         {t('banner.listen_now')}
                     </button>
                     <button
                         style={{ ...btnStyle, ...style.btnOutline }}
                         tabIndex={0}
-                        onClick={() => navigate("/favourites")}
-                        onTouchStart={() => {}} // Add touch support
+                        onClick={() => {
+                            if (!isLoggedIn()) {
+                                toast.info(t('banner.please_login_first'));
+                                return;
+                            }
+                            navigate("/favourites");
+                        }}
                     >
                         {t('banner.add_to_queue')}
                     </button>
@@ -409,6 +420,7 @@ export default function BannerSection() {
                     ))}
                 </div>
             </div>
+            <ToastContainer position="top-right" autoClose={1000} />
         </div>
     );
 }

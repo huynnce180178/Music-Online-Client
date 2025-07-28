@@ -3,8 +3,8 @@ import { UserOutlined, MailOutlined, LockOutlined, FileImageOutlined } from '@an
 import { Button, Form, Input, Typography, Row, Col, Upload, Modal } from 'antd';
 import PropTypes from 'prop-types';
 import axios from 'axios';
-import { useTranslation } from 'react-i18next';
 import BASE_API_URL from "../services/base.api.url";
+import { useTranslation } from 'react-i18next';
 
 const { Title } = Typography;
 
@@ -78,18 +78,17 @@ export default function Register(props) {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                padding: isMobile ? '16px' : 8,
+                padding: isMobile ? 0 : 8,
             }}
         >
             <div
                 style={{
                     background: 'white',
-                    borderRadius: isMobile ? 16 : 32,
+                    borderRadius: 32,
                     boxShadow: '0 8px 32px rgba(0,0,0,0.18)',
                     maxWidth: 900,
                     width: '100%',
-                    maxHeight: isMobile ? '90vh' : 'auto',
-                    overflow: 'auto',
+                    overflow: 'hidden',
                     position: 'relative',
                 }}
             >
@@ -114,10 +113,7 @@ export default function Register(props) {
                     aria-label="Close"
                     icon={<span style={{ fontSize: 24, color: '#999' }}>&times;</span>}
                 />
-                <Row style={{ 
-                    minHeight: isMobile ? 300 : 420, 
-                    width: '100%' 
-                }}>
+                <Row style={{ minHeight: 420, width: '100%' }}>
                     {/* Image Section - hidden on mobile */}
                     {!isMobile && (
                         <Col
@@ -146,12 +142,12 @@ export default function Register(props) {
                         xs={24}
                         md={12}
                         style={{
-                            padding: isMobile ? '16px 20px' : '18px 3vw',
+                            padding: isMobile ? '12px 2vw' : '18px 3vw',
                             display: 'flex',
                             flexDirection: 'column',
                             justifyContent: 'center',
                             minWidth: 0,
-                            minHeight: isMobile ? 300 : 340,
+                            minHeight: 340,
                             width: '100%',
                         }}
                     >
@@ -275,9 +271,19 @@ export default function Register(props) {
                             </Form.Item>
                             <Form.Item
                                 name="profilePic"
-                                label="Profile Picture (Optional)"
+                                label="Profile Picture"
                                 valuePropName="fileList"
                                 getValueFromEvent={e => Array.isArray(e) ? e : e && e.fileList}
+                                rules={[
+                                    {
+                                        required: true,
+                                        message: t('please_upload_profile_picture'),
+                                        validator: (_, value) => {
+                                            if (value && value.length > 0) return Promise.resolve();
+                                            return Promise.reject(new Error(t('please_upload_profile_picture')));
+                                        }
+                                    }
+                                ]}
                                 style={{ marginBottom: 10 }}
                             >
                                 <Upload

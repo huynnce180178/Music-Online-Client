@@ -210,10 +210,6 @@ export default function Login({ onClose, onSwitchToRegister }) {
                                         border: 'none',
                                         fontSize: 18,
                                         boxShadow: '0 2px 8px rgba(33,168,197,0.08)',
-                                        height: 48,
-                                        display: "flex",
-                                        alignItems: "center",
-                                        justifyContent: "center"
                                     }}
                                 >
                                     {t('login')}

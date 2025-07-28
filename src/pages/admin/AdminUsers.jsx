@@ -51,6 +51,7 @@ export default function AdminUsers() {
     const token = localStorage.getItem("accessToken");
     const screens = useBreakpoint();
     const isTablet = !screens.lg;
+    const isMobile = screens.xs;
 
     useEffect(() => {
         fetchUsers({
@@ -88,6 +89,12 @@ export default function AdminUsers() {
         .ant-select-item:hover { background-color: #1f2233 !important; }
         .ant-select-item-option-selected { background-color: #434760 !important; }
         .ant-empty-description { color: #888 !important; }
+        .ant-select-selection-item-remove {
+            color: #fff !important;
+        }
+        .ant-select-selection-item-remove:hover {
+            color: #3ed8ff !important;
+        }
         `;
         document.head.appendChild(style);
         return () => document.head.removeChild(style);
@@ -218,7 +225,7 @@ export default function AdminUsers() {
             title: "#",
             key: "index",
             align: "center",
-            width: 50,
+            width: isMobile ? 40 : 50,
             render: (text, record, index) =>
                 (pagination.current - 1) * pagination.pageSize + index + 1,
         },
@@ -229,20 +236,20 @@ export default function AdminUsers() {
             render: (url) => (
                 <img
                     src={url || '/default-avatar.png'}
-                    alt="avatar"
+                    alt={t('admin_users.avatar')}
                     onError={(e) => {
                         e.target.src = '/default-avatar.png';
                     }}
                     style={{
-                        width: isTablet ? 36 : 50,
-                        height: isTablet ? 36 : 50,
+                        width: isMobile ? 28 : isTablet ? 36 : 50,
+                        height: isMobile ? 28 : isTablet ? 36 : 50,
                         borderRadius: "50%",
                         objectFit: "cover",
                         border: "2px solid #434760",
                     }}
                 />
             ),
-            width: isTablet ? 50 : 70,
+            width: isMobile ? 40 : isTablet ? 50 : 70,
             align: "center",
         },
         {
@@ -250,18 +257,18 @@ export default function AdminUsers() {
             align: "center",
             key: "fullName",
             render: (_, record) => `${record.firstName} ${record.lastName}`,
-            width: isTablet ? 110 : 160,
+            width: isMobile ? 80 : isTablet ? 110 : 160,
         },
         {
             title: t('admin_users.email'),
             align: "center",
             dataIndex: "email",
             key: "email",
-            width: isTablet ? 140 : 200,
-            ellipsis: isTablet,
+            width: isMobile ? 100 : isTablet ? 140 : 200,
+            ellipsis: true,
         },
-        !isTablet && {
-            title: "Roles",
+        {
+            title: t('admin_users.roles'),
             align: "center",
             dataIndex: "roleNames",
             key: "roleNames",
@@ -274,13 +281,16 @@ export default function AdminUsers() {
                             style={{
                                 backgroundColor: ROLE_COLORS[cleanedRole] || "#d9d9d9",
                                 color: "#181d36",
+                                fontSize: isMobile ? 11 : 13,
+                                padding: isMobile ? "1px 6px" : "2px 10px",
+                                borderRadius: 8,
                             }}
                         >
                             {t('admin_users.role_' + cleanedRole.toLowerCase(), cleanedRole)}
                         </Tag>
                     );
                 }),
-            width: 150,
+            width: isMobile ? 90 : isTablet ? 120 : 150,
         },
         {
             title: t('admin_users.status'),
@@ -297,12 +307,15 @@ export default function AdminUsers() {
                     style={{
                         backgroundColor: STATUS_COLORS[text] || "#d9d9d9",
                         color: "#181d36",
+                        fontSize: isMobile ? 11 : 13,
+                        borderRadius: 8,
+                        padding: isMobile ? "1px 6px" : "2px 10px",
                     }}
                 >
                     {t('admin_users.status_' + text.toLowerCase(), text)}
                 </Tag>
             ),
-            width: isTablet ? 90 : 110,
+            width: isMobile ? 70 : isTablet ? 90 : 110,
         },
         {
             title: t('admin_users.action'),
@@ -311,8 +324,8 @@ export default function AdminUsers() {
             render: (_, record) => (
                 <Select
                     value={record.status}
-                    style={{ width: isTablet ? 90 : 120 }}
-                    size={isTablet ? "small" : "middle"}
+                    style={{ width: isMobile ? 70 : isTablet ? 90 : 120 }}
+                    size={isMobile ? "small" : isTablet ? "small" : "middle"}
                     onChange={(value) => {
                         if (value !== record.status) {
                             handleChangeStatus(record.id, value);
@@ -320,38 +333,71 @@ export default function AdminUsers() {
                     }}
                     onClick={(e) => e.stopPropagation()}
                 >
-                    <Option value="VERIFY">Verify</Option>
-                    <Option value="ACTIVE">Active</Option>
-                    <Option value="BLOCKED">Blocked</Option>
+                    <Option value="VERIFY">{t('admin_users.status_verify')}</Option>
+                    <Option value="ACTIVE">{t('admin_users.status_active')}</Option>
+                    <Option value="BLOCKED">{t('admin_users.status_blocked')}</Option>
                 </Select>
             ),
-            width: isTablet ? 100 : 130,
+            width: isMobile ? 80 : isTablet ? 100 : 130,
         },
-        !isTablet && {
-            title: "Set Role",
+        {
+            title: t('admin_users.action'),
             align: "center",
             key: "setRole",
             render: (_, record) => (
                 <Button
                     type="primary"
-                    size="small"
-                    style={{ borderRadius: 8, fontWeight: 500 }}
+                    size={isMobile ? "small" : "small"}
+                    style={{
+                        borderRadius: 8,
+                        fontWeight: 500,
+                        padding: isMobile ? "0 6px" : "0 12px",
+                        fontSize: isMobile ? 12 : 14,
+                    }}
                     onClick={() => openEditRoleModal(record.id, record.roleNames)}
                 >
-                    Edit
+                    {t('admin_users.edit', 'Edit')}
                 </Button>
             ),
-            width: 90,
+            width: isMobile ? 60 : 90,
         },
-    ].filter(Boolean);
+    ];
 
     const renderEditRoleModal = () => (
         <Modal
             open={editModalOpen}
-            title="Set Roles for User"
+            title={t('admin_users.edit_role_title', 'Set Roles for User')}
             onCancel={() => { setEditModalOpen(false); setEditUserId(null); setEditRoleIds([]); }}
             footer={null}
             centered
+            styles={{
+                header: {
+                    background: "#181C2B",
+                    borderBottom: "1px solid #434760",
+                },
+                content: {
+                    background: "#101426",
+                },
+                close: {
+                    color: "#fff",
+                }
+            }}
+            closeIcon={
+                <span
+                    style={{
+                        color: "#fff",
+                        fontSize: isMobile ? 18 : 20,
+                        fontWeight: 700,
+                        background: "transparent",
+                    }}
+                >
+                    ×
+                </span>
+            }
+            width={isMobile ? 320 : 400}
+            bodyStyle={{
+                padding: isMobile ? "16px 8px" : "24px 24px",
+            }}
         >
             <div style={{ marginBottom: 16 }}>
                 <Select
@@ -359,8 +405,13 @@ export default function AdminUsers() {
                     style={{ width: "100%" }}
                     value={editRoleIds}
                     onChange={setEditRoleIds}
-                    options={ROLE_OPTIONS.map(r => ({ label: r.label, value: r.id }))}
-                    placeholder="Select roles"
+                    options={ROLE_OPTIONS.map(r => ({
+                        label: t('admin_users.role_' + r.label.toLowerCase(), r.label),
+                        value: r.id
+                    }))}
+                    placeholder={t('admin_users.select_roles', 'Select roles')}
+                    size={isMobile ? "small" : "middle"}
+                    maxTagCount={isMobile ? 2 : 5}
                 />
             </div>
             <Space>
@@ -368,11 +419,15 @@ export default function AdminUsers() {
                     type="primary"
                     onClick={handleSetRole}
                     disabled={editRoleIds.length === 0}
+                    size={isMobile ? "small" : "middle"}
                 >
-                    Save
+                    {t('admin_users.save', 'Save')}
                 </Button>
-                <Button onClick={() => { setEditModalOpen(false); setEditUserId(null); setEditRoleIds([]); }}>
-                    Cancel
+                <Button
+                    onClick={() => { setEditModalOpen(false); setEditUserId(null); setEditRoleIds([]); }}
+                    size={isMobile ? "small" : "middle"}
+                >
+                    {t('admin_users.cancel', 'Cancel')}
                 </Button>
             </Space>
         </Modal>
@@ -381,7 +436,7 @@ export default function AdminUsers() {
     return (
         <div
             style={{
-                padding: isTablet ? 8 : 16,
+                padding: isMobile ? 4 : isTablet ? 8 : 16,
                 maxWidth: 1200,
                 margin: "0 auto",
             }}
@@ -389,19 +444,19 @@ export default function AdminUsers() {
             <div
                 style={{
                     display: "flex",
-                    flexDirection: isTablet ? "column" : "row",
-                    gap: isTablet ? 8 : 24,
-                    alignItems: isTablet ? "stretch" : "center",
+                    flexDirection: isMobile ? "column" : isTablet ? "column" : "row",
+                    gap: isMobile ? 4 : isTablet ? 8 : 24,
+                    alignItems: isMobile ? "stretch" : isTablet ? "stretch" : "center",
                     marginBottom: 16,
                 }}
             >
                 <Search
-                    placeholder="Search by name or email"
+                    placeholder={t('admin_users.search_placeholder', 'Search by name or email')}
                     onSearch={handleSearch}
                     onChange={handleInputChange}
                     style={{
-                        width: isTablet ? "100%" : 320,
-                        fontSize: isTablet ? 14 : 16,
+                        width: "100%",
+                        fontSize: isMobile ? 12 : isTablet ? 14 : 16,
                         borderRadius: 8,
                         background: "#181C2B",
                         border: "0",
@@ -409,18 +464,17 @@ export default function AdminUsers() {
                         boxShadow: "none",
                     }}
                     value={keyword}
-                    size={isTablet ? "middle" : "large"}
+                    size={isMobile ? "small" : isTablet ? "middle" : "large"}
                     allowClear
                     enterButton
                 />
-                {/* You can add more filters here if needed */}
             </div>
             <div style={{
                 width: "100%",
-                overflowX: isTablet ? "auto" : "visible",
+                overflowX: "auto",
                 background: "#101426",
                 borderRadius: 12,
-                boxShadow: isTablet ? "none" : "0 2px 12px rgba(33,168,197,0.08)",
+                boxShadow: isMobile ? "none" : isTablet ? "none" : "0 2px 12px rgba(33,168,197,0.08)",
             }}>
                 <Table
                     columns={columns}
@@ -429,21 +483,21 @@ export default function AdminUsers() {
                         ...pagination,
                         showSizeChanger: true,
                         pageSizeOptions: ["5", "10", "20", "50"],
-                        position: isTablet ? ["bottomCenter"] : ["bottomRight"],
+                        position: ["bottomCenter"],
                     }}
                     loading={loading}
                     onChange={handleTableChange}
                     rowKey="id"
-                    size={isTablet ? "small" : "middle"}
-                    scroll={isTablet ? { x: 600 } : undefined}
+                    size={isMobile ? "small" : isTablet ? "small" : "middle"}
+                    scroll={{ x: isMobile ? 600 : isTablet ? 600 : undefined }}
                     style={{
-                        minWidth: isTablet ? 600 : "auto",
-                        fontSize: isTablet ? 13 : 15,
+                        minWidth: isMobile ? 600 : isTablet ? 600 : "auto",
+                        fontSize: isMobile ? 11 : isTablet ? 13 : 15,
                     }}
                     locale={{
                         emptyText: (
                             <div style={{ color: '#888', padding: '20px' }}>
-                                No users found
+                                {t('admin_users.no_users_found', 'No users found')}
                             </div>
                         )
                     }}

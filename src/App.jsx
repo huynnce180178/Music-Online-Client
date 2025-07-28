@@ -1,5 +1,5 @@
 import Layout from "./layouts/Index";
-import './App.css';
+//import './App.css';
 
 function App() {
   return (

@@ -311,7 +311,7 @@ export default function ProfilePage({ isDrawer }) {
                         {profile.bio || <span style={{ color: "#758cad" }}>{t('profile.no_bio')}</span>}
                     </div>
                     <Button
-                        icon={<EditOutlined style={{ fontSize: 18 }} />}
+                        icon={<EditOutlined />}
                         onClick={handleEdit}
                         disabled={editMode}
                         size="large"
@@ -327,10 +327,6 @@ export default function ProfilePage({ isDrawer }) {
                             fontSize: 17,
                             boxShadow: "0 2px 8px 0 rgba(33,168,197,0.13)",
                             transition: "background 0.2s, box-shadow 0.2s",
-                            height: 48,
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center"
                         }}
                         block
                     >{t('profile.edit_profile')}</Button>

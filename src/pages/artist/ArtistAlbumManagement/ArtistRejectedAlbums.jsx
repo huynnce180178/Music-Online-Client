@@ -12,6 +12,7 @@ export default function ArtistRejectedAlbums() {
     const [loading, setLoading] = useState(false);
     const screens = useBreakpoint();
     const isTablet = !screens.lg;
+    const isMobile = !screens.md;
     const token = localStorage.getItem("accessToken");
     const config = { headers: { Authorization: `Bearer ${token}` } };
     const { t } = useTranslation();
@@ -45,7 +46,7 @@ export default function ArtistRejectedAlbums() {
     const handleRequestRestore = async (albumId) => {
         try {
             await axios.post(
-                `${BASE_API_URL}/artist/album/${albumId}/request-restore`,
+                `${BASE_API_URL}/api/v1/artist/album/${albumId}/request-restore`,
                 {},
                 config
             );
@@ -61,39 +62,47 @@ export default function ArtistRejectedAlbums() {
             title: t('index'),
             key: "index",
             align: "center",
-            width: 50,
+            width: isMobile ? 36 : isTablet ? 50 : 50,
             render: (text, record, index) => index + 1,
+        },
+        {
+            title: t('cover'),
+            dataIndex: "coverImageUrl",
+            key: "coverImageUrl",
+            render: url => url && <Image src={url} width={isMobile ? 28 : isTablet ? 40 : 60} height={isMobile ? 28 : isTablet ? 40 : 60} style={{ objectFit: "cover", borderRadius: 8 }} />,
+            width: isMobile ? 36 : isTablet ? 50 : 80,
+            align: "center",
         },
         {
             title: t('album_name'),
             align: "center",
             dataIndex: "titleAlbum",
             key: "titleAlbum",
-            width: isTablet ? 120 : 180,
-            ellipsis: isTablet,
+            width: isMobile ? 70 : isTablet ? 120 : 180,
+            ellipsis: isTablet || isMobile,
         },
         {
             title: t('release_date'),
             align: "center",
             dataIndex: "releaseDateStr",
             key: "releaseDateStr",
-            width: isTablet ? 110 : 160,
-            ellipsis: isTablet,
+            width: isMobile ? 60 : isTablet ? 110 : 160,
+            ellipsis: isTablet || isMobile,
         },
         {
             title: t('type'),
             align: "center",
             dataIndex: "type",
             key: "type",
-            width: isTablet ? 70 : 100,
-            ellipsis: isTablet,
+            width: isMobile ? 40 : isTablet ? 70 : 100,
+            ellipsis: isTablet || isMobile,
         },
         {
             title: t('status'),
             dataIndex: "status",
             key: "status",
             align: "center",
-            width: 110,
+            width: isMobile ? 70 : 110,
             render: status => {
                 let color = "#888";
                 let bg = "#232b3e";
@@ -120,14 +129,6 @@ export default function ArtistRejectedAlbums() {
             }
         },
         {
-            title: t('cover'),
-            dataIndex: "coverImageUrl",
-            key: "coverImageUrl",
-            render: url => url && <Image src={url} width={isTablet ? 40 : 60} height={isTablet ? 40 : 60} style={{ objectFit: "cover", borderRadius: 8 }} />,
-            width: isTablet ? 50 : 80,
-            align: "center",
-        },
-        {
             title: t('actions'),
             align: "center",
             key: "action",
@@ -137,28 +138,29 @@ export default function ArtistRejectedAlbums() {
                         type="dashed"
                         icon={<ReloadOutlined />}
                         onClick={() => handleRequestRestore(album.id)}
+                        size={isMobile ? "small" : undefined}
                     >
                         {t('request_restore')}
                     </Button>
                 </Space>
             ),
-            width: 140,
+            width: isMobile ? 60 : 140,
         }
     ];
 
     return (
-        <div style={{ padding: isTablet ? 8 : 24 }}>
+        <div style={{ padding: isMobile ? 4 : isTablet ? 8 : 24 }}>
             <Table
                 columns={columns}
                 dataSource={albums}
                 rowKey="id"
                 loading={loading}
                 pagination={false}
-                size={isTablet ? "small" : "middle"}
-                scroll={isTablet ? { x: 400 } : undefined}
-                style={{ background: "#181d36" }}
+                size={isMobile ? "small" : isTablet ? "small" : "middle"}
+                scroll={isMobile ? { x: 480 } : isTablet ? { x: 400 } : undefined}
+                style={{ background: "#181d36", minWidth: isMobile ? 480 : isTablet ? 400 : undefined }}
                 locale={{ emptyText: t('no_data') }}
             />
         </div>
     );
-} 
+}

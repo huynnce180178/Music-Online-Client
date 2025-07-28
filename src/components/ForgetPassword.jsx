@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Form, Input, Button, Typography, Modal } from "antd";
 import axios from "axios";
 import PropTypes from "prop-types";
@@ -7,22 +7,9 @@ import BASE_API_URL from "../services/base.api.url";
 
 const { Title } = Typography;
 
-// Responsive hook
-function useIsMobile() {
-    const [isMobile, setIsMobile] = useState(false);
-    useEffect(() => {
-        const check = () => setIsMobile(window.innerWidth < 768);
-        check();
-        window.addEventListener('resize', check);
-        return () => window.removeEventListener('resize', check);
-    }, []);
-    return isMobile;
-}
-
 export default function ForgetPassword({ onBackToLogin, onShowReset }) {
     const { t } = useTranslation();
     const [loading, setLoading] = useState(false);
-    const isMobile = useIsMobile();
 
     const handleSubmit = async (values) => {
         setLoading(true);
@@ -50,23 +37,19 @@ export default function ForgetPassword({ onBackToLogin, onShowReset }) {
 
     return (
         <div style={{
-            minHeight: isMobile ? 280 : 320,
+            minHeight: 320,
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
             justifyContent: "center",
-            padding: isMobile ? "16px" : 24,
+            padding: 24,
             background: "#fff",
-            borderRadius: isMobile ? 12 : 16,
+            borderRadius: 16,
             boxShadow: "0 4px 24px rgba(33,168,197,0.08)",
-            maxWidth: isMobile ? "90vw" : 400,
-            margin: isMobile ? "20px auto" : "40px auto"
+            maxWidth: 400,
+            margin: "40px auto"
         }}>
-            <Title level={isMobile ? 4 : 3} style={{ 
-                color: "#21A8C5", 
-                marginBottom: isMobile ? 16 : 24,
-                fontSize: isMobile ? 20 : 24
-            }}>{t('forgot_password.title')}</Title>
+            <Title level={3} style={{ color: "#21A8C5", marginBottom: 24 }}>{t('forgot_password.title')}</Title>
             <Form layout="vertical" onFinish={handleSubmit} style={{ width: "100%" }}>
                 <Form.Item
                     name="email"
@@ -89,8 +72,7 @@ export default function ForgetPassword({ onBackToLogin, onShowReset }) {
                             fontWeight: 700,
                             background: 'linear-gradient(90deg, #39C6E5 0%, #21A8C5 100%)',
                             border: 'none',
-                            fontSize: isMobile ? 16 : 18,
-                            height: isMobile ? 44 : 48,
+                            fontSize: 18,
                         }}
                     >
                         {t('forgot_password.send_reset_email')}

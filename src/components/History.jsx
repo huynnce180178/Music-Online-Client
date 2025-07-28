@@ -126,7 +126,7 @@ export default function History() {
                         <div className="col-12 text-center text-light">Loading...</div>
                     ) : histories.length === 0 ? (
                         <div className="col-12 text-center mt-4">
-                            <span className="material-icons" style={{ fontSize: 42, color: "#bbb" }}>history</span>
+                            <i className="bi bi-clock-history" style={{ fontSize: 42, color: "#bbb" }}></i>
                             <p style={{ color: "#ccc", fontSize: 18, marginTop: 12 }}>
                                 {t('history.empty')}
                             </p>

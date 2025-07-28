@@ -158,25 +158,12 @@ export default function SearchResult() {
     }
 
     return (
-        <div style={{ 
-            color: "#fff", 
-            background: "#181c2b", 
-            padding: window.innerWidth < 768 ? "20px 16px" : "40px 60px" 
-        }}>
+        <div style={{ color: "#fff", background: "#181c2b", padding: "40px 60px" }}>
             {/* Top result + Songs */}
-            <div style={{ 
-                display: "flex", 
-                gap: window.innerWidth < 768 ? 20 : 40, 
-                marginBottom: 40,
-                flexDirection: window.innerWidth < 768 ? "column" : "row"
-            }}>
+            <div style={{ display: "flex", gap: 40, marginBottom: 40 }}>
                 {/* Top Result */}
-                <div style={{ flex: window.innerWidth < 768 ? "none" : 4 }}>
-                    <h2 style={{ 
-                        fontSize: window.innerWidth < 768 ? 24 : 28, 
-                        marginBottom: 25, 
-                        color: "#3ed8ff" 
-                    }}>{t('search.topResult')}</h2>
+                <div style={{ flex: 4 }}>
+                    <h2 style={{ fontSize: 28, marginBottom: 25, color: "#3ed8ff" }}>{t('search.topResult')}</h2>
                     {localTopResult.type === "Song" ? (
                         // Card Song giữ nguyên như cũ
                         <div
@@ -188,7 +175,7 @@ export default function SearchResult() {
                                 overflow: "hidden",
                                 background: "#23283e",
                                 boxShadow: "0 4px 24px #3ed8ff22",
-                                height: window.innerWidth < 768 ? 200 : 300,
+                                height: 300,
                                 display: "flex",
                                 flexDirection: "column",
                                 justifyContent: "flex-end",
@@ -227,19 +214,14 @@ export default function SearchResult() {
                                     zIndex: 2,
                                     color: "#fff",
                                     fontWeight: 700,
-                                    fontSize: window.innerWidth < 768 ? 16 : 20,
+                                    fontSize: 20,
                                     fontFamily: "'Quicksand', 'Montserrat', sans-serif",
                                     textShadow: "0 2px 8px #181f2a88",
-                                    padding: window.innerWidth < 768 ? "12px" : "16px",
+                                    padding: "16px",
                                 }}
                             >
                                 {localTopResult.songName}
-                                <div style={{ 
-                                    fontWeight: 400, 
-                                    fontSize: window.innerWidth < 768 ? 11 : 13, 
-                                    color: "#8ca0c6", 
-                                    marginTop: 4 
-                                }}>
+                                <div style={{ fontWeight: 400, fontSize: 13, color: "#8ca0c6", marginTop: 4 }}>
                                     {t('search.song')} · {localTopResult.artistName}
                                 </div>
                             </div>
@@ -252,8 +234,8 @@ export default function SearchResult() {
                                 borderRadius: 24,
                                 overflow: "hidden",
                                 width: "100%",
-                                height: window.innerWidth < 768 ? 200 : 320,
-                                minHeight: window.innerWidth < 768 ? 200 : 320,
+                                height: 320,
+                                minHeight: 320,
                                 background: "#23283e",
                                 boxShadow: "0 8px 40px #1a225566",
                                 cursor: "pointer",
@@ -283,7 +265,7 @@ export default function SearchResult() {
                                     left: 0,
                                     right: 0,
                                     bottom: 0,
-                                    height: window.innerWidth < 768 ? 80 : 110,
+                                    height: 110,
                                     background: "linear-gradient(0deg, rgba(18,21,34,0.92) 85%, rgba(18,21,34,0.08) 100%)",
                                     zIndex: 1,
                                     pointerEvents: "none",
@@ -298,7 +280,7 @@ export default function SearchResult() {
                                     bottom: 0,
                                     zIndex: 2,
                                     width: "100%",
-                                    padding: window.innerWidth < 768 ? "12px 16px 8px 16px" : "22px 38px 18px 38px",
+                                    padding: "22px 38px 18px 38px",
                                     color: "#fff",
                                     textAlign: "center",
                                     pointerEvents: "none",
@@ -307,14 +289,14 @@ export default function SearchResult() {
                             >
                                 <div style={{
                                     fontWeight: 700,
-                                    fontSize: window.innerWidth < 768 ? 20 : 30,
-                                    marginBottom: window.innerWidth < 768 ? 5 : 10,
+                                    fontSize: 30,
+                                    marginBottom: 10,
                                     textShadow: "0 3px 18px #181c2bcc, 0 1px 4px #23283eaa"
                                 }}>
                                     {localTopResult.artistName}
                                 </div>
                                 <div style={{
-                                    fontSize: window.innerWidth < 768 ? 12 : 17,
+                                    fontSize: 17,
                                     fontWeight: 400,
                                     maxWidth: 600,
                                     margin: "0 auto",
@@ -326,15 +308,15 @@ export default function SearchResult() {
                             </div>
                         </div>
                     ) : localTopResult.type === "Album" ? (
-                        // CARD ALBUM mới
+                        // CARD ALBUM
                         <div
                             style={{
                                 position: "relative",
                                 borderRadius: 24,
                                 overflow: "hidden",
                                 width: "100%",
-                                height: window.innerWidth < 768 ? 200 : 320,
-                                minHeight: window.innerWidth < 768 ? 200 : 320,
+                                height: 320,
+                                minHeight: 320,
                                 background: "#23283e",
                                 boxShadow: "0 8px 40px #1a225566",
                                 cursor: "pointer",
@@ -383,7 +365,7 @@ export default function SearchResult() {
                                     {localTopResult.albumName}
                                 </div>
                                 <div style={{
-                                    fontSize: window.innerWidth < 768 ? 12 : 16,
+                                    fontSize: 16,
                                     color: "#e5ebfa",
                                     fontWeight: 400,
                                     marginBottom: 3,
@@ -397,12 +379,8 @@ export default function SearchResult() {
                 </div>
 
                 {/* Songs */}
-                <div style={{ flex: window.innerWidth < 768 ? "none" : 6 }}>
-                    <h2 style={{ 
-                        fontSize: window.innerWidth < 768 ? 24 : 28, 
-                        marginBottom: 25, 
-                        color: "#3ed8ff" 
-                    }}>{t('search.songs')}</h2>
+                <div style={{ flex: 6 }}>
+                    <h2 style={{ fontSize: 28, marginBottom: 25, color: "#3ed8ff" }}>{t('search.songs')}</h2>
                     <div
                         style={{
                             maxHeight: 300,
@@ -449,11 +427,7 @@ export default function SearchResult() {
             {/* Featuring */}
             {localFeaturing.length > 0 && (
                 <div style={{ position: "relative", marginTop: 40 }}>
-                    <h2 style={{ 
-                        fontSize: window.innerWidth < 768 ? 24 : 28, 
-                        marginBottom: 25, 
-                        color: "#3ed8ff" 
-                    }}>{t('search.featuring')}</h2>
+                    <h2 style={{ fontSize: 28, marginBottom: 25, color: "#3ed8ff" }}>{t('search.featuring')}</h2>
                     <button
                         onClick={() => setStartIdx((idx) => Math.max(idx - visibleCount, 0))}
                         disabled={startIdx === 0}

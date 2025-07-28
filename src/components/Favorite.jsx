@@ -88,7 +88,7 @@ export default function Favorite() {
                     </div>
                 ) : favorites.length === 0 ? (
                     <div className="col-12 text-center mt-4 mb-5" style={{ minHeight: '100%' }}>
-                        <span className="material-icons" style={{ fontSize: 42, color: "#bbb" }}>favorite_border</span>
+                        <i className="bi bi-heart" style={{ fontSize: 42, color: "#bbb" }}></i>
                         <p style={{ color: "#ccc", fontSize: 18, marginTop: 12 }}>
                             {t('favorites.no_favorites')}
                         </p>

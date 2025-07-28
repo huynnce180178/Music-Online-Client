@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import { Table, Button, Space, Image, message, Grid } from "antd";
-import { ReloadOutlined } from "@ant-design/icons";
+import { Table, Image, message, Grid } from "antd";
 import axios from "axios";
 import { useTranslation } from 'react-i18next';
 import BASE_API_URL from "../../../services/base.api.url";
@@ -43,27 +42,23 @@ export default function ArtistPendingAlbums() {
     };
     useEffect(() => { fetchAlbums(); }, []);
 
-    const handleRequestRestore = async (albumId) => {
-        try {
-            await axios.post(
-                `${BASE_API_URL}/artist/album/${albumId}/request-restore`,
-                {},
-                config
-            );
-            message.success("Restore request sent!");
-            fetchAlbums();
-        } catch {
-            message.error("Failed to send restore request!");
-        }
-    };
 
     const columns = [
+
         {
             title: t('index'),
             key: "index",
             align: "center",
             width: 50,
             render: (text, record, index) => index + 1,
+        },
+        {
+            title: t('cover'),
+            dataIndex: "coverImageUrl",
+            key: "coverImageUrl",
+            render: url => url && <Image src={url} width={isTablet ? 40 : 60} height={isTablet ? 40 : 60} style={{ objectFit: "cover", borderRadius: 8 }} />,
+            width: isTablet ? 50 : 80,
+            align: "center",
         },
         {
             title: t('album_name'),
@@ -120,31 +115,8 @@ export default function ArtistPendingAlbums() {
                 );
             }
         },
-        {
-            title: t('cover'),
-            dataIndex: "coverImageUrl",
-            key: "coverImageUrl",
-            render: url => url && <Image src={url} width={isTablet ? 40 : 60} height={isTablet ? 40 : 60} style={{ objectFit: "cover", borderRadius: 8 }} />,
-            width: isTablet ? 50 : 80,
-            align: "center",
-        },
-        {
-            title: t('actions'),
-            align: "center",
-            key: "action",
-            render: (_, album) => (
-                <Space>
-                    <Button
-                        type="dashed"
-                        icon={<ReloadOutlined />}
-                        onClick={() => handleRequestRestore(album.id)}
-                    >
-                        {t('request_restore')}
-                    </Button>
-                </Space>
-            ),
-            width: 140,
-        }
+
+
     ];
 
     return (
@@ -162,4 +134,4 @@ export default function ArtistPendingAlbums() {
             />
         </div>
     );
-} 
+}

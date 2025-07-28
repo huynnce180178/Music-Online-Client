@@ -14,7 +14,6 @@ import {
     Empty,
     Tooltip,
     Popconfirm,
-    message,
 } from "antd";
 import {
     FiUser,
@@ -23,7 +22,6 @@ import {
     FiLogOut,
     FiBell,
     FiMenu,
-    FiHome,
     FiVolume2,
     FiArrowLeft,
 } from "react-icons/fi";
@@ -184,10 +182,10 @@ function NotificationDropdown() {
                                             <Tooltip title="Mark as read" key="mark">
                                                 <Button
                                                     type="text"
-                                                    icon={<CheckCircleOutlined style={{ color: "#3ed8ff", fontSize: 20 }} />}
-                                                    size="middle"
+                                                    icon={<CheckCircleOutlined style={{ color: "#3ed8ff", fontSize: 18 }} />}
+                                                    size="small"
                                                     onClick={() => handleMarkAsRead(item.id)}
-                                                    style={{ borderRadius: 12, minWidth: 40, minHeight: 40 }}
+                                                    style={{ borderRadius: 12 }}
                                                 />
                                             </Tooltip>
                                         ),
@@ -195,9 +193,9 @@ function NotificationDropdown() {
                                             <Button
                                                 type="text"
                                                 danger
-                                                icon={<DeleteOutlined style={{ fontSize: 18 }} />}
-                                                size="middle"
-                                                style={{ borderRadius: 12, minWidth: 40, minHeight: 40 }}
+                                                icon={<DeleteOutlined />}
+                                                size="small"
+                                                style={{ borderRadius: 12 }}
                                                 onClick={() => handleDelete(item.id)}
                                             />
                                         </Tooltip>
@@ -266,11 +264,11 @@ export default function ArtistLayout({ children }) {
     const navigate = useNavigate();
     const screens = useBreakpoint();
     const isMobile = !screens.md;
+    const isTablet = screens.md && !screens.lg;
 
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [collapsed, setCollapsed] = useState(false);
     const [showProfile, setShowProfile] = useState(false);
-    const [isLoading, setIsLoading] = useState(true);
 
     // State cho switch role
     const [showRoleModal, setShowRoleModal] = useState(false);
@@ -286,11 +284,7 @@ export default function ArtistLayout({ children }) {
         const roles = JSON.parse(localStorage.getItem("roles") || "[]");
         setRoles(roles);
         if (!roles.includes("ROLE_ARTIST")) {
-            // Show a message before redirecting
-            message.error("You need to be logged in as an artist to access this page.");
             navigate("/");
-        } else {
-            setIsLoading(false);
         }
     }, [navigate]);
 
@@ -336,11 +330,7 @@ export default function ArtistLayout({ children }) {
     };
 
     const menuItems = [
-        {
-            key: "/artist",
-            icon: <FiHome />,
-            label: <Link to="/artist" style={{ textDecoration: "none" }}>{t('sidebar.dashboard')}</Link>,
-        },
+
         {
             label: t('sidebar.song'),
             key: "artist-song-management",
@@ -386,20 +376,20 @@ export default function ArtistLayout({ children }) {
         <>
             <div
                 style={{
-                    height: 64,
+                    height: isMobile ? 48 : 64,
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    marginBottom: 16,
+                    marginBottom: isMobile ? 8 : 16,
                 }}
             >
                 <Avatar
-                    size={48}
+                    size={isMobile ? 36 : 48}
                     style={{
                         background: "linear-gradient(135deg, #3ed8ff 60%, #38bdf8 100%)",
                         color: "#181d36",
                         fontWeight: "bold",
-                        fontSize: 28,
+                        fontSize: isMobile ? 20 : 28,
                         cursor: "pointer"
                     }}
                     onClick={() => navigate("/")}
@@ -408,14 +398,15 @@ export default function ArtistLayout({ children }) {
                 </Avatar>
             </div>
             <Title
-                level={4}
+                level={isMobile ? 5 : 4}
                 style={{
                     color: "#3ed8ff",
                     textAlign: "center",
-                    marginBottom: 24,
+                    marginBottom: isMobile ? 12 : 24,
                     fontWeight: 700,
                     letterSpacing: 1,
-                    cursor: "pointer"
+                    cursor: "pointer",
+                    fontSize: isMobile ? 18 : undefined,
                 }}
                 onClick={() => navigate("/")}
             >
@@ -425,7 +416,11 @@ export default function ArtistLayout({ children }) {
                 theme="dark"
                 mode="inline"
                 selectedKeys={[location.pathname]}
-                style={{ background: "transparent", fontWeight: 600 }}
+                style={{
+                    background: "transparent",
+                    fontWeight: 600,
+                    fontSize: isMobile ? 14 : 16,
+                }}
                 onClick={({ key }) => {
                     if (key.startsWith("/artist")) navigate(key);
                     if (isMobile) setDrawerOpen(false);
@@ -444,34 +439,30 @@ export default function ArtistLayout({ children }) {
                 .ant-menu-dark .ant-menu-item-selected a {
                     color: #181c2b !important;
                 }
+                @media (max-width: 768px) {
+                    .ant-menu-dark .ant-menu-item,
+                    .ant-menu-dark .ant-menu-submenu-title {
+                        font-size: 14px !important;
+                        padding: 0 12px !important;
+                    }
+                }
             `}</style>
         </>
     );
 
-    if (isLoading) {
-        return (
-            <div style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                minHeight: "100vh",
-                background: "#181c2b",
-                color: "#3ed8ff"
-            }}>
-                <Spin size="large" />
-            </div>
-        );
-    }
-
     return (
-        <Layout style={{ minHeight: "100vh", background: "#181c2b" }}>
+        <Layout style={{
+            minHeight: "100vh",
+            background: "#181c2b",
+            overflow: "hidden",
+        }}>
             {!isMobile && (
                 <Sider
                     collapsible
                     collapsed={collapsed}
                     onCollapse={setCollapsed}
-                    width={220}
-                    collapsedWidth={80}
+                    width={isTablet ? 160 : 220}
+                    collapsedWidth={isTablet ? 60 : 80}
                     style={{
                         background: "#181c2b",
                         boxShadow: "4px 0 24px 0 #3ed8ff22",
@@ -485,6 +476,7 @@ export default function ArtistLayout({ children }) {
                         padding: 0,
                         overflowY: "auto",
                         overflowX: "hidden",
+                        transition: "width 0.3s",
                     }}
                 >
                     {sidebarContent}
@@ -496,19 +488,26 @@ export default function ArtistLayout({ children }) {
                 closable={false}
                 onClose={() => setDrawerOpen(false)}
                 open={drawerOpen}
-                styles={{ body: { padding: 0, background: "#181c2b", overflowY: "auto", overflowX: "hidden" } }}
-                width={220}
+                styles={{
+                    body: {
+                        padding: 0,
+                        background: "#181c2b",
+                        overflowY: "auto",
+                        overflowX: "hidden"
+                    }
+                }}
+                width={isMobile ? 180 : 220}
             >
                 {sidebarContent}
             </Drawer>
 
             <Layout
                 style={{
-                    marginLeft: !isMobile ? (collapsed ? 80 : 220) : 0,
-                    background: "#181c2b", // Đảm bảo nền tối phủ kín
+                    marginLeft: !isMobile ? (collapsed ? (isTablet ? 60 : 80) : (isTablet ? 160 : 220)) : 0,
+                    background: "#181c2b",
                     minHeight: "100vh",
                     transition: "margin-left 0.3s",
-                    padding: 0, // Không padding/margin dư
+                    padding: 0,
                 }}
             >
                 <Header
@@ -518,51 +517,43 @@ export default function ArtistLayout({ children }) {
                         display: "flex",
                         justifyContent: "space-between",
                         alignItems: "center",
-                        padding: "0 32px",
-                        height: 64,
+                        padding: isMobile ? "0 12px" : isTablet ? "0 18px" : "0 32px",
+                        height: isMobile ? 52 : 64,
                         position: "sticky",
                         top: 0,
                         zIndex: 10,
                     }}
                 >
-                    <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: isMobile ? 8 : 16 }}>
                         {isMobile && (
                             <Button
                                 type="text"
-                                icon={<FiMenu size={24} />}
-                                style={{ 
-                                    color: "#3ed8ff",
-                                    minWidth: 44,
-                                    minHeight: 44,
-                                    display: "flex",
-                                    alignItems: "center",
-                                    justifyContent: "center"
-                                }}
+                                icon={<FiMenu size={isMobile ? 18 : 22} />}
+                                style={{ color: "#3ed8ff" }}
                                 onClick={() => setDrawerOpen(true)}
                             />
                         )}
                         <Button
                             type="text"
-                            icon={<FiArrowLeft size={22} />}
+                            icon={<FiArrowLeft size={isMobile ? 16 : 20} />}
                             onClick={() => navigate("/")}
                             style={{
                                 color: "#3ed8ff",
                                 fontWeight: 600,
-                                fontSize: 16,
+                                fontSize: isMobile ? 13 : 16,
                                 display: "flex",
                                 alignItems: "center",
                                 gap: 8,
                                 background: "rgba(62,216,255,0.1)",
                                 borderRadius: 20,
-                                padding: "0 16px",
-                                height: 44,
-                                minWidth: 44
+                                padding: isMobile ? "0 8px" : "0 16px",
+                                height: isMobile ? 32 : 40,
                             }}
                         >
                             {!isMobile && t('sidebar.back_to_homepage')}
                         </Button>
                     </div>
-                    <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: isMobile ? 6 : 12 }}>
                         {/* NÚT ĐỔI NGÔN NGỮ */}
                         <Dropdown
                             menu={{
@@ -580,8 +571,10 @@ export default function ArtistLayout({ children }) {
                                     background: '#232b3e',
                                     color: '#fff',
                                     border: 'none',
-                                    minWidth: 44,
+                                    minWidth: isMobile ? 32 : 44,
                                     fontWeight: 500,
+                                    fontSize: isMobile ? 13 : 15,
+                                    padding: isMobile ? "0 6px" : "0 12px",
                                 }}
                                 aria-label={t('languages')}
                             >
@@ -597,24 +590,27 @@ export default function ArtistLayout({ children }) {
                                 style={{
                                     display: "flex",
                                     alignItems: "center",
-                                    gap: 10,
+                                    gap: isMobile ? 6 : 10,
                                     color: "#fff",
                                     fontWeight: 600,
-                                    fontSize: 16,
+                                    fontSize: isMobile ? 13 : 16,
                                     background: "none",
+                                    padding: isMobile ? "0 4px" : undefined,
                                 }}
                             >
                                 <Avatar
-                                    size={36}
+                                    size={isMobile ? 28 : 36}
                                     style={{
                                         background: "#3ed8ff",
                                         color: "#181d36",
                                         fontWeight: 700,
-                                        fontSize: 20,
+                                        fontSize: isMobile ? 15 : 20,
                                     }}
                                     icon={<FiUser />}
                                 />
-                                <span>{localStorage.getItem("userName") || "Artist"}</span>
+                                <span style={{ display: isMobile ? "none" : "inline" }}>
+                                    {localStorage.getItem("userName") || "Artist"}
+                                </span>
                             </Button>
                         </Dropdown>
                     </div>
@@ -622,10 +618,12 @@ export default function ArtistLayout({ children }) {
 
                 <Content
                     style={{
-                        padding: isMobile ? "16px" : 30,
+                        padding: isMobile ? 10 : isTablet ? 18 : 30,
                         background: "#101426",
-                        minHeight: "calc(100vh - 64px - 48px)",
+                        minHeight: `calc(100vh - ${isMobile ? 52 : 64}px - 48px)`,
                         boxShadow: "0 4px 24px 0 rgba(62,216,255,0.08)",
+                        borderRadius: isMobile ? 0 : 18,
+                        transition: "padding 0.3s",
                     }}
                 >
                     {children || <Outlet />}
@@ -639,7 +637,7 @@ export default function ArtistLayout({ children }) {
                     title={
                         <span style={{
                             fontWeight: 800,
-                            fontSize: 22,
+                            fontSize: isMobile ? 18 : 22,
                             color: "#3ed8ff",
                             letterSpacing: 0.5,
                             textAlign: "center",
@@ -648,43 +646,43 @@ export default function ArtistLayout({ children }) {
                             {t('role.select_your_role')}
                         </span>
                     }
-                    styles={{ body: { padding: "32px 24px" } }}
+                    styles={{ body: { padding: isMobile ? "18px 8px" : "32px 24px" } }}
                 >
                     <div
                         style={{
                             display: "flex",
                             flexWrap: "wrap",
-                            gap: 24,
+                            gap: isMobile ? 12 : 24,
                             justifyContent: "center",
                             alignItems: "center",
-                            minHeight: 120,
+                            minHeight: isMobile ? 60 : 120,
                         }}
                     >
                         {roles.map(role => {
                             let icon, color, label;
                             switch (role) {
                                 case "ROLE_ADMIN":
-                                    icon = <FiUser size={32} color="#ff416c" />;
+                                    icon = <FiUser size={isMobile ? 22 : 32} color="#ff416c" />;
                                     color = "linear-gradient(135deg, #ff416c 60%, #ff4b2b 100%)";
                                     label = t('role.admin');
                                     break;
                                 case "ROLE_ARTIST":
-                                    icon = <FiMusic size={32} color="#3ed8ff" />;
+                                    icon = <FiMusic size={isMobile ? 22 : 32} color="#3ed8ff" />;
                                     color = "linear-gradient(135deg, #3ed8ff 60%, #1fa2ff 100%)";
                                     label = t('role.artist');
                                     break;
                                 case "ROLE_USER":
-                                    icon = <FiUser size={32} color="#21A8C5" />;
+                                    icon = <FiUser size={isMobile ? 22 : 32} color="#21A8C5" />;
                                     color = "linear-gradient(135deg, #21A8C5 60%, #39C6E5 100%)";
                                     label = t('role.user');
                                     break;
                                 case "ROLE_PREMIUM":
-                                    icon = <CheckCircleOutlined style={{ fontSize: 32, color: "#FFD700" }} />;
+                                    icon = <CheckCircleOutlined style={{ fontSize: isMobile ? 22 : 32, color: "#FFD700" }} />;
                                     color = "linear-gradient(135deg, #FFD700 60%, #CD9B1D 100%)";
                                     label = t('role.premium');
                                     break;
                                 default:
-                                    icon = <FiUser size={32} color="#8ca0c6" />;
+                                    icon = <FiUser size={isMobile ? 22 : 32} color="#8ca0c6" />;
                                     color = "linear-gradient(135deg, #8ca0c6 60%, #232b3e 100%)";
                                     label = role.replace("ROLE_", "");
                             }
@@ -692,19 +690,19 @@ export default function ArtistLayout({ children }) {
                                 <div
                                     key={role}
                                     style={{
-                                        minWidth: 140,
-                                        maxWidth: 180,
+                                        minWidth: isMobile ? 90 : 140,
+                                        maxWidth: isMobile ? 120 : 180,
                                         background: color,
                                         borderRadius: 18,
                                         boxShadow: "0 4px 24px #3ed8ff22",
-                                        padding: "24px 18px",
+                                        padding: isMobile ? "12px 8px" : "24px 18px",
                                         display: "flex",
                                         flexDirection: "column",
                                         alignItems: "center",
                                         cursor: "pointer",
                                         transition: "transform 0.18s, box-shadow 0.18s, background 0.18s",
                                         fontWeight: 700,
-                                        fontSize: 18,
+                                        fontSize: isMobile ? 14 : 18,
                                         color: "#fff",
                                         position: "relative",
                                     }}
@@ -714,9 +712,9 @@ export default function ArtistLayout({ children }) {
                                 >
                                     {icon}
                                     <span style={{
-                                        marginTop: 14,
+                                        marginTop: isMobile ? 8 : 14,
                                         fontWeight: 800,
-                                        fontSize: 18,
+                                        fontSize: isMobile ? 14 : 18,
                                         letterSpacing: 0.5,
                                         textShadow: "0 2px 8px #181f2a88"
                                     }}>

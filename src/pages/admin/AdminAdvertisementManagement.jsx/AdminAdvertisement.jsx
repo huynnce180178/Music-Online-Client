@@ -346,7 +346,7 @@ export default function AdminAdvertisement() {
                         label={t('admin_ad.start_date')}
                         rules={[{ required: true, message: t('admin_ad.please_select_start_date') }]}
                     >
-                        <DatePicker style={{ width: "100%" }} disabledDate={d => d < dayjs().startOf("day")}/>
+                        <DatePicker style={{ width: "100%" }} disabledDate={d => d < dayjs().startOf("day")} />
                     </Form.Item>
                     <Form.Item
                         name="endDate"
@@ -371,7 +371,7 @@ export default function AdminAdvertisement() {
                             }),
                         ]}
                     >
-                        <DatePicker style={{ width: "100%" }} disabledDate={d => d < dayjs().startOf("day")}/>
+                        <DatePicker style={{ width: "100%" }} disabledDate={d => d < dayjs().startOf("day")} />
                     </Form.Item>
                     <Form.Item
                         name="mediaFile"

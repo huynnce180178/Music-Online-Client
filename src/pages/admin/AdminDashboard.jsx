@@ -17,29 +17,29 @@ const { RangePicker } = DatePicker;
 const { Title, Text } = Typography;
 
 const COLORS = [
-  "#00eaff", "#ffe066", "#40c4ff", "#00e676", "#ff1744", "#b388ff", "#ff9800", "#ff80ab"
+    "#00eaff", "#ffe066", "#40c4ff", "#00e676", "#ff1744", "#b388ff", "#ff9800", "#ff80ab"
 ];
 
 // Custom label cho PieChart
 const renderCustomLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, index, value }) => {
-  const RADIAN = Math.PI / 180;
-  const radius = innerRadius + (outerRadius - innerRadius) * 1.15;
-  const x = cx + radius * Math.cos(-midAngle * RADIAN);
-  const y = cy + radius * Math.sin(-midAngle * RADIAN);
-  return (
-    <text
-      x={x}
-      y={y}
-      fill="#ffffff"
-      fontWeight="bold"
-      fontSize={14}
-      textAnchor={x > cx ? "start" : "end"}
-      dominantBaseline="central"
-      style={{ textShadow: "0 1px 8px #101426" }}
-    >
-      {value}
-    </text>
-  );
+    const RADIAN = Math.PI / 180;
+    const radius = innerRadius + (outerRadius - innerRadius) * 1.15;
+    const x = cx + radius * Math.cos(-midAngle * RADIAN);
+    const y = cy + radius * Math.sin(-midAngle * RADIAN);
+    return (
+        <text
+            x={x}
+            y={y}
+            fill="#ffffff"
+            fontWeight="bold"
+            fontSize={14}
+            textAnchor={x > cx ? "start" : "end"}
+            dominantBaseline="central"
+            style={{ textShadow: "0 1px 8px #101426" }}
+        >
+            {value}
+        </text>
+    );
 };
 
 export default function AdminDashboard() {

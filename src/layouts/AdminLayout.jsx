@@ -5,8 +5,7 @@ import {
     Dropdown,
     Button,
     Typography,
-    message,
-    Spin,
+
     Drawer,
     Grid,
     Modal,
@@ -49,7 +48,6 @@ export default function AdminLayout({ children }) {
     const [showRoleModal, setShowRoleModal] = useState(false);
     const [roles, setRoles] = useState([]);
     const [openKeys, setOpenKeys] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         // Đừng tự động set openKeys khi chuyển route, chỉ set openKeys mặc định khi lần đầu vào trang
@@ -78,12 +76,8 @@ export default function AdminLayout({ children }) {
 
     useEffect(() => {
         const roles = JSON.parse(localStorage.getItem("roles") || "[]");
-        setRoles(roles);
         if (!roles.includes("ROLE_ADMIN")) {
-            message.error("You need to be logged in as an admin to access this page.");
             navigate("/");
-        } else {
-            setIsLoading(false);
         }
     }, [navigate]);
 
@@ -273,21 +267,6 @@ export default function AdminLayout({ children }) {
         </>
     );
 
-    if (isLoading) {
-        return (
-            <div style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                minHeight: "100vh",
-                background: "#181c2b",
-                color: "#3ed8ff"
-            }}>
-                <Spin size="large" />
-            </div>
-        );
-    }
-
     return (
         <Layout style={{ minHeight: "100vh", background: "#181c2b" }}>
             {!isMobile && (
@@ -437,7 +416,7 @@ export default function AdminLayout({ children }) {
                 </Header>
                 <Content
                     style={{
-                        padding: isMobile ? "16px" : 30,
+                        padding: 30,
                         background: "#101426",
                         minHeight: "calc(100vh - 64px - 48px)",
                         boxShadow: "0 4px 24px 0 rgba(62,216,255,0.08)",
