@@ -20,6 +20,7 @@ export default function ArtistRejectedAdvertisements() {
     const [renewForm] = Form.useForm();
     const screens = useBreakpoint();
     const isTablet = !screens.lg;
+    const isMobile = !screens.md;
     const { t } = useTranslation();
 
     const token = localStorage.getItem("accessToken");
@@ -77,7 +78,7 @@ export default function ArtistRejectedAdvertisements() {
     const handleRenew = async (values) => {
         try {
             await axios.post(
-                `${BASE_API_URL}/artist/advertisements/renew/${renewModal.record.id}`,
+                `${BASE_API_URL}/api/v1/artist/advertisements/renew/${renewModal.record.id}`,
                 {},
                 {
                     headers: config.headers,
@@ -100,25 +101,25 @@ export default function ArtistRejectedAdvertisements() {
         {
             title: t('index'),
             align: "center",
-            width: 50,
+            width: isMobile ? 36 : isTablet ? 50 : 50,
             render: (_, __, idx) => idx + 1,
         },
         {
             title: t('artist_ad.creator'),
             dataIndex: "createdByName",
             align: "center",
-            width: 120,
+            width: isMobile ? 60 : 120,
         },
         {
             title: t('artist_ad.media'),
             dataIndex: "mediaUrl",
             align: "center",
-            width: 150,
+            width: isMobile ? 80 : 150,
             render: (url, record) =>
                 record.adType === "AUDIO" && url ? (
-                    <audio controls src={url} style={{ width: "100%" }} />
+                    <audio controls src={url} style={{ width: isMobile ? 80 : "100%" }} />
                 ) : url ? (
-                    <Image src={url} width={60} height={60} style={{ objectFit: "cover" }} />
+                    <Image src={url} width={isMobile ? 36 : 60} height={isMobile ? 36 : 60} style={{ objectFit: "cover" }} />
                 ) : "-",
         },
         {
@@ -165,14 +166,15 @@ export default function ArtistRejectedAdvertisements() {
             rowKey="id"
             loading={loading}
             pagination={false}
-            size={isTablet ? "small" : "middle"}
-            style={{ background: "#181d36" }}
+            size={isMobile ? "small" : isTablet ? "small" : "middle"}
+            scroll={isMobile ? { x: 480 } : isTablet ? { x: 800 } : undefined}
+            style={{ background: "#181d36", minWidth: isMobile ? 480 : isTablet ? 800 : undefined }}
             locale={{ emptyText: t('artist_ad.no_data') }}
         />
     );
 
     return (
-        <div style={{ padding: isTablet ? 8 : 16 }}>
+        <div style={{ padding: isMobile ? 4 : isTablet ? 8 : 16 }}>
             <Tabs
                 defaultActiveKey="AUDIO"
                 items={[

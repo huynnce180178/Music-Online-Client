@@ -12,6 +12,7 @@ export default function ArtistDeletedSongs() {
     const [loading, setLoading] = useState(false);
     const screens = useBreakpoint();
     const isTablet = !screens.lg;
+    const isMobile = !screens.md;
     const token = localStorage.getItem("accessToken");
     const config = { headers: { Authorization: `Bearer ${token}` } };
     const { t } = useTranslation();
@@ -27,26 +28,28 @@ export default function ArtistDeletedSongs() {
         .ant-table {
             background-color: #181d36 !important;
             color: #fff !important;
-            border-radius: 14px !important;
+            border-radius: 0 !important;
             overflow: hidden;
         }
         .ant-table-thead > tr > th {
             background-color: #232b3e !important;
-            color: #3ed8ff !important;
+            color: #ffffff !important;
             border-bottom: 2px solid #3ed8ff !important;
             font-weight: 700;
             font-size: 17px;
+            border-radius: 0 !important;
         }
         .ant-table-thead > tr > th:first-child {
-            border-top-left-radius: 14px !important;
+            border-top-left-radius: 0 !important;
         }
         .ant-table-thead > tr > th:last-child {
-            border-top-right-radius: 14px !important;
+            border-top-right-radius: 0 !important;
         }
         .ant-table-tbody > tr > td {
             background-color: #181d36 !important;
             color: #fff !important;
             font-size: 16px;
+            border-radius: 0 !important;
         }
         .ant-table-tbody > tr:hover > td {
             background-color: #233554 !important;
@@ -59,7 +62,7 @@ export default function ArtistDeletedSongs() {
             filter: invert(0.7);
         }
         .ant-table-content {
-            border-radius: 14px !important;
+            border-radius: 0 !important;
         }
         `;
         document.head.appendChild(style);
@@ -111,14 +114,14 @@ export default function ArtistDeletedSongs() {
             key: "index",
             align: "center",
             render: (text, record, index) => index + 1,
-            width: 50,
+            width: isMobile ? 36 : isTablet ? 50 : 50,
         },
         {
             title: t('cover'),
             dataIndex: "profilePicUrl",
             key: "profilePicUrl",
-            render: url => url && <Image src={url} width={isTablet ? 40 : 60} height={isTablet ? 40 : 60} style={{ objectFit: "cover", borderRadius: 8 }} />,
-            width: isTablet ? 50 : 80,
+            render: url => url && <Image src={url} width={isMobile ? 28 : isTablet ? 40 : 60} height={isMobile ? 28 : isTablet ? 40 : 60} style={{ objectFit: "cover", borderRadius: 8 }} />,
+            width: isMobile ? 36 : isTablet ? 50 : 80,
             align: "center",
         },
         {
@@ -126,15 +129,15 @@ export default function ArtistDeletedSongs() {
             align: "center",
             dataIndex: "title",
             key: "title",
-            width: isTablet ? 110 : 200,
-            ellipsis: isTablet,
+            width: isMobile ? 70 : isTablet ? 110 : 200,
+            ellipsis: isTablet || isMobile,
         },
         {
             title: t('status'),
             dataIndex: "status",
             key: "status",
             align: "center",
-            width: 110,
+            width: isMobile ? 70 : 110,
             render: status => {
                 let color = "#888";
                 let bg = "#232b3e";
@@ -161,34 +164,34 @@ export default function ArtistDeletedSongs() {
             }
         },
         {
-            title: "Actions",
+            title: t('actions'),
             align: "center",
             key: "action",
             render: (_, song) => (
                 <Space>
-                    <Button icon={<EyeOutlined />} onClick={() => handleViewLyrics(song.id, song.title)} title="View lyrics" />
-                    <Button type="dashed" onClick={() => handleRequestRestore(song.id)} title="Request restore">
-                        Request Restore
+                    <Button icon={<EyeOutlined />} onClick={() => handleViewLyrics(song.id, song.title)} title={t('view_lyrics')} size={isMobile ? "small" : undefined} />
+                    <Button type="dashed" onClick={() => handleRequestRestore(song.id)} title={t('request_restore') || "Request Restore"} size={isMobile ? "small" : undefined}>
+                        {t('request_restore') || "Request Restore"}
                     </Button>
                 </Space>
             ),
-            width: 200,
+            width: isMobile ? 80 : 200,
         }
     ];
 
     return (
-        <div style={{ padding: isTablet ? 8 : 24, width: "100%", height: "100%", boxSizing: "border-box", flex: 1, display: "flex", flexDirection: "column" }}>
+        <div style={{ padding: isMobile ? 4 : isTablet ? 8 : 24, width: "100%", height: "100%", boxSizing: "border-box", flex: 1, display: "flex", flexDirection: "column" }}>
             <Table
                 columns={columns}
                 dataSource={songs}
                 rowKey="id"
                 loading={loading}
                 pagination={false}
-                size={isTablet ? "small" : "middle"}
-                scroll={isTablet ? { x: 700 } : undefined}
-                style={{ background: "#181d36", minWidth: isTablet ? 700 : undefined, width: "100%" }}
+                size={isMobile ? "small" : isTablet ? "small" : "middle"}
+                scroll={isMobile ? { x: 480 } : isTablet ? { x: 700 } : undefined}
+                style={{ background: "#181d36", minWidth: isMobile ? 480 : isTablet ? 700 : undefined, width: "100%" }}
                 locale={{ emptyText: t('no_data') }}
             />
         </div>
     );
-} 
+}

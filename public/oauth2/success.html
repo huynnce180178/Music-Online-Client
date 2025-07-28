@@ -6,11 +6,14 @@
     Processing login, please wait...
   </div>
   <script>
+    // Import BASE_API_URL
+    const BASE_API_URL = "https://music-online-backend-fjgha0e2bvevfah8.southeastasia-01.azurewebsites.net";
+
     window.onload = function () {
       const urlParams = new URLSearchParams(window.location.search);
       const provider = urlParams.get("provider") || "google";
       if (urlParams.has("oauth2")) {
-        fetch(`https://music-online-backend-fjgha0e2bvevfah8.southeastasia-01.azurewebsites.net/${provider}/oauth2-success`, {
+        fetch(`${BASE_API_URL}/${provider}/oauth2-success`, {
           method: "GET",
           credentials: "include",
         })

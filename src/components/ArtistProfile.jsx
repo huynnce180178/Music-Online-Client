@@ -29,7 +29,7 @@ export default function ArtistProfile() {
         const fetchArtistInfo = async () => {
             try {
                 const res = await axios.get(
-                    `${BASE_API_URL}/api/v1/guest/artist/${artistId}`,
+                    `${BASE_API_URL}/api/v1/user/artist/view/${artistId}`,
                     {
                         headers: {
                             Authorization: `Bearer ${localStorage.getItem("accessToken")}`
@@ -50,7 +50,7 @@ export default function ArtistProfile() {
         const fetchSongsByArtist = async () => {
             try {
                 const res = await axios.get(
-                    `${BASE_API_URL}/api/v1/guest/song/artist/${artistId}`,
+                    `${BASE_API_URL}/api/v1/user/song/artist/${artistId}`,
                     {
                         headers: {
                             Authorization: `Bearer ${localStorage.getItem("accessToken")}`
@@ -67,7 +67,7 @@ export default function ArtistProfile() {
         const fetchAlbumsByArtist = async () => {
             try {
                 const res = await axios.get(
-                    `${BASE_API_URL}/api/v1/guest/album/artist/${artistId}`,
+                    `${BASE_API_URL}/api/v1/user/albums/${artistId}`,
                     {
                         headers: {
                             Authorization: `Bearer ${localStorage.getItem("accessToken")}`
@@ -96,7 +96,7 @@ export default function ArtistProfile() {
             setLoadingAlbum(albumId);
             try {
                 // Gọi API guest hoặc user đều được, tùy rule của bạn
-                const res = await axios.get(`${BASE_API_URL}/api/v1/guest/album/${albumId}/songs`);
+                const res = await axios.get(`${BASE_API_URL}/api/v1/guest/ablum/${albumId}/songs`);
                 setAlbumSongs(prev => ({
                     ...prev,
                     [albumId]: res.data?.data || []
@@ -138,7 +138,7 @@ export default function ArtistProfile() {
     const handleSelectSong = (songId) => {
         const allSongIds = songsByArtist.map(s => s.songId || s.id);
         if (typeof playSong === "function") {
-            playSong(songId, allSongIds, "artist", artistId);
+            playSong(songId, allSongIds);
         }
     };
 
@@ -534,7 +534,7 @@ export default function ArtistProfile() {
                                                                             e.stopPropagation();
                                                                             if (typeof playSong === "function") {
                                                                                 const allIds = albumSongs[albumId].map(s => s.id || s.songId);
-                                                                                playSong(song.id || song.songId, allIds, "artist", artistId);
+                                                                                playSong(song.id || song.songId, allIds);
                                                                             }
                                                                         }}
                                                                         onMouseOver={e => {

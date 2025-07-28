@@ -124,8 +124,6 @@ export default function Footer() {
             fontSize: breakpoint === "mobile" ? 15 : 17,
             justifyContent: "center",
             transition: "background 0.2s, color 0.2s",
-            height: breakpoint === "mobile" ? 44 : 48,
-            padding: breakpoint === "mobile" ? "0 16px" : "0 20px"
         },
         input: {
             marginBottom: 10,

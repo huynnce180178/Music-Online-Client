@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useSearchParams, useLocation } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { Result, Button, Spin, Input, message } from "antd";
 import axios from "axios";
 import { useTranslation } from 'react-i18next';
@@ -8,50 +8,28 @@ import BASE_API_URL from "../services/base.api.url";
 export default function ActivateAccount() {
     const { t } = useTranslation();
     const [searchParams] = useSearchParams();
-    const location = useLocation();
     const [status, setStatus] = useState("loading");
     const [messageText, setMessageText] = useState("");
     const [email, setEmail] = useState("");
     const [resending, setResending] = useState(false);
 
     useEffect(() => {
-        // Try to get token from query parameter first, then from path parameter
-        let token = searchParams.get("token");
-        
-        // If no token in query params, try to extract from path
-        if (!token) {
-            const pathParts = location.pathname.split("/");
-            token = pathParts[pathParts.length - 1];
-        }
-        
+        const token = searchParams.get("token");
         if (!token) {
             setStatus("error");
             setMessageText("No activation token found.");
             return;
         }
-        
-        // Try both API formats
-        const tryActivation = async () => {
-            try {
-                // First try with query parameter format
-                await axios.get(`${BASE_API_URL}/api/v1/auth/activate?token=${token}`);
+        axios.get(`${BASE_API_URL}/api/v1/auth/activate/${token}`)
+            .then(() => {
                 setStatus("success");
                 setMessageText("Your account has been activated successfully!");
-            } catch (error) {
-                try {
-                    // If that fails, try with path parameter format
-                    await axios.get(`${BASE_API_URL}/api/v1/auth/activate/${token}`);
-                    setStatus("success");
-                    setMessageText("Your account has been activated successfully!");
-                } catch (secondError) {
-                    setStatus("error");
-                    setMessageText("Activation failed or token is invalid/expired.");
-                }
-            }
-        };
-        
-        tryActivation();
-    }, [searchParams, location.pathname]);
+            })
+            .catch(() => {
+                setStatus("error");
+                setMessageText("Activation failed or token is invalid/expired.");
+            });
+    }, [searchParams]);
 
     const handleResend = async () => {
         if (!email) {

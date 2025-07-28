@@ -12,6 +12,7 @@ export default function ArtistDeletedByAdminSongs() {
     const [loading, setLoading] = useState(false);
     const screens = useBreakpoint();
     const isTablet = !screens.lg;
+    const isMobile = !screens.md;
     const token = localStorage.getItem("accessToken");
     const config = { headers: { Authorization: `Bearer ${token}` } };
     const { t } = useTranslation();
@@ -26,26 +27,28 @@ export default function ArtistDeletedByAdminSongs() {
         .ant-table {
             background-color: #181d36 !important;
             color: #fff !important;
-            border-radius: 14px !important;
+            border-radius: 0 !important;
             overflow: hidden;
         }
         .ant-table-thead > tr > th {
             background-color: #232b3e !important;
-            color: #3ed8ff !important;
+            color: #ffffff !important;
             border-bottom: 2px solid #3ed8ff !important;
             font-weight: 700;
             font-size: 17px;
+            border-radius: 0 !important;
         }
         .ant-table-thead > tr > th:first-child {
-            border-top-left-radius: 14px !important;
+            border-top-left-radius: 0 !important;
         }
         .ant-table-thead > tr > th:last-child {
-            border-top-right-radius: 14px !important;
+            border-top-right-radius: 0 !important;
         }
         .ant-table-tbody > tr > td {
             background-color: #181d36 !important;
             color: #fff !important;
             font-size: 16px;
+            border-radius: 0 !important;
         }
         .ant-table-tbody > tr:hover > td {
             background-color: #233554 !important;
@@ -58,7 +61,7 @@ export default function ArtistDeletedByAdminSongs() {
             filter: invert(0.7);
         }
         .ant-table-content {
-            border-radius: 14px !important;
+            border-radius: 0 !important;
         }
         `;
         document.head.appendChild(style);
@@ -160,14 +163,14 @@ export default function ArtistDeletedByAdminSongs() {
             }
         },
         {
-            title: "Actions",
+            title: t('actions'),
             align: "center",
             key: "action",
             render: (_, song) => (
                 <Space>
-                    <Button icon={<EyeOutlined />} onClick={() => handleViewLyrics(song.id, song.title)} title="View lyrics" />
-                    <Button type="dashed" onClick={() => handleRequestRestore(song.id)} title="Request restore">
-                        Request Restore
+                    <Button icon={<EyeOutlined />} onClick={() => handleViewLyrics(song.id, song.title)} title={t('view_lyrics')} />
+                    <Button type="dashed" onClick={() => handleRequestRestore(song.id)} title={t('request_restore') || "Request Restore"}>
+                        {t('request_restore') || "Request Restore"}
                     </Button>
                 </Space>
             ),
@@ -176,18 +179,18 @@ export default function ArtistDeletedByAdminSongs() {
     ];
 
     return (
-        <div style={{ padding: isTablet ? 8 : 24, width: "100%", height: "100%", boxSizing: "border-box", flex: 1, display: "flex", flexDirection: "column" }}>
+        <div style={{ padding: isMobile ? 4 : isTablet ? 8 : 24, width: "100%", height: "100%", boxSizing: "border-box", flex: 1, display: "flex", flexDirection: "column" }}>
             <Table
                 columns={columns}
                 dataSource={songs}
                 rowKey="id"
                 loading={loading}
                 pagination={false}
-                size={isTablet ? "small" : "middle"}
-                scroll={isTablet ? { x: 700 } : undefined}
-                style={{ background: "#181d36", minWidth: isTablet ? 700 : undefined, width: "100%" }}
+                size={isMobile ? "small" : isTablet ? "small" : "middle"}
+                scroll={isMobile ? { x: 480 } : isTablet ? { x: 700 } : undefined}
+                style={{ background: "#181d36", minWidth: isMobile ? 480 : isTablet ? 700 : undefined, width: "100%" }}
                 locale={{ emptyText: t('no_data') }}
             />
         </div>
     );
-} 
+}

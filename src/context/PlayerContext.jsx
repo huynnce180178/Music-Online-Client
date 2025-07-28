@@ -80,7 +80,7 @@ export const PlayerProvider = ({ children }) => {
     };
 
     // Các hàm play, pause, next, prev...
-    const playSong = (songId, playlistData = [], contextType = null, contextId = null) => {
+    const playSong = (songId, playlistData = []) => {
         if (adPlaying) {
             toast.info("Please finish the ad before selecting another song!", { autoClose: 2000 });
             return;
@@ -88,9 +88,6 @@ export const PlayerProvider = ({ children }) => {
         setCurrentSongId(songId);
         setIsPlaying(true);
         if (playlistData.length > 0) setPlaylist(playlistData);
-        // Lưu context để biết đang ở đâu
-        setPlayType(contextType || "song");
-        setContextId(contextId);
     };
 
     const handlePlayPause = () => {
@@ -146,12 +143,12 @@ export const PlayerProvider = ({ children }) => {
         if (audioRef.current) audioRef.current.pause();
     };
 
-    const handleSelectSong = (songId, playlistData, contextType = null, contextId = null) => {
+    const handleSelectSong = (songId, playlistData) => {
         if (adPlaying) {
             toast.info("Please finish the ad before selecting another song!", { autoClose: 2000 });
             return;
         }
-        playSong(songId, playlistData, contextType, contextId);
+        playSong(songId, playlistData);
     };
 
     const resetSongCount = () => setSongCount(0);

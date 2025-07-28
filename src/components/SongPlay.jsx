@@ -149,7 +149,7 @@ function SongPlay({ sidebarWidth = 0 }) {
             const durationSec = song.duration.split(":").reduce((acc, val) => 60 * acc + +val, 0);
             if (audioRef.current.currentTime / durationSec > 0.8) {
                 setViewed(true); // đánh dấu đã cộng view bài này
-                axios.post(`/api/v1/play/song/${song.id}/update-views`, null, {
+                axios.post(`${BASE_API_URL}/api/v1/play/song/${song.id}/update-views`, null, {
                     params: { playedDuration: audioRef.current.currentTime }
                 }).catch(() => { });
             }
@@ -241,7 +241,7 @@ function SongPlay({ sidebarWidth = 0 }) {
     const fetchUserPlaylists = async () => {
         const token = localStorage.getItem("accessToken");
         try {
-            const res = await axios.get("/api/v1/user/playlist", {
+            const res = await axios.get(`${BASE_API_URL}/api/v1/user/playlist`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setUserPlaylists(res.data.data || []);
@@ -258,7 +258,7 @@ function SongPlay({ sidebarWidth = 0 }) {
         setCreatingPlaylist(true);
         try {
             const token = localStorage.getItem("accessToken");
-            await axios.post("/api/v1/user/playlist", { name: newPlaylistName }, {
+            await axios.post(`${BASE_API_URL}/api/v1/user/playlist`, { name: newPlaylistName }, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             message.success("Tạo playlist thành công!");
@@ -290,7 +290,7 @@ function SongPlay({ sidebarWidth = 0 }) {
                 return;
             }
             formData.append("imageUrl", values.image[0].originFileObj);
-            await axios.post("/api/v1/user/playlist/add", formData, {
+            await axios.post(`${BASE_API_URL}/api/v1/user/playlist/add`, formData, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     "Content-Type": "multipart/form-data"
@@ -504,7 +504,7 @@ function SongPlay({ sidebarWidth = 0 }) {
                     }
                     try {
                         const token = localStorage.getItem("accessToken");
-                        await axios.post(`/api/v1/user/playlist/add-song?playlistId=${selectedPlaylistId}&songId=${song.id}`, {}, {
+                        await axios.post(`${BASE_API_URL}/api/v1/user/playlist/add-song?playlistId=${selectedPlaylistId}&songId=${song.id}`, {}, {
                             headers: { Authorization: `Bearer ${token}` }
                         });
                         message.success(t("weekly_top_10.added_to_playlist"));

@@ -12,8 +12,7 @@ export default function AllArtists() {
     const isLoggedIn = !!localStorage.getItem("accessToken");
 
     useEffect(() => {
-        axios
-            .get(`${BASE_API_URL}/api/v1/guest/artist/listArtist?page=0&limit=100&sortBy=id&orderBy=asc`)
+        axios.get(`${BASE_API_URL}/api/v1/guest/artist/listArtist?page=0&limit=100&sortBy=id&orderBy=asc`)
             .then(res => {
                 const data = res.data?.content;
                 if (Array.isArray(data)) {

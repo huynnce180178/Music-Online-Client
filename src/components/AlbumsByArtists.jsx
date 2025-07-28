@@ -26,65 +26,18 @@ export default function AlbumsByArtists() {
     const [startIdx, setStartIdx] = useState(0);
 
     useEffect(() => {
-        // Try multiple endpoints to find the correct one
-        const endpoints = [
-            `${BASE_API_URL}/api/v1/guest/ablum/all`,
-            `${BASE_API_URL}/api/v1/guest/album/all`,
-            `${BASE_API_URL}/api/v1/guest/album/albums`,
-            `${BASE_API_URL}/api/v1/guest/ablum/albums`
-        ];
-        
-        const tryEndpoint = async (index = 0) => {
-            if (index >= endpoints.length) {
-                console.error('All album endpoints failed');
-                setAlbums([]);
-                return;
-            }
-            
-            const endpoint = endpoints[index];
-            console.log(`Trying albums endpoint ${index + 1}:`, endpoint);
-            
-            try {
-                const res = await fetch(endpoint);
-                if (!res.ok) {
-                    throw new Error(`HTTP ${res.status}`);
-                }
-                
-                const data = await res.json();
-                console.log(`Albums endpoint ${index + 1} response:`, data);
-                
-                // Check if data is an array and has content
-                if (Array.isArray(data) && data.length > 0) {
-                    const mapped = data.map(album => ({
-                        id: album.id,
-                        title: album.title,
-                        artist: album.artistName,
-                        cover: album.coverUrl || "/img/default-cover.png",
-                    }));
-                    setAlbums(mapped);
-                    console.log('Set albums successfully:', mapped.length);
-                } else if (data && Array.isArray(data.data)) {
-                    // Handle case where data is wrapped in a data property
-                    const mapped = data.data.map(album => ({
-                        id: album.id,
-                        title: album.title,
-                        artist: album.artistName,
-                        cover: album.coverUrl || "/img/default-cover.png",
-                    }));
-                    setAlbums(mapped);
-                    console.log('Set albums from data.data:', mapped.length);
-                } else {
-                    console.warn(`Albums endpoint ${index + 1} returned empty or invalid data:`, data);
-                    tryEndpoint(index + 1);
-                    return;
-                }
-            } catch (error) {
-                console.error(`Albums endpoint ${index + 1} failed:`, error.message);
-                tryEndpoint(index + 1);
-            }
-        };
-        
-        tryEndpoint();
+        fetch(`${BASE_API_URL}/api/v1/guest/ablum/all`)
+            .then(res => res.json())
+            .then(data => {
+                const mapped = data.map(album => ({
+                    id: album.id,
+                    title: album.title,
+                    artist: album.artistName,
+                    cover: album.coverUrl || "/img/default-cover.png",
+                }));
+                setAlbums(mapped);
+            })
+            .catch(() => setAlbums([]));
     }, []);
 
     useEffect(() => {

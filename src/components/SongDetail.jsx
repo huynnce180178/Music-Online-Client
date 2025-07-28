@@ -1,5 +1,5 @@
 import { useEffect, useState, useContext, useCallback } from "react";
-import { Tabs, Spin, message, Avatar, Button, Modal, Select, Input } from "antd";
+import { Tabs, Spin, message, Avatar, Button } from "antd";
 import axios from "axios";
 import PropTypes from "prop-types";
 import { PlayerContext } from "../context/PlayerContext";
@@ -7,8 +7,6 @@ import CommentTab from "./CommentTab";
 import { useNavigate } from "react-router-dom"; // Thêm import này
 import { useTranslation } from 'react-i18next';
 import BASE_API_URL from "../services/base.api.url";
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 
 export default function SongDetail({ songId, onClose }) {
     const { t } = useTranslation();
@@ -19,14 +17,6 @@ export default function SongDetail({ songId, onClose }) {
     const [loading, setLoading] = useState(true);
     const [currentTime, setCurrentTime] = useState(0);
     const [viewed, setViewed] = useState(false);
-    const [isMobile, setIsMobile] = useState(window.innerWidth <= 780);
-
-    // Add to Playlist states
-    const [addToPlaylistModal, setAddToPlaylistModal] = useState(false);
-    const [userPlaylists, setUserPlaylists] = useState([]);
-    const [selectedPlaylistId, setSelectedPlaylistId] = useState(null);
-    const [newPlaylistName, setNewPlaylistName] = useState("");
-    const [showCreatePlaylist, setShowCreatePlaylist] = useState(false);
 
     const {
         adPlaying,
@@ -249,93 +239,6 @@ export default function SongDetail({ songId, onClose }) {
         return `${min}:${sec < 10 ? "0" : ""}${sec}`;
     }, []);
 
-    // Add to Playlist functions
-    const fetchUserPlaylists = async () => {
-        try {
-            const token = localStorage.getItem("accessToken");
-            if (!token) return;
-
-            const response = await axios.get(`${BASE_API_URL}/api/v1/playlist/user`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            setUserPlaylists(response.data || []);
-        } catch (error) {
-            console.error("Error fetching playlists:", error);
-            setUserPlaylists([]);
-        }
-    };
-
-    const handleAddToPlaylist = async () => {
-        if (!selectedPlaylistId) {
-            toast.error("Please select a playlist!");
-            return;
-        }
-
-        try {
-            const token = localStorage.getItem("accessToken");
-            const response = await axios.post(
-                `${BASE_API_URL}/api/v1/playlist/${selectedPlaylistId}/songs/${songId}`,
-                {},
-                { headers: { Authorization: `Bearer ${token}` } }
-            );
-
-            if (response.status === 200) {
-                toast.success("Song added to playlist successfully!");
-                setAddToPlaylistModal(false);
-                setSelectedPlaylistId(null);
-            }
-        } catch (error) {
-            if (error.response?.status === 409) {
-                toast.error("Song already exists in this playlist!");
-            } else {
-                toast.error("Failed to add song to playlist!");
-            }
-        }
-    };
-
-    const handleCreatePlaylist = async () => {
-        if (!newPlaylistName.trim()) {
-            toast.error("Please enter a playlist name!");
-            return;
-        }
-
-        try {
-            const token = localStorage.getItem("accessToken");
-            const response = await axios.post(
-                `${BASE_API_URL}/api/v1/playlist`,
-                { name: newPlaylistName.trim() },
-                { headers: { Authorization: `Bearer ${token}` } }
-            );
-
-            if (response.status === 201) {
-                toast.success("Playlist created successfully!");
-                setNewPlaylistName("");
-                setShowCreatePlaylist(false);
-                await fetchUserPlaylists(); // Refresh playlists
-            }
-        } catch (error) {
-            toast.error("Failed to create playlist!");
-        }
-    };
-
-    // Handle window resize
-    useEffect(() => {
-        const handleResize = () => {
-            const mobile = window.innerWidth <= 780;
-            console.log('Window width:', window.innerWidth, 'Is mobile:', mobile);
-            setIsMobile(mobile);
-        };
-
-        // Call once on mount
-        handleResize();
-
-        window.addEventListener('resize', handleResize);
-        return () => window.removeEventListener('resize', handleResize);
-    }, []);
-
-    // Debug: Log current state
-    console.log('Current isMobile state:', isMobile, 'Window width:', window.innerWidth);
-
     if (loading) return <Spin style={{ margin: 40 }} />;
     if (!song) return <div style={{ padding: 40 }}>Song not found.</div>;
 
@@ -345,371 +248,13 @@ export default function SongDetail({ songId, onClose }) {
     return (
         <>
             <style>{`
-                /* Ẩn toàn bộ thanh cuộn trên desktop (giao diện lớn) */
-                .song-detail-container::-webkit-scrollbar,
-                .song-detail-content::-webkit-scrollbar,
-                .lyrics-scroll::-webkit-scrollbar,
-                *::-webkit-scrollbar {
-                    display: none !important; /* Ẩn hoàn toàn thanh cuộn cho Webkit browsers */
+                .lyrics-scroll::-webkit-scrollbar {
+                    display: none;
                 }
-                
-                .song-detail-container,
-                .song-detail-content,
-                .lyrics-scroll,
-                * {
-                    -ms-overflow-style: none !important; /* Ẩn hoàn toàn thanh cuộn cho IE và Edge */
-                    scrollbar-width: none !important; /* Ẩn hoàn toàn thanh cuộn cho Firefox */
-                }
-                
-                /* Đảm bảo tất cả element có thể cuộn nhưng không hiển thị thanh cuộn */
-                .song-detail-container {
-                    overflow: auto;
-                }
-                
-                .song-detail-content {
-                    overflow: auto;
-                }
-                
                 .lyrics-scroll {
-                    overflow-y: auto;
+                    -ms-overflow-style: none;
+                    scrollbar-width: none;
                 }
-
-                /* Kiểu cho desktop (mặc định - không có thanh cuộn) */
-                .song-detail-content {
-                    flex-direction: row;
-                }
-                
-                .song-detail-image {
-                    width: 330px;
-                    height: 330px;
-                    border-radius: 20px;
-                    margin-bottom: 32px;
-                }
-                
-                .song-detail-title {
-                    font-size: 36px;
-                }
-                
-                .artist-avatar {
-                    width: 40px !important;
-                    height: 40px !important;
-                }
-                
-                .artist-name {
-                    font-size: 18px;
-                }
-                
-                .song-detail-info {
-                    font-size: 16px;
-                    margin-bottom: 4px;
-                }
-                
-                .song-detail-controls {
-                    gap: 18px;
-                    flex-wrap: nowrap;
-                }
-                
-                .progress-container {
-                    max-width: 340px;
-                }
-                
-                .time-display {
-                    font-size: 13px;
-                }
-                
-                .song-detail-right {
-                    height: 100vh;
-                }
-                
-                .lyrics-scroll {
-                    color: #fff;
-                    white-space: pre-line;
-                    font-size: 18px;
-                    font-family: inherit;
-                    height: calc(100vh - 160px);
-                    overflow-y: auto; /* Cho phép cuộn nhưng thanh cuộn bị ẩn */
-                    padding-right: 8px;
-                    line-height: 1.6;
-                }
-                
-                .song-detail-tabs .ant-tabs-tab {
-                    font-size: 18px;
-                    padding: 12px 16px;
-                }
-                
-                .close-btn {
-                    top: 32px;
-                    right: 48px;
-                    font-size: 20px;
-                }
-                
-                .volume-slider {
-                    width: 70px;
-                }
-
-                /* Kiểu cho tablet và mobile - hiển thị thanh cuộn khi cần */
-                @media (max-width: 1024px) {
-                    .song-detail-container::-webkit-scrollbar,
-                    .song-detail-content::-webkit-scrollbar {
-                        display: block; /* Hiển thị thanh cuộn cho Webkit browsers */
-                        width: 8px;
-                    }
-                    .song-detail-container,
-                    .song-detail-content {
-                        -ms-overflow-style: auto; /* Hiển thị thanh cuộn cho IE và Edge */
-                        scrollbar-width: thin; /* Hiển thị thanh cuộn mỏng cho Firefox */
-                    }
-                    .song-detail-container::-webkit-scrollbar-thumb,
-                    .song-detail-content::-webkit-scrollbar-thumb {
-                        background-color: rgba(255, 255, 255, 0.3);
-                        border-radius: 4px;
-                    }
-                    .song-detail-container::-webkit-scrollbar-track,
-                    .song-detail-content::-webkit-scrollbar-track {
-                        background: transparent;
-                    }
-                    
-                    /* Hiển thị thanh cuộn cho lyrics trên tablet */
-                    .lyrics-scroll::-webkit-scrollbar {
-                        display: block; /* Hiển thị thanh cuộn cho Webkit browsers */
-                        width: 8px;
-                    }
-                    .lyrics-scroll {
-                        -ms-overflow-style: auto; /* Hiển thị thanh cuộn cho IE và Edge */
-                        scrollbar-width: thin; /* Hiển thị thanh cuộn mỏng cho Firefox */
-                    }
-                    .lyrics-scroll::-webkit-scrollbar-thumb {
-                        background-color: rgba(255, 255, 255, 0.3);
-                        border-radius: 4px;
-                    }
-                    .lyrics-scroll::-webkit-scrollbar-track {
-                        background: transparent;
-                    }
-
-                    .song-detail-image {
-                        width: 280px;
-                        height: 280px;
-                        border-radius: 16px;
-                        margin-bottom: 24px;
-                    }
-                    
-                    .song-detail-title {
-                        font-size: 28px;
-                    }
-                    
-                    .artist-name {
-                        font-size: 16px;
-                    }
-                    
-                    .song-detail-info {
-                        font-size: 14px;
-                    }
-                    
-                    .song-detail-controls {
-                        gap: 14px;
-                    }
-                    
-                    .progress-container {
-                        max-width: 300px;
-                    }
-                    
-                    .lyrics-scroll {
-                        font-size: 16px;
-                    }
-                    
-                    .song-detail-tabs .ant-tabs-tab {
-                        font-size: 16px;
-                    }
-                }
-
-                @media (max-width: 768px) {
-                    .song-detail-content {
-                        flex-direction: column;
-                        padding: 24px 16px 0 16px;
-                        gap: 24px;
-                        overflow-y: auto; /* Cho phép cuộn khi cần */
-                        height: 100vh;
-                    }
-                    
-                    /* Hiển thị thanh cuộn cho lyrics trên mobile */
-                    .lyrics-scroll::-webkit-scrollbar {
-                        display: block; /* Hiển thị thanh cuộn cho Webkit browsers */
-                        width: 6px;
-                    }
-                    .lyrics-scroll {
-                        -ms-overflow-style: auto; /* Hiển thị thanh cuộn cho IE và Edge */
-                        scrollbar-width: thin; /* Hiển thị thanh cuộn mỏng cho Firefox */
-                    }
-                    .lyrics-scroll::-webkit-scrollbar-thumb {
-                        background-color: rgba(255, 255, 255, 0.2);
-                        border-radius: 3px;
-                    }
-                    .lyrics-scroll::-webkit-scrollbar-track {
-                        background: transparent;
-                    }
-                    
-                    .song-detail-image {
-                        width: 200px;
-                        height: 200px;
-                        border-radius: 12px;
-                        margin-bottom: 16px;
-                    }
-                    
-                    .song-detail-title {
-                        font-size: 20px;
-                        padding: 0 8px;
-                    }
-                    
-                    .artist-avatar {
-                        width: 32px !important;
-                        height: 32px !important;
-                    }
-                    
-                    .artist-name {
-                        font-size: 14px;
-                    }
-                    
-                    .song-detail-info {
-                        font-size: 12px;
-                        padding: 0 8px;
-                    }
-                    
-                    .song-detail-controls {
-                        gap: 10px;
-                        flex-wrap: wrap;
-                        justify-content: center;
-                    }
-                    
-                    .progress-container {
-                        max-width: 280px;
-                        padding: 0 16px;
-                    }
-                    
-                    .time-display {
-                        font-size: 11px;
-                    }
-                    
-                    .song-detail-right {
-                        height: auto;
-                        min-height: 400px;
-                        flex: 1;
-                        overflow: visible;
-                    }
-                    
-                    .lyrics-scroll {
-                        font-size: 14px;
-                        height: 400px;
-                        overflow-y: auto;
-                    }
-                    
-                    .song-detail-tabs .ant-tabs-tab {
-                        font-size: 14px;
-                        padding: 8px 12px;
-                    }
-                    
-                    .close-btn {
-                        top: 16px;
-                        right: 16px;
-                        font-size: 16px;
-                    }
-                    
-                    .volume-slider {
-                        width: 50px;
-                    }
-                }
-                
-                /* Kiểu cho mobile nhỏ */
-                @media (max-width: 480px) {
-                    .song-detail-container::-webkit-scrollbar {
-                        width: 6px;
-                    }
-                    .song-detail-container::-webkit-scrollbar-thumb {
-                        background-color: rgba(255, 255, 255, 0.2);
-                    }
-                    
-                    /* Hiển thị thanh cuộn cho lyrics trên mobile nhỏ */
-                    .lyrics-scroll::-webkit-scrollbar {
-                        width: 4px;
-                    }
-                    .lyrics-scroll::-webkit-scrollbar-thumb {
-                        background-color: rgba(255, 255, 255, 0.15);
-                    }
-
-                    .song-detail-content {
-                        padding: 16px 12px 0 12px;
-                        gap: 16px;
-                        overflow-y: auto;
-                        height: 100vh;
-                    }
-                    
-                    .song-detail-image {
-                        width: 160px;
-                        height: 160px;
-                        border-radius: 10px;
-                        margin-bottom: 12px;
-                    }
-                    
-                    .song-detail-title {
-                        font-size: 18px;
-                        padding: 0 4px;
-                    }
-                    
-                    .artist-avatar {
-                        width: 28px !important;
-                        height: 28px !important;
-                    }
-                    
-                    .artist-name {
-                        font-size: 12px;
-                    }
-                    
-                    .song-detail-info {
-                        font-size: 11px;
-                        padding: 0 4px;
-                    }
-                    
-                    .song-detail-controls {
-                        gap: 8px;
-                    }
-                    
-                    .progress-container {
-                        max-width: 240px;
-                        padding: 0 12px;
-                    }
-                    
-                    .time-display {
-                        font-size: 10px;
-                    }
-                    
-                    .song-detail-right {
-                        min-height: 350px;
-                        flex: 1;
-                        overflow: visible;
-                    }
-                    
-                    .lyrics-scroll {
-                        font-size: 12px;
-                        height: 350px;
-                        overflow-y: auto;
-                    }
-                    
-                    .song-detail-tabs .ant-tabs-tab {
-                        font-size: 12px;
-                        padding: 6px 10px;
-                    }
-                    
-                    .close-btn {
-                        top: 12px;
-                        right: 12px;
-                        font-size: 14px;
-                    }
-                    
-                    .volume-slider {
-                        width: 40px;
-                    }
-                }
-
-                /* Kiểu nút player */
                 .player-btn {
                     background: rgba(255,255,255,0.1);
                     border: none;
@@ -726,23 +271,6 @@ export default function SongDetail({ songId, onClose }) {
                     outline: none;
                     box-shadow: none;
                 }
-                
-                @media (max-width: 768px) {
-                    .player-btn {
-                        width: 48px !important;
-                        height: 48px !important;
-                        font-size: 20px !important;
-                    }
-                }
-                
-                @media (max-width: 480px) {
-                    .player-btn {
-                        width: 44px !important;
-                        height: 44px !important;
-                        font-size: 18px !important;
-                    }
-                }
-                
                 .player-btn:hover {
                     background: rgba(255,255,255,0.2);
                     transform: scale(1.05);
@@ -766,23 +294,6 @@ export default function SongDetail({ songId, onClose }) {
                     font-size: 24px;
                     color: #23283e;
                 }
-                
-                @media (max-width: 768px) {
-                    .player-btn.main {
-                        width: 56px !important;
-                        height: 56px !important;
-                        font-size: 24px !important;
-                    }
-                }
-                
-                @media (max-width: 480px) {
-                    .player-btn.main {
-                        width: 52px !important;
-                        height: 52px !important;
-                        font-size: 22px !important;
-                    }
-                }
-                
                 .player-btn.main:hover {
                     background: linear-gradient(135deg, #29aaff 60%, #1890ff 100%);
                     color: #23283e;
@@ -832,6 +343,7 @@ export default function SongDetail({ songId, onClose }) {
                     cursor: not-allowed;
                 }
                 .volume-slider {
+                    width: 70px;
                     height: 4px;
                     border-radius: 2px;
                     background: #23283e;
@@ -858,13 +370,6 @@ export default function SongDetail({ songId, onClose }) {
                 .song-detail-container {
                     animation: fadeInUp 0.4s ease-out;
                 }
-                
-                /* Hỗ trợ vùng an toàn */
-                @supports (padding: max(0px)) {
-                    .song-detail-container {
-                        padding-bottom: max(0px, env(safe-area-inset-bottom));
-                    }
-                }
             `}</style>
 
             <div className="song-detail-container"
@@ -874,8 +379,8 @@ export default function SongDetail({ songId, onClose }) {
                     display: "flex",
                     flexDirection: "column",
                     position: "relative",
-                    minHeight: "100vh",
-                    overflow: "hidden"
+                    minHeight: "100vh", // Đảm bảo chiều cao tối thiểu
+                    overflow: "hidden"  // Ngăn cuộn dọc không cần thiết ở container chính
                 }}>
                 <div style={{
                     position: "fixed",
@@ -893,7 +398,6 @@ export default function SongDetail({ songId, onClose }) {
                     type="text"
                     shape="circle"
                     size="large"
-                    className="close-btn"
                     style={{
                         position: "fixed",
                         top: 32,
@@ -905,18 +409,13 @@ export default function SongDetail({ songId, onClose }) {
                         cursor: "pointer",
                         border: "none",
                         outline: "none",
-                        boxShadow: "0 4px 16px rgba(0,0,0,0.3)",
-                        width: 48,
-                        height: 48,
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center"
+                        boxShadow: "0 4px 16px rgba(0,0,0,0.3)"
                     }}
-                    icon={<span className="material-icons">close</span>}
+                    icon={<i className="bi bi-x-lg"></i>}
                     aria-label="Close"
                 />
 
-                <div className="song-detail-content" style={{
+                <div style={{
                     display: "flex",
                     flex: 1,
                     zIndex: 1,
@@ -925,21 +424,13 @@ export default function SongDetail({ songId, onClose }) {
                     width: "100%",
                     padding: "48px 32px 0 32px",
                     gap: 48,
-                    minHeight: "calc(100vh - 48px)",
-                    overflow: "auto",
-                    justifyContent: "center"
+                    minHeight: "calc(100vh - 48px)", // Đảm bảo chiều cao tối thiểu cho flex
+                    overflow: "hidden" // Ngăn cuộn dọc ở vùng flex chính
                 }}>
-                    <div className="song-detail-left" style={{
-                        flex: 1,
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                        minWidth: 0
-                    }}>
+                    <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center" }}>
                         <img
                             src={song?.profilePicUrl}
                             alt={song?.title}
-                            className="song-detail-image"
                             style={{
                                 width: 330,
                                 height: 330,
@@ -950,7 +441,7 @@ export default function SongDetail({ songId, onClose }) {
                                 transition: "transform 0.3s, box-shadow 0.3s"
                             }}
                         />
-                        <h1 className="song-detail-title" style={{
+                        <h1 style={{
                             color: "#fff",
                             fontWeight: 700,
                             fontSize: 36,
@@ -964,18 +455,12 @@ export default function SongDetail({ songId, onClose }) {
 
                         {artist && (
                             <div
-                                className="song-detail-artist"
-                                style={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                    gap: 12,
-                                    marginBottom: 8,
-                                    cursor: "pointer"
-                                }}
+                                style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 8, cursor: "pointer" }}
                                 onClick={() => {
                                     const token = localStorage.getItem("accessToken");
                                     if (token) {
-                                        if (onClose) onClose();
+                                        if (onClose) onClose(); // Đóng modal detail trước
+                                        // Điều hướng sang trang profile nghệ sĩ
                                         navigate(`/artist/${artist.id || artist.artistId}`);
                                     } else {
                                         message.info("Please login to view artist profile!");
@@ -991,14 +476,8 @@ export default function SongDetail({ songId, onClose }) {
                                         "/img/default-cover.png"
                                     }
                                     size={40}
-                                    className="artist-avatar"
                                 />
-                                <span className="artist-name" style={{
-                                    color: "#fff",
-                                    fontWeight: 500,
-                                    fontSize: 18,
-                                    textDecoration: "underline"
-                                }}>
+                                <span style={{ color: "#fff", fontWeight: 500, fontSize: 18, textDecoration: "underline" }}>
                                     {(artist.firstName && artist.lastName)
                                         ? `${artist.firstName} ${artist.lastName}`
                                         : artist.artistName || ""}
@@ -1006,41 +485,17 @@ export default function SongDetail({ songId, onClose }) {
                             </div>
                         )}
 
-                        <div className="song-detail-info" style={{
-                            color: "#fff",
-                            opacity: 0.85,
-                            marginBottom: 4,
-                            fontSize: 16,
-                            textAlign: "center"
-                        }}>
+                        <div style={{ color: "#fff", opacity: 0.85, marginBottom: 4, fontSize: 16 }}>
                             <b>{t('song_detail.album')}:</b> {album ? album.titleAlbum : song?.albumName || "—"}
                         </div>
-                        <div className="song-detail-info" style={{
-                            color: "#fff",
-                            opacity: 0.85,
-                            marginBottom: 4,
-                            fontSize: 16,
-                            textAlign: "center"
-                        }}>
+                        <div style={{ color: "#fff", opacity: 0.85, marginBottom: 4, fontSize: 16 }}>
                             <b>{t('song_detail.views')}:</b> {song?.views?.toLocaleString()}
                         </div>
-                        <div className="song-detail-info" style={{
-                            color: "#fff",
-                            opacity: 0.85,
-                            fontSize: 16,
-                            marginBottom: 24,
-                            textAlign: "center"
-                        }}>
+                        <div style={{ color: "#fff", opacity: 0.85, fontSize: 16, marginBottom: 24 }}>
                             <b>{t('song_detail.duration')}:</b> {song?.duration}
                         </div>
 
-                        <div className="song-detail-controls" style={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: 18,
-                            marginBottom: 16,
-                            justifyContent: "center"
-                        }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 18, marginBottom: 16 }}>
                             <button
                                 className="player-btn"
                                 onClick={safePrevSong}
@@ -1048,7 +503,7 @@ export default function SongDetail({ songId, onClose }) {
                                 title="Previous Song"
                                 style={adPlaying ? { opacity: 0.5, pointerEvents: "none" } : {}}
                             >
-                                <span className="material-icons">skip_previous</span>
+                                <i className="bi bi-skip-backward-fill"></i>
                             </button>
                             <button
                                 className="player-btn main"
@@ -1057,7 +512,7 @@ export default function SongDetail({ songId, onClose }) {
                                 title={isPlaying ? "Pause" : "Play"}
                                 style={adPlaying ? { opacity: 0.5, pointerEvents: "none" } : {}}
                             >
-                                <span className="material-icons">{isPlaying ? "pause" : "play_arrow"}</span>
+                                <i className={isPlaying ? "bi bi-pause-fill" : "bi bi-play-fill"}></i>
                             </button>
                             <button
                                 className="player-btn"
@@ -1066,7 +521,7 @@ export default function SongDetail({ songId, onClose }) {
                                 title="Next Song"
                                 style={adPlaying ? { opacity: 0.5, pointerEvents: "none" } : {}}
                             >
-                                <span className="material-icons">skip_next</span>
+                                <i className="bi bi-skip-forward-fill"></i>
                             </button>
                             <button
                                 className={`player-btn like${liked ? " liked" : ""}`}
@@ -1075,7 +530,7 @@ export default function SongDetail({ songId, onClose }) {
                                 title={liked ? "Remove from Favorites" : "Add to Favorites"}
                                 style={adPlaying ? { opacity: 0.5, pointerEvents: "none" } : {}}
                             >
-                                <span className="material-icons">{liked ? "favorite" : "favorite_border"}</span>
+                                <i className={liked ? "bi bi-heart-fill" : "bi bi-heart"}></i>
                             </button>
                             <button
                                 className="player-btn"
@@ -1084,35 +539,10 @@ export default function SongDetail({ songId, onClose }) {
                                 title={t('song_detail.download_song')}
                                 style={adPlaying ? { opacity: 0.5, pointerEvents: "none" } : {}}
                             >
-                                <span className="material-icons">file_download</span>
+                                <i className="bi bi-download"></i>
                             </button>
-                            <button
-                                className="player-btn"
-                                onClick={() => {
-                                    const token = localStorage.getItem("accessToken");
-                                    if (!token) {
-                                        toast.info("Please login to add songs to your playlist!", { autoClose: 2000 });
-                                        return;
-                                    }
-                                    fetchUserPlaylists();
-                                    setAddToPlaylistModal(true);
-                                    setSelectedPlaylistId(null);
-                                }}
-                                disabled={adPlaying}
-                                title={t("song_detail.add_to_playlist") || "Add to Playlist"}
-                                style={adPlaying ? { opacity: 0.5, pointerEvents: "none" } : {}}
-                            >
-                                <span className="material-icons">add_box</span>
-                            </button>
-                            <div className="volume-control" style={{
-                                display: "flex",
-                                alignItems: "center",
-                                gap: 6
-                            }}>
-                                <span className="material-icons" style={{
-                                    fontSize: 20,
-                                    color: "#8ca0c6"
-                                }}>volume_up</span>
+                            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                                <i className="bi bi-volume-up" style={{ fontSize: 20, color: "#8ca0c6" }}></i>
                                 <input
                                     type="range"
                                     min={0}
@@ -1128,50 +558,42 @@ export default function SongDetail({ songId, onClose }) {
                             </div>
                         </div>
 
-                        {isMobile && (
-                            <div className="progress-bar-wrap">
-                                <div className="progress-container" style={{
-                                    width: "100%",
-                                    maxWidth: 340
-                                }}>
-                                    <input
-                                        type="range"
-                                        min={0}
-                                        max={durationSec}
-                                        value={currentTime}
-                                        onChange={handleSeek}
-                                        className="progress-bar"
-                                        style={{
-                                            background: `linear-gradient(90deg, #3ed8ff ${(currentTime / durationSec) * 100}%, #23283e ${(currentTime / durationSec) * 100}%)`,
-                                            ...(adPlaying && { opacity: 0.5, pointerEvents: "none" })
-                                        }}
-                                        disabled={adPlaying}
-                                        title="Seek"
-                                    />
-                                    <div className="time-display" style={{
-                                        display: "flex",
-                                        justifyContent: "space-between",
-                                        color: "#8ca0c6",
-                                        fontSize: 13,
-                                        marginTop: 4
-                                    }}>
-                                        <span>{formatTime(currentTime)}</span>
-                                        <span>{song?.duration}</span>
-                                    </div>
-                                </div>
+                        <div style={{ width: "100%", maxWidth: 340 }}>
+                            <input
+                                type="range"
+                                min={0}
+                                max={durationSec}
+                                value={currentTime}
+                                onChange={handleSeek}
+                                className="progress-bar"
+                                style={{
+                                    background: `linear-gradient(90deg, #3ed8ff ${(currentTime / durationSec) * 100}%, #23283e ${(currentTime / durationSec) * 100}%)`,
+                                    ...(adPlaying && { opacity: 0.5, pointerEvents: "none" })
+                                }}
+                                disabled={adPlaying}
+                                title="Seek"
+                            />
+                            <div style={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                                color: "#8ca0c6",
+                                fontSize: 13,
+                                marginTop: 4
+                            }}>
+                                <span>{formatTime(currentTime)}</span>
+                                <span>{song?.duration}</span>
                             </div>
-                        )}
+                        </div>
                     </div>
 
-                    <div className="song-detail-right" style={{
+                    <div style={{
                         flex: 1,
                         minWidth: 0,
                         display: "flex",
                         flexDirection: "column",
                         justifyContent: "flex-start",
                         height: "100vh",
-                        overflow: "visible",
-                        maxWidth: 600 // Add max width for right column
+                        overflow: "hidden" // Ngăn cuộn dọc ở vùng phải
                     }}>
                         <Tabs
                             defaultActiveKey="lyrics"
@@ -1327,80 +749,6 @@ export default function SongDetail({ songId, onClose }) {
                     />
                 </div>
             )}
-
-            {/* Add to Playlist Modal */}
-            <Modal
-                title="Add to Playlist"
-                open={addToPlaylistModal}
-                onCancel={() => {
-                    setAddToPlaylistModal(false);
-                    setSelectedPlaylistId(null);
-                }}
-                footer={[
-                    <Button key="cancel" onClick={() => {
-                        setAddToPlaylistModal(false);
-                        setSelectedPlaylistId(null);
-                    }}>
-                        Cancel
-                    </Button>,
-                    <Button key="create" type="dashed" onClick={() => setShowCreatePlaylist(true)}>
-                        Create New Playlist
-                    </Button>,
-                    <Button key="add" type="primary" onClick={handleAddToPlaylist} disabled={!selectedPlaylistId}>
-                        Add to Playlist
-                    </Button>
-                ]}
-                width={400}
-            >
-                <div style={{ marginBottom: 16 }}>
-                    <p>Select a playlist to add this song:</p>
-                    <Select
-                        style={{ width: "100%", marginTop: 8 }}
-                        placeholder="Choose a playlist"
-                        value={selectedPlaylistId}
-                        onChange={setSelectedPlaylistId}
-                        options={userPlaylists.map(playlist => ({
-                            label: playlist.name,
-                            value: playlist.id
-                        }))}
-                    />
-                </div>
-            </Modal>
-
-            {/* Create New Playlist Modal */}
-            <Modal
-                title="Create New Playlist"
-                open={showCreatePlaylist}
-                onCancel={() => {
-                    setShowCreatePlaylist(false);
-                    setNewPlaylistName("");
-                }}
-                footer={[
-                    <Button key="cancel" onClick={() => {
-                        setShowCreatePlaylist(false);
-                        setNewPlaylistName("");
-                    }}>
-                        Cancel
-                    </Button>,
-                    <Button key="create" type="primary" onClick={handleCreatePlaylist}>
-                        Create Playlist
-                    </Button>
-                ]}
-                width={400}
-            >
-                <div style={{ marginBottom: 16 }}>
-                    <p>Enter a name for your new playlist:</p>
-                    <Input
-                        style={{ marginTop: 8 }}
-                        placeholder="Playlist name"
-                        value={newPlaylistName}
-                        onChange={(e) => setNewPlaylistName(e.target.value)}
-                        onPressEnter={handleCreatePlaylist}
-                    />
-                </div>
-            </Modal>
-
-            <ToastContainer />
         </>
     );
 }

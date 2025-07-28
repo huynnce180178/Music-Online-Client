@@ -1,7 +1,6 @@
 import { Drawer } from "antd";
 import PropTypes from "prop-types";
 import { useTranslation } from 'react-i18next';
-
 import ProfilePage from "../pages/ProfilePage";
 
 export default function ProfileDrawer(props) {

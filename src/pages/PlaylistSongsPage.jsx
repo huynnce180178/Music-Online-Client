@@ -154,7 +154,7 @@ export default function PlaylistSongsPage() {
                         <div style={{ display: "flex", gap: 16 }}>
                             <Button
                                 type="primary"
-                                icon={isPlaying ? <PauseCircleFilled style={{ fontSize: 20 }} /> : <PlayCircleFilled style={{ fontSize: 20 }} />}
+                                icon={isPlaying ? <PauseCircleFilled /> : <PlayCircleFilled />}
                                 size="large"
                                 style={{
                                     fontWeight: 600,
@@ -162,14 +162,12 @@ export default function PlaylistSongsPage() {
                                     borderRadius: 8,
                                     background: "#3ed8ff",
                                     border: "none",
-                                    color: "#181c2b",
-                                    height: 48,
-                                    padding: "0 24px"
+                                    color: "#181c2b"
                                 }}
                                 onClick={handlePlayAll}
                             >{t('playlist.play')}</Button>
                             <Button
-                                icon={<SwapOutlined style={{ fontSize: 18 }} />}
+                                icon={<SwapOutlined />}
                                 size="large"
                                 style={{
                                     fontWeight: 600,
@@ -177,9 +175,7 @@ export default function PlaylistSongsPage() {
                                     borderRadius: 8,
                                     background: "#23283e",
                                     border: "none",
-                                    color: "#3ed8ff",
-                                    height: 48,
-                                    padding: "0 24px"
+                                    color: "#3ed8ff"
                                 }}
                                 onClick={handleShuffle}
                             >{t('playlist.shuffle')}</Button>
