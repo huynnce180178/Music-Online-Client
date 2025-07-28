@@ -2,8 +2,9 @@ import { useState, useEffect } from 'react';
 import { UserOutlined, MailOutlined, LockOutlined, FileImageOutlined } from '@ant-design/icons';
 import { Button, Form, Input, Typography, Row, Col, Upload, Modal } from 'antd';
 import PropTypes from 'prop-types';
+import axios from 'axios';
+import BASE_API_URL from "../services/base.api.url";
 import { useTranslation } from 'react-i18next';
-import { apiPost } from "../utils/apiUtils";
 
 const { Title } = Typography;
 
@@ -44,7 +45,7 @@ export default function Register(props) {
                 formData.append("profilePic", fileList[0].originFileObj);
             }
 
-            const res = await apiPost('/api/v1/auth/register', formData, {
+            const res = await axios.post(`${BASE_API_URL}/api/v1/auth/register`, formData, {
                 headers: { "Content-Type": "multipart/form-data" }
             });
 
@@ -58,8 +59,7 @@ export default function Register(props) {
                 Modal.error({ title: "Registration failed", content: res.data.data || "Registration failed!" });
             }
         } catch (err) {
-            // Error handling is now done in the apiUtils interceptor
-            console.error('Registration error:', err);
+            Modal.error({ title: "Error", content: err.response?.data?.data || "Server connection error!" });
         } finally {
             setLoading(false);
         }
