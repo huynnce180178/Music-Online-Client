@@ -1,5 +1,5 @@
 import { useEffect, useState, useContext, useCallback } from "react";
-import { Tabs, Spin, message, Avatar, Button } from "antd";
+import { Tabs, Spin, message, Avatar, Button, Modal, Select } from "antd";
 import axios from "axios";
 import PropTypes from "prop-types";
 import { PlayerContext } from "../context/PlayerContext";
@@ -17,6 +17,22 @@ export default function SongDetail({ songId, onClose }) {
     const [loading, setLoading] = useState(true);
     const [currentTime, setCurrentTime] = useState(0);
     const [viewed, setViewed] = useState(false);
+    const [addToPlaylistModal, setAddToPlaylistModal] = useState(false);
+    const [userPlaylists, setUserPlaylists] = useState([]);
+    const [selectedPlaylistId, setSelectedPlaylistId] = useState(null);
+
+    const fetchUserPlaylists = async () => {
+        const token = localStorage.getItem("accessToken");
+        try {
+            const res = await axios.get("/api/v1/user/playlist", {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setUserPlaylists(res.data.data || []);
+        } catch {
+            message.error(t("weekly_top_10.get_playlist_failed") || "Unable to load playlist!");
+        }
+    };
+
 
     const {
         adPlaying,
@@ -245,132 +261,372 @@ export default function SongDetail({ songId, onClose }) {
     const durationSec = song?.duration ? song.duration.split(":").reduce((acc, t) => 60 * acc + +t, 0) : 0;
     const currentUser = localStorage.getItem("userName");
 
+    <Modal
+        title={t("song_detail.add_to_playlist")}
+        open={addToPlaylistModal}
+        onOk={async () => {
+            if (!selectedPlaylistId) {
+                message.warning(t("weekly_top_10.select_playlist_warning") || "Vui lòng chọn playlist");
+                return;
+            }
+            try {
+                const token = localStorage.getItem("accessToken");
+                await axios.post(`/api/v1/user/playlist/add-song?playlistId=${selectedPlaylistId}&songId=${song.id}`, {}, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                message.success(t("weekly_top_10.added_to_playlist") || "Đã thêm vào playlist");
+                setAddToPlaylistModal(false);
+            } catch {
+                message.error(t("weekly_top_10.add_to_playlist_failed") || "Thêm vào playlist thất bại");
+            }
+        }}
+        onCancel={() => setAddToPlaylistModal(false)}
+        okText={t("song_detail.add")}
+        cancelText={t("weekly_top_10.cancel")}
+    >
+        <Select
+            style={{ width: "100%" }}
+            placeholder={t("song_detail.select_playlist")}
+            value={selectedPlaylistId}
+            onChange={setSelectedPlaylistId}
+        >
+            {userPlaylists.map(pl => (
+                <Select.Option key={pl.id} value={pl.id}>
+                    {pl.name}
+                </Select.Option>
+            ))}
+        </Select>
+    </Modal>
+
     return (
         <>
             <style>{`
-                .lyrics-scroll::-webkit-scrollbar {
-                    display: none;
-                }
-                .lyrics-scroll {
-                    -ms-overflow-style: none;
-                    scrollbar-width: none;
-                }
-                .player-btn {
-                    background: rgba(255,255,255,0.1);
-                    border: none;
-                    border-radius: 50%;
-                    width: 48px;
-                    height: 48px;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    color: #fff;
-                    cursor: pointer;
-                    transition: all 0.2s;
-                    font-size: 18px;
-                    outline: none;
-                    box-shadow: none;
-                }
-                .player-btn:hover {
-                    background: rgba(255,255,255,0.2);
-                    transform: scale(1.05);
-                    color: #fff;
-                }
-                .player-btn:focus {
-                    background: rgba(255,255,255,0.2);
-                    color: #fff;
-                    outline: none;
-                    box-shadow: none;
-                }
-                .player-btn:disabled {
-                    opacity: 0.5;
-                    cursor: not-allowed;
-                    transform: none;
-                }
-                .player-btn.main {
-                    width: 56px;
-                    height: 56px;
-                    background: linear-gradient(135deg, #3ed8ff 60%, #1fa2ff 100%);
-                    font-size: 24px;
-                    color: #23283e;
-                }
-                .player-btn.main:hover {
-                    background: linear-gradient(135deg, #29aaff 60%, #1890ff 100%);
-                    color: #23283e;
-                }
-                .player-btn.like.liked {
-                    color: #ff4757;
-                    background: rgba(255, 71, 87, 0.1);
-                }
-                .player-btn.like.liked:hover {
-                    color: #ff4757;
-                    background: rgba(255, 71, 87, 0.2);
-                }
-                .progress-bar {
-                    width: 100%;
-                    height: 6px;
-                    border-radius: 4px;
-                    background: #23283e;
-                    outline: none;
-                    border: none;
-                    appearance: none;
-                    cursor: pointer;
-                }
-                .progress-bar::-webkit-slider-thumb {
-                    appearance: none;
-                    width: 16px;
-                    height: 16px;
-                    border-radius: 50%;
-                    background: #3ed8ff;
-                    cursor: pointer;
-                    border: none;
-                    box-shadow: 0 2px 8px rgba(62, 216, 255, 0.3);
-                }
-                .progress-bar::-moz-range-thumb {
-                    width: 16px;
-                    height: 16px;
-                    border-radius: 50%;
-                    background: #3ed8ff;
-                    cursor: pointer;
-                    border: none;
-                    box-shadow: 0 2px 8px rgba(62, 216, 255, 0.3);
-                }
-                .progress-bar:disabled {
-                    opacity: 0.5;
-                    cursor: not-allowed;
-                }
-                .progress-bar:disabled::-webkit-slider-thumb {
-                    cursor: not-allowed;
-                }
-                .volume-slider {
-                    width: 70px;
-                    height: 4px;
-                    border-radius: 2px;
-                    background: #23283e;
-                    outline: none;
-                    border: none;
-                    appearance: none;
-                    cursor: pointer;
-                    accent-color: #3ed8ff;
-                }
-                .volume-slider:disabled {
-                    opacity: 0.5;
-                    cursor: not-allowed;
-                }
-                @keyframes fadeInUp {
-                    from {
-                        opacity: 0;
-                        transform: translateY(20px);
-                    }
-                    to {
-                        opacity: 1;
-                        transform: translateY(0);
-                    }
-                }
-                .song-detail-container {
-                    animation: fadeInUp 0.4s ease-out;
-                }
-            `}</style>
+/* ==== Base Styles ==== */
+.song-detail-container {
+    animation: fadeInUp 0.4s ease-out;
+    background: #181818;
+    min-height: 100vh;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+}
+.song-detail-content {
+    display: flex;
+    flex: 1;
+    z-index: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+    padding: 48px 32px 0 32px;
+    gap: 48px;
+    min-height: calc(100vh - 48px);
+    overflow: hidden;
+}
+.song-detail-left {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.song-detail-right {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    height: 100vh;
+    overflow: hidden;
+}
+.player-img {
+    width: 330px;
+    height: 330px;
+    border-radius: 20px;
+    object-fit: cover;
+    box-shadow: 0 12px 48px rgba(0,0,0,0.6);
+    margin-bottom: 32px;
+    transition: transform 0.3s, box-shadow 0.3s;
+    margin-top: 12px;
+}
+.song-title {
+    color: #fff;
+    font-weight: 700;
+    font-size: 36px;
+    margin-bottom: 10px;
+    text-shadow: 0 2px 12px rgba(0,0,0,0.6);
+    line-height: 1.1;
+    text-align: center;
+}
+.song-meta {
+    color: #fff;
+    opacity: 0.85;
+    font-size: 16px;
+    margin-bottom: 4px;
+}
+.player-controls {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    margin-bottom: 16px;
+}
+.song-progress {
+    width: 100%;
+    max-width: 340px;
+    margin-bottom: 4px;
+    margin-top: 2px;
+}
+.progress-bar {
+    width: 100%;
+    height: 6px;
+    border-radius: 4px;
+    background: #23283e;
+    outline: none;
+    border: none;
+    appearance: none;
+    cursor: pointer;
+}
+.progress-bar::-webkit-slider-thumb {
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #3ed8ff;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 2px 8px rgba(62, 216, 255, 0.3);
+}
+.progress-bar::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #3ed8ff;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 2px 8px rgba(62, 216, 255, 0.3);
+}
+.progress-bar:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+.progress-bar:disabled::-webkit-slider-thumb {
+    cursor: not-allowed;
+}
+.progress-time {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #8ca0c6;
+    font-size: 13px;
+    margin-top: 2px;
+    width: 100%;
+    padding: 0 4px;
+    font-variant-numeric: tabular-nums;
+}
+.lyrics-scroll {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    color: #fff;
+    white-space: pre-line;
+    font-size: 18px;
+    font-family: inherit;
+    line-height: 1.6;
+    padding: 0 20px 12px 20px;
+    text-align: center;
+    min-height: 150px;
+    max-height: calc(100vh - 210px);
+    overflow-y: auto;
+}
+.lyrics-scroll::-webkit-scrollbar {
+    display: none;
+}
+.tabs-lyrics-comments .ant-tabs-nav {
+    font-size: 18px;
+}
+.player-btn {
+    background: rgba(255,255,255,0.1);
+    border: none;
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 18px;
+    outline: none;
+    box-shadow: none;
+}
+.player-btn:hover {
+    background: rgba(255,255,255,0.2);
+    transform: scale(1.05);
+    color: #fff;
+}
+.player-btn:focus {
+    background: rgba(255,255,255,0.2);
+    color: #fff;
+    outline: none;
+    box-shadow: none;
+}
+.player-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+.player-btn.main {
+    width: 56px;
+    height: 56px;
+    background: linear-gradient(135deg, #3ed8ff 60%, #1fa2ff 100%);
+    font-size: 24px;
+    color: #23283e;
+}
+.player-btn.main:hover {
+    background: linear-gradient(135deg, #29aaff 60%, #1890ff 100%);
+    color: #23283e;
+}
+.player-btn.like.liked {
+    color: #ff4757;
+    background: rgba(255, 71, 87, 0.1);
+}
+.player-btn.like.liked:hover {
+    color: #ff4757;
+    background: rgba(255, 71, 87, 0.2);
+}
+.volume-slider {
+    width: 70px;
+    height: 4px;
+    border-radius: 2px;
+    background: #23283e;
+    outline: none;
+    border: none;
+    appearance: none;
+    cursor: pointer;
+    accent-color: #3ed8ff;
+}
+.volume-slider:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* ==== Responsive tablet (max-width: 1100px) ==== */
+@media (max-width: 1100px) {
+    .song-detail-content {
+        flex-direction: column !important;
+        gap: 30px !important;
+        padding: 34px 5vw 0 5vw !important;
+        max-width: 99vw !important;
+    }
+    .player-img {
+        width: 210px !important;
+        height: 210px !important;
+        margin-bottom: 26px !important;
+    }
+    .song-title {
+        font-size: 45px !important;
+        margin-bottom: 18px !important;
+    }
+    .artist-link .artist-name {
+        font-size: 23px !important;
+    }
+    .song-meta {
+        font-size: 22px !important;
+        margin-bottom: 8px !important;
+    }
+    .player-controls {
+        gap: 28px !important;
+        margin-bottom: 22px !important;
+    }
+    .player-btn,
+    .player-btn.main {
+        width: 58px !important;
+        height: 58px !important;
+        font-size: 27px !important;
+    }
+    .player-btn.main {
+        width: 68px !important;
+        height: 68px !important;
+        font-size: 34px !important;
+    }
+    .volume-slider {
+        width: 120px !important;
+        height: 6px !important;
+    }
+    .song-progress {
+        max-width: 500px !important;
+        margin-bottom: 9px !important;
+        margin-top: 9px !important;
+    }
+    .progress-bar {
+        height: 10px !important;
+        border-radius: 6px !important;
+    }
+    .progress-bar::-webkit-slider-thumb,
+    .progress-bar::-moz-range-thumb {
+        width: 22px !important;
+        height: 22px !important;
+    }
+    .progress-time {
+        font-size: 18px !important;
+        padding: 0 9px !important;
+    }
+    .lyrics-scroll {
+        font-size: 22px !important;
+        padding: 0 8vw 16px 8vw !important;
+        min-height: 160px !important;
+        max-height: 520px !important;
+    }
+    .tabs-lyrics-comments .ant-tabs-nav {
+        font-size: 22px !important;
+    }
+}
+
+/* ==== Responsive mobile (max-width: 600px) ==== */
+@media (max-width: 600px) {
+    .song-detail-content {
+        padding: 8px 0 0 0 !important;
+        gap: 8px !important;
+        max-width: 100vw !important;
+    }
+    .player-img {
+        width: 80px !important;
+        height: 80px !important;
+        margin-bottom: 5px !important;
+        border-radius: 8px !important;
+        margin-top: 2px !important;
+    }
+    .lyrics-scroll {
+        font-size: 12.5px !important;
+        padding: 0 4vw 8px 4vw !important;
+        min-height: 65px !important;
+        max-height: 300px !important;
+        border-radius: 7px;
+        text-align: center !important;
+    }
+    .progress-time {
+        font-size: 11.5px !important;
+        padding: 0 4vw !important;
+    }
+    .song-progress {
+        max-width: 70vw !important;
+        margin: 0 auto 4px auto !important;
+    }
+    .player-controls {
+        gap: 9px !important;
+    }
+}
+
+/* Animation */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+`}</style>
 
             <div className="song-detail-container"
                 style={{
@@ -379,8 +635,8 @@ export default function SongDetail({ songId, onClose }) {
                     display: "flex",
                     flexDirection: "column",
                     position: "relative",
-                    minHeight: "100vh", // Đảm bảo chiều cao tối thiểu
-                    overflow: "hidden"  // Ngăn cuộn dọc không cần thiết ở container chính
+                    minHeight: "100vh",
+                    overflow: "hidden"
                 }}>
                 <div style={{
                     position: "fixed",
@@ -415,52 +671,24 @@ export default function SongDetail({ songId, onClose }) {
                     aria-label="Close"
                 />
 
-                <div style={{
-                    display: "flex",
-                    flex: 1,
-                    zIndex: 1,
-                    maxWidth: 1200,
-                    margin: "0 auto",
-                    width: "100%",
-                    padding: "48px 32px 0 32px",
-                    gap: 48,
-                    minHeight: "calc(100vh - 48px)", // Đảm bảo chiều cao tối thiểu cho flex
-                    overflow: "hidden" // Ngăn cuộn dọc ở vùng flex chính
-                }}>
-                    <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center" }}>
+                <div className="song-detail-content">
+                    <div className="song-detail-left">
                         <img
+                            className="player-img"
                             src={song?.profilePicUrl}
                             alt={song?.title}
-                            style={{
-                                width: 330,
-                                height: 330,
-                                borderRadius: 20,
-                                objectFit: "cover",
-                                boxShadow: "0 12px 48px rgba(0,0,0,0.6)",
-                                marginBottom: 32,
-                                transition: "transform 0.3s, box-shadow 0.3s"
-                            }}
                         />
-                        <h1 style={{
-                            color: "#fff",
-                            fontWeight: 700,
-                            fontSize: 36,
-                            marginBottom: 10,
-                            textShadow: "0 2px 12px rgba(0,0,0,0.6)",
-                            lineHeight: 1.1,
-                            textAlign: "center"
-                        }}>
+                        <h1 className="song-title">
                             {song?.title}
                         </h1>
 
                         {artist && (
                             <div
-                                style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 8, cursor: "pointer" }}
+                                className="artist-link"
                                 onClick={() => {
                                     const token = localStorage.getItem("accessToken");
                                     if (token) {
-                                        if (onClose) onClose(); // Đóng modal detail trước
-                                        // Điều hướng sang trang profile nghệ sĩ
+                                        if (onClose) onClose();
                                         navigate(`/artist/${artist.id || artist.artistId}`);
                                     } else {
                                         message.info("Please login to view artist profile!");
@@ -477,7 +705,7 @@ export default function SongDetail({ songId, onClose }) {
                                     }
                                     size={40}
                                 />
-                                <span style={{ color: "#fff", fontWeight: 500, fontSize: 18, textDecoration: "underline" }}>
+                                <span className="artist-name">
                                     {(artist.firstName && artist.lastName)
                                         ? `${artist.firstName} ${artist.lastName}`
                                         : artist.artistName || ""}
@@ -485,17 +713,17 @@ export default function SongDetail({ songId, onClose }) {
                             </div>
                         )}
 
-                        <div style={{ color: "#fff", opacity: 0.85, marginBottom: 4, fontSize: 16 }}>
+                        <div className="song-meta">
                             <b>{t('song_detail.album')}:</b> {album ? album.titleAlbum : song?.albumName || "—"}
                         </div>
-                        <div style={{ color: "#fff", opacity: 0.85, marginBottom: 4, fontSize: 16 }}>
+                        <div className="song-meta">
                             <b>{t('song_detail.views')}:</b> {song?.views?.toLocaleString()}
                         </div>
-                        <div style={{ color: "#fff", opacity: 0.85, fontSize: 16, marginBottom: 24 }}>
+                        <div className="song-meta" style={{ marginBottom: 24 }}>
                             <b>{t('song_detail.duration')}:</b> {song?.duration}
                         </div>
 
-                        <div style={{ display: "flex", alignItems: "center", gap: 18, marginBottom: 16 }}>
+                        <div className="player-controls">
                             <button
                                 className="player-btn"
                                 onClick={safePrevSong}
@@ -541,8 +769,26 @@ export default function SongDetail({ songId, onClose }) {
                             >
                                 <i className="bi bi-download"></i>
                             </button>
-                            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                                <i className="bi bi-volume-up" style={{ fontSize: 20, color: "#8ca0c6" }}></i>
+                            <button
+                                className="player-btn"
+                                onClick={() => {
+                                    const token = localStorage.getItem("accessToken");
+                                    if (!token) {
+                                        message.info(t("weekly_top_10.login_to_add_playlist") || "Please login to add songs to your playlist!");
+                                        return;
+                                    }
+                                    fetchUserPlaylists();
+                                    setAddToPlaylistModal(true);
+                                    setSelectedPlaylistId(null);
+                                }}
+                                disabled={adPlaying}
+                                title={t('song_detail.add_to_playlist') || "Add to Playlist"}
+                                style={adPlaying ? { opacity: 0.5, pointerEvents: "none" } : {}}
+                            >
+                                <i className="bi bi-plus-square"></i>
+                            </button>
+                            <div className="volume-container">
+                                <i className="bi bi-volume-up volume-icon"></i>
                                 <input
                                     type="range"
                                     min={0}
@@ -558,7 +804,7 @@ export default function SongDetail({ songId, onClose }) {
                             </div>
                         </div>
 
-                        <div style={{ width: "100%", maxWidth: 340 }}>
+                        <div className="song-progress">
                             <input
                                 type="range"
                                 min={0}
@@ -573,59 +819,31 @@ export default function SongDetail({ songId, onClose }) {
                                 disabled={adPlaying}
                                 title="Seek"
                             />
-                            <div style={{
-                                display: "flex",
-                                justifyContent: "space-between",
-                                color: "#8ca0c6",
-                                fontSize: 13,
-                                marginTop: 4
-                            }}>
-                                <span>{formatTime(currentTime)}</span>
-                                <span>{song?.duration}</span>
+                            <div className="progress-time">
+                                <span className="time-current">{formatTime(currentTime)}</span>
+                                <span className="time-total">{song?.duration}</span>
                             </div>
                         </div>
                     </div>
 
-                    <div style={{
-                        flex: 1,
-                        minWidth: 0,
-                        display: "flex",
-                        flexDirection: "column",
-                        justifyContent: "flex-start",
-                        height: "100vh",
-                        overflow: "hidden" // Ngăn cuộn dọc ở vùng phải
-                    }}>
+                    <div className="song-detail-right">
                         <Tabs
                             defaultActiveKey="lyrics"
                             centered
+                            className="tabs-lyrics-comments"
                             items={[
                                 {
                                     key: "lyrics",
                                     label: <span style={{ color: "#29aaff", fontWeight: 700 }}>{t('song_detail.lyrics')}</span>,
                                     children: (
-                                        <div className="lyrics-scroll" style={{
-                                            color: "#fff",
-                                            whiteSpace: "pre-line",
-                                            fontSize: 18,
-                                            fontFamily: "inherit",
-                                            height: "calc(100vh - 160px)",
-                                            overflowY: "auto",
-                                            paddingRight: "8px",
-                                            lineHeight: 1.6
-                                        }}>
-                                            {lyrics}
-                                        </div>
+                                        <div className="lyrics-scroll">{lyrics}</div>
                                     )
                                 },
                                 {
                                     key: "comments",
                                     label: <span style={{ color: "#29aaff", fontWeight: 700 }}>{t('song_detail.comments')}</span>,
                                     children: (
-                                        <div className="lyrics-scroll" style={{
-                                            height: "calc(100vh - 150px)",
-                                            overflowY: "auto",
-                                            paddingRight: "8px"
-                                        }}>
+                                        <div className="lyrics-scroll">
                                             <CommentTab songId={songId} currentUser={currentUser} />
                                         </div>
                                     )
@@ -641,13 +859,12 @@ export default function SongDetail({ songId, onClose }) {
                                 textShadow: "0 2px 8px rgba(41, 170, 255, 0.3)"
                             }}
                             style={{ height: "100%" }}
-                            className="song-detail-tabs"
                         />
                     </div>
                 </div>
             </div>
 
-            {/* ✅ Quảng cáo overlay - Chỉ hiển thị "Learn More" button */}
+            {/* ✅ Quảng cáo overlay */}
             {adPlaying && adAudio && (
                 <div
                     style={{
@@ -708,8 +925,6 @@ export default function SongDetail({ songId, onClose }) {
                         }}>
                             Please wait while the ad is playing...
                         </p>
-
-                        {/* ✅ Chỉ hiển thị Learn More button nếu có redirectUrl */}
                         {adAudio.redirectUrl && (
                             <Button
                                 style={{
@@ -738,8 +953,6 @@ export default function SongDetail({ songId, onClose }) {
                             </Button>
                         )}
                     </div>
-
-                    {/* Hidden audio element for ad */}
                     <audio
                         src={adAudio.mediaUrl}
                         autoPlay

@@ -6,7 +6,6 @@ import 'antd/dist/reset.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './i18n';
 
-
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <App />

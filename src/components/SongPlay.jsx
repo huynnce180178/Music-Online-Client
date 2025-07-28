@@ -341,7 +341,10 @@ function SongPlay({ sidebarWidth = 0 }) {
                     transition: "box-shadow 0.2s, background 0.2s"
                 }}>
                 {/* Thumbnail */}
-                <div className="player-thumb">
+                <div className="player-thumb"
+                    onClick={() => setShowDetail(true)}
+                    style={{ cursor: "pointer" }}
+                >
                     <img src={song?.profilePicUrl} alt={song?.title}
                         style={{
                             width: 72, height: 72, borderRadius: 16,
@@ -399,7 +402,7 @@ function SongPlay({ sidebarWidth = 0 }) {
                 </div>
 
                 {/* Progress */}
-                <div className="player-progress-wrap" style={{
+                <div className="player-progress-wrap player-progress-mobilehide" style={{
                     flex: "2 2 320px", maxWidth: 340, padding: "0 24px"
                 }}>
                     <input
@@ -423,40 +426,37 @@ function SongPlay({ sidebarWidth = 0 }) {
                 </div>
 
                 {/* Right Controls */}
-                <div className="player-actions" style={{
-                    flex: "0 0 160px", marginRight: '10px', display: "flex", gap: 12, alignItems: "center"
-                }}>
-                    <i className="bi bi-volume-up" style={{ fontSize: 19, color: "#8ca0c6" }}></i>
-                    <input type="range" min={0} max={1} step={0.01} value={volume} onChange={handleVolume}
-                        style={{ width: 60, accentColor: "#3ed8ff" }} />
-                    <button className={`player-btn like${liked ? " liked" : ""}`}
-                        title={t("favorite") || "Favorite"}
-                        onClick={toggleWishlist}
-                    >
-                        <i className={liked ? "bi bi-heart-fill" : "bi bi-heart"}></i>
-                    </button>
-                    <button className="player-btn" title={t("song_detail.download_song") || "Download"} onClick={handleDownload}>
-                        <i className="bi bi-download"></i>
-                    </button>
-                    <button className="player-btn" title={t("song_detail.comments") || "Show Details"} onClick={() => setShowDetail(true)}>
-                        <i className="bi bi-chevron-up"></i>
-                    </button>
-                    <button
-                        className="player-btn"
-                        title={t("song_detail.add_to_playlist") || "Add to Playlist"}
-                        onClick={() => {
-                            const token = localStorage.getItem("accessToken");
-                            if (!token) {
-                                toast.info(t("weekly_top_10.login_to_add_playlist") || "Please login to add songs to your playlist!", { autoClose: 2000 });
-                                return;
-                            }
-                            fetchUserPlaylists();
-                            setAddToPlaylistModal(true);
-                            setSelectedPlaylistId(null);
-                        }}
-                    >
-                        <i className="bi bi-plus-square"></i>
-                    </button>
+                <div className="player-actions" style={{ display: "flex", gap: 12, alignItems: "center" }}>
+                    <div className="hide-on-mobile" style={{ display: "flex", gap: 12, alignItems: "center" }}>
+                        <i className="bi bi-volume-up" style={{ fontSize: 19, color: "#8ca0c6" }}></i>
+                        <input type="range" min={0} max={1} step={0.01} value={volume} onChange={handleVolume}
+                            style={{ width: 60, accentColor: "#3ed8ff" }} />
+                        <button className={`player-btn like${liked ? " liked" : ""}`}
+                            title={t("favorite") || "Favorite"}
+                            onClick={toggleWishlist}
+                        >
+                            <i className={liked ? "bi bi-heart-fill" : "bi bi-heart"}></i>
+                        </button>
+                        <button className="player-btn" title={t("song_detail.download_song") || "Download"} onClick={handleDownload}>
+                            <i className="bi bi-download"></i>
+                        </button>
+                        <button
+                            className="player-btn"
+                            title={t("song_detail.add_to_playlist") || "Add to Playlist"}
+                            onClick={() => {
+                                const token = localStorage.getItem("accessToken");
+                                if (!token) {
+                                    toast.info(t("weekly_top_10.login_to_add_playlist") || "Please login to add songs to your playlist!", { autoClose: 2000 });
+                                    return;
+                                }
+                                fetchUserPlaylists();
+                                setAddToPlaylistModal(true);
+                                setSelectedPlaylistId(null);
+                            }}
+                        >
+                            <i className="bi bi-plus-square"></i>
+                        </button>
+                    </div>
                     <button className="player-btn close" title={t("common.close") || "Close Player"} onClick={stopPlayer}>
                         <i className="bi bi-x-lg"></i>
                     </button>
@@ -549,7 +549,7 @@ function SongPlay({ sidebarWidth = 0 }) {
                 okText={t("song_detail.add")}
                 cancelText={t("playlist.cancel")}
                 confirmLoading={createLoading}
-                destroyOnClose
+                destroyOnHidden
             >
                 <Form form={createForm} layout="vertical">
                     <Form.Item
@@ -761,6 +761,66 @@ function SongPlay({ sidebarWidth = 0 }) {
 .player-thumb img:hover {
     box-shadow: none !important;
     transform: scale(1.04);
+}
+    @media (max-width: 767px) {
+    .player-actions .hide-mobile {
+        display: none !important;
+    }
+    .hide-on-mobile {
+    display: none !important;
+  }
+  .player-progress-mobilehide {
+    display: none !important;
+  }
+    .player-progress-wrap, .player-title, .player-artist {
+        font-size: 16px !important;
+        padding-left: 0;
+        padding-right: 0;
+    }
+    .songplay-root.improved-player {
+        min-height: 66px;
+        padding: 0 8px;
+        gap: 8px;
+    }
+    .player-thumb img {
+        width: 54px !important;
+        height: 54px !important;
+        border-radius: 12px !important;
+    }
+    .player-title {
+        font-size: 16px !important;
+    }
+    .player-artist {
+        font-size: 12px !important;
+    }
+    .player-controls {
+        gap: 6px !important;
+    }
+    .player-btn {
+        font-size: 17px !important;
+        width: 34px !important;
+        height: 34px !important;
+    }
+    .player-btn.main {
+        font-size: 22px !important;
+        width: 38px !important;
+        height: 38px !important;
+    }
+    .player-actions {
+        gap: 2px !important;
+        margin-right: 0 !important;
+    }
+}
+
+/* Tablet, mobile lớn hơn */
+@media (max-width: 992px) and (min-width: 768px) {
+    .player-thumb img {
+        width: 64px;
+        height: 64px;
+        border-radius: 12px;
+    }
+    .player-title { font-size: 18px; }
+    .player-artist { font-size: 13px; }
 }
 `}</style>
         </>
