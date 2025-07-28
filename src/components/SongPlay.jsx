@@ -10,6 +10,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { Modal, Select, message, Button, Form, Input, Switch, Upload } from "antd";
 import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
+import BASE_API_URL from "../services/base.api.url";
 
 function SongPlay({ sidebarWidth = 0 }) {
     const {
@@ -54,12 +55,12 @@ function SongPlay({ sidebarWidth = 0 }) {
 
     const generatePlayUrl = useCallback(() => {
         switch (playType) {
-            case "playlist": return `/api/v1/play/playlist/${contextId}/song/${currentSongId}`;
-            case "genre": return `/api/v1/play/genre/${contextId}/song/${currentSongId}`;
-            case "album": return `/api/v1/play/album/${contextId}/song/${currentSongId}`;
-            case "wishlist": return `/api/v1/play/wishlist/${currentSongId}`;
-            case "history": return `/api/v1/play/history/${currentSongId}`;
-            default: return `/api/v1/play/song/${currentSongId}`;
+            case "playlist": return `${BASE_API_URL}/api/v1/play/playlist/${contextId}/song/${currentSongId}`;
+            case "genre": return `${BASE_API_URL}/api/v1/play/genre/${contextId}/song/${currentSongId}`;
+            case "album": return `${BASE_API_URL}/api/v1/play/album/${contextId}/song/${currentSongId}`;
+            case "wishlist": return `${BASE_API_URL}/api/v1/play/wishlist/${currentSongId}`;
+            case "history": return `${BASE_API_URL}/api/v1/play/history/${currentSongId}`;
+            default: return `${BASE_API_URL}/api/v1/play/song/${currentSongId}`;
         }
     }, [playType, contextId, currentSongId]);
 
