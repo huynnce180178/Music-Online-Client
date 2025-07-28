@@ -285,7 +285,7 @@ function SongPlay({ sidebarWidth = 0 }) {
             formData.append("description", values.description || "");
             formData.append("isPublic", values.isPublic ? "true" : "false");
             if (!values.image || !values.image[0]) {
-                message.error("Vui lòng chọn ảnh!");
+                message.error("Please select a photo!");
                 setCreateLoading(false);
                 return;
             }
@@ -296,11 +296,11 @@ function SongPlay({ sidebarWidth = 0 }) {
                     "Content-Type": "multipart/form-data"
                 }
             });
-            message.success("Tạo playlist thành công!");
+            message.success("Create playlist successfully!");
             setCreateModalOpen(false);
             await fetchUserPlaylists();
         } catch (err) {
-            message.error("Tạo playlist thất bại!");
+            message.error("Playlist creation failed!");
         } finally {
             setCreateLoading(false);
         }

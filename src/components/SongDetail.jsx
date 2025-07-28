@@ -24,7 +24,7 @@ export default function SongDetail({ songId, onClose }) {
     const fetchUserPlaylists = async () => {
         const token = localStorage.getItem("accessToken");
         try {
-            const res = await axios.get("/api/v1/user/playlist", {
+            const res = await axios.get(`${BASE_API_URL}/api/v1/user/playlist`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setUserPlaylists(res.data.data || []);
@@ -123,7 +123,7 @@ export default function SongDetail({ songId, onClose }) {
     // Logic next/prev/auto-next với quảng cáo
     const handleSongChange = useCallback((type) => {
         if (adPlaying) {
-            message.info("Vui lòng nghe hết quảng cáo trước khi thao tác!");
+            message.info("Please listen to the entire ad before proceeding.!");
             return;
         }
         if (isPremium) {
@@ -198,7 +198,7 @@ export default function SongDetail({ songId, onClose }) {
     // Safe functions
     const safePlayPause = useCallback(() => {
         if (adPlaying) {
-            message.info("Vui lòng nghe hết quảng cáo trước khi thao tác!");
+            message.info("Please listen to the entire ad before proceeding.!");
             return;
         }
         contextHandlePlayPause();
@@ -214,7 +214,7 @@ export default function SongDetail({ songId, onClose }) {
 
     const safeDownload = useCallback(() => {
         if (adPlaying) {
-            message.info("Vui lòng nghe hết quảng cáo trước khi tải xuống!");
+            message.info("Please listen to the entire ad before downloading.!");
             return;
         }
         contextHandleDownload();
@@ -222,7 +222,7 @@ export default function SongDetail({ songId, onClose }) {
 
     const safeToggleWishlist = useCallback(() => {
         if (adPlaying) {
-            message.info("Vui lòng nghe hết quảng cáo trước khi thao tác!");
+            message.info("Please listen to the entire ad before proceeding.!");
             return;
         }
         toggleWishlist(songId);
@@ -230,7 +230,7 @@ export default function SongDetail({ songId, onClose }) {
 
     const handleSeek = useCallback((e) => {
         if (adPlaying) {
-            message.info("Vui lòng nghe hết quảng cáo trước khi thao tác!");
+            message.info("Please listen to the entire ad before proceeding.!");
             return;
         }
         if (audioRef.current) {
@@ -242,7 +242,7 @@ export default function SongDetail({ songId, onClose }) {
 
     const handleVolumeChange = useCallback((value) => {
         if (adPlaying) {
-            message.info("Vui lòng nghe hết quảng cáo trước khi thao tác!");
+            message.info("Please listen to the entire ad before proceeding.!");
             return;
         }
         contextHandleVolume(value);
@@ -266,18 +266,18 @@ export default function SongDetail({ songId, onClose }) {
         open={addToPlaylistModal}
         onOk={async () => {
             if (!selectedPlaylistId) {
-                message.warning(t("weekly_top_10.select_playlist_warning") || "Vui lòng chọn playlist");
+                message.warning(t("weekly_top_10.select_playlist_warning") || "Please select playlist");
                 return;
             }
             try {
                 const token = localStorage.getItem("accessToken");
-                await axios.post(`/api/v1/user/playlist/add-song?playlistId=${selectedPlaylistId}&songId=${song.id}`, {}, {
+                await axios.post(`${BASE_API_URL}/api/v1/user/playlist/add-song?playlistId=${selectedPlaylistId}&songId=${song.id}`, {}, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
-                message.success(t("weekly_top_10.added_to_playlist") || "Đã thêm vào playlist");
+                message.success(t("weekly_top_10.added_to_playlist") || "Added to playlist");
                 setAddToPlaylistModal(false);
             } catch {
-                message.error(t("weekly_top_10.add_to_playlist_failed") || "Thêm vào playlist thất bại");
+                message.error(t("weekly_top_10.add_to_playlist_failed") || "Add to playlist failed");
             }
         }}
         onCancel={() => setAddToPlaylistModal(false)}
@@ -582,36 +582,58 @@ export default function SongDetail({ songId, onClose }) {
 
 /* ==== Responsive mobile (max-width: 600px) ==== */
 @media (max-width: 600px) {
-    .song-detail-content {
-        padding: 8px 0 0 0 !important;
-        gap: 8px !important;
-        max-width: 100vw !important;
+    .song-title {
+        font-size: 18px !important;
+        margin-bottom: 5px !important;
+    }
+    .artist-link .artist-name {
+        font-size: 13px !important;
+    }
+    .volume-container {
+        display: none !important;
+    }
+    .song-meta {
+        font-size: 13px !important;
+        margin-bottom: 2px !important;
     }
     .player-img {
-        width: 80px !important;
-        height: 80px !important;
+        width: 70px !important;
+        height: 70px !important;
         margin-bottom: 5px !important;
-        border-radius: 8px !important;
-        margin-top: 2px !important;
-    }
-    .lyrics-scroll {
-        font-size: 12.5px !important;
-        padding: 0 4vw 8px 4vw !important;
-        min-height: 65px !important;
-        max-height: 300px !important;
-        border-radius: 7px;
-        text-align: center !important;
-    }
-    .progress-time {
-        font-size: 11.5px !important;
-        padding: 0 4vw !important;
     }
     .song-progress {
         max-width: 70vw !important;
         margin: 0 auto 4px auto !important;
     }
-    .player-controls {
-        gap: 9px !important;
+    .lyrics-scroll {
+        font-size: 15px !important;
+        min-height: 110px !important;
+        max-height: 220px !important;
+        border-radius: 8px !important;
+        padding: 0 10px 10px 10px !important;
+        text-align: center !important;
+        background: rgba(44,68,106,0.12);
+        box-shadow: 0 2px 12px 0 rgba(62,216,255,0.04);
+    }
+    .comment-input-container {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        width: 100% !important;
+        padding: 0 2vw !important;
+        margin: 0 auto 8px auto !important;
+    }
+    .comment-input-container textarea,
+    .comment-input-container input {
+        font-size: 14px !important;
+        padding: 6px 10px !important;
+        border-radius: 6px !important;
+    }
+    .comment-input-container button,
+    .ant-btn-primary {
+        font-size: 13px !important;
+        padding: 7px 18px !important;
+        border-radius: 6px !important;
     }
 }
 
@@ -678,9 +700,7 @@ export default function SongDetail({ songId, onClose }) {
                             src={song?.profilePicUrl}
                             alt={song?.title}
                         />
-                        <h1 className="song-title">
-                            {song?.title}
-                        </h1>
+                        <h1 className="song-title">{song?.title}</h1>
 
                         {artist && (
                             <div
@@ -824,9 +844,8 @@ export default function SongDetail({ songId, onClose }) {
                                 <span className="time-total">{song?.duration}</span>
                             </div>
                         </div>
-                    </div>
 
-                    <div className="song-detail-right">
+                        {/* --- ĐƯA Tabs LÊN NGAY DƯỚI progress --- */}
                         <Tabs
                             defaultActiveKey="lyrics"
                             centered
@@ -835,9 +854,7 @@ export default function SongDetail({ songId, onClose }) {
                                 {
                                     key: "lyrics",
                                     label: <span style={{ color: "#29aaff", fontWeight: 700 }}>{t('song_detail.lyrics')}</span>,
-                                    children: (
-                                        <div className="lyrics-scroll">{lyrics}</div>
-                                    )
+                                    children: <div className="lyrics-scroll">{lyrics}</div>
                                 },
                                 {
                                     key: "comments",
@@ -855,10 +872,10 @@ export default function SongDetail({ songId, onClose }) {
                                 fontWeight: 700,
                                 fontSize: 18,
                                 borderBottom: "1.5px solid #333",
-                                marginBottom: 24,
+                                marginBottom: 18,
                                 textShadow: "0 2px 8px rgba(41, 170, 255, 0.3)"
                             }}
-                            style={{ height: "100%" }}
+                            style={{ width: "100%", marginTop: 8 }}
                         />
                     </div>
                 </div>
