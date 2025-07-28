@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState, useRef, useCallback } from "react";
 import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
-
+import "bootstrap-icons/font/bootstrap-icons.css";
 import { PlayerContext } from "../context/PlayerContext";
 import SubscriptionModalPlan from "./SubscriptionModalPlan";
 import SongDetail from "./SongDetail";
@@ -10,7 +10,6 @@ import "react-toastify/dist/ReactToastify.css";
 import { Modal, Select, message, Button, Form, Input, Switch, Upload } from "antd";
 import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
-import BASE_API_URL from "../services/base.api.url";
 
 function SongPlay({ sidebarWidth = 0 }) {
     const {
@@ -55,12 +54,12 @@ function SongPlay({ sidebarWidth = 0 }) {
 
     const generatePlayUrl = useCallback(() => {
         switch (playType) {
-            case "playlist": return `${BASE_API_URL}/api/v1/play/playlist/${contextId}/song/${currentSongId}`;
-            case "genre": return `${BASE_API_URL}/api/v1/play/genre/${contextId}/song/${currentSongId}`;
-            case "album": return `${BASE_API_URL}/api/v1/play/album/${contextId}/song/${currentSongId}`;
-            case "wishlist": return `${BASE_API_URL}/api/v1/play/wishlist/${currentSongId}`;
-            case "history": return `${BASE_API_URL}/api/v1/play/history/${currentSongId}`;
-            default: return `${BASE_API_URL}/api/v1/play/song/${currentSongId}`;
+            case "playlist": return `/api/v1/play/playlist/${contextId}/song/${currentSongId}`;
+            case "genre": return `/api/v1/play/genre/${contextId}/song/${currentSongId}`;
+            case "album": return `/api/v1/play/album/${contextId}/song/${currentSongId}`;
+            case "wishlist": return `/api/v1/play/wishlist/${currentSongId}`;
+            case "history": return `/api/v1/play/history/${currentSongId}`;
+            default: return `/api/v1/play/song/${currentSongId}`;
         }
     }, [playType, contextId, currentSongId]);
 
@@ -149,7 +148,7 @@ function SongPlay({ sidebarWidth = 0 }) {
             const durationSec = song.duration.split(":").reduce((acc, val) => 60 * acc + +val, 0);
             if (audioRef.current.currentTime / durationSec > 0.8) {
                 setViewed(true); // đánh dấu đã cộng view bài này
-                axios.post(`${BASE_API_URL}/api/v1/play/song/${song.id}/update-views`, null, {
+                axios.post(`/api/v1/play/song/${song.id}/update-views`, null, {
                     params: { playedDuration: audioRef.current.currentTime }
                 }).catch(() => { });
             }
@@ -241,7 +240,7 @@ function SongPlay({ sidebarWidth = 0 }) {
     const fetchUserPlaylists = async () => {
         const token = localStorage.getItem("accessToken");
         try {
-            const res = await axios.get(`${BASE_API_URL}/api/v1/user/playlist`, {
+            const res = await axios.get("/api/v1/user/playlist", {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setUserPlaylists(res.data.data || []);
@@ -258,7 +257,7 @@ function SongPlay({ sidebarWidth = 0 }) {
         setCreatingPlaylist(true);
         try {
             const token = localStorage.getItem("accessToken");
-            await axios.post(`${BASE_API_URL}/api/v1/user/playlist`, { name: newPlaylistName }, {
+            await axios.post("/api/v1/user/playlist", { name: newPlaylistName }, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             message.success("Tạo playlist thành công!");
@@ -290,7 +289,7 @@ function SongPlay({ sidebarWidth = 0 }) {
                 return;
             }
             formData.append("imageUrl", values.image[0].originFileObj);
-            await axios.post(`${BASE_API_URL}/api/v1/user/playlist/add`, formData, {
+            await axios.post("/api/v1/user/playlist/add", formData, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     "Content-Type": "multipart/form-data"
@@ -324,21 +323,51 @@ function SongPlay({ sidebarWidth = 0 }) {
     return (
         <>
             <div className="songplay-root improved-player"
-                >
+                style={{
+                    background: 'rgba(24,28,43,0.85)',
+                    backdropFilter: 'blur(12px)',
+                    width: `calc(100vw - ${sidebarWidth}px)`,
+                    minHeight: 90,
+                    padding: '0 32px',
+                    position: 'fixed',
+                    left: sidebarWidth,
+                    bottom: 0,
+                    zIndex: 1100,
+                    boxShadow: '0 8px 32px #3ed8ff33',
+                    display: 'flex',
+                    alignItems: 'center',
+                    overflow: "hidden",
+                    transition: "box-shadow 0.2s, background 0.2s"
+                }}>
                 {/* Thumbnail */}
-                <div className="player-thumb" onClick={() => setShowDetail(true)} style={{ cursor: 'pointer' }}>
+                <div className="player-thumb">
                     <img src={song?.profilePicUrl} alt={song?.title}
-                        className="player-thumb-img" />
+                        style={{
+                            width: 72, height: 72, borderRadius: 16,
+                            objectFit: "cover", boxShadow: "0 2px 16px #29aaff44"
+                        }} />
                 </div>
 
                 {/* Song Info */}
-                <div className="player-info">
-                    <div className="player-title">{song?.title}</div>
-                    <div className="player-artist">{song?.artistName || song?.albumName}</div>
+                <div className="player-info" style={{
+                    flex: 1, padding: "0 24px 5px 18px", overflow: "hidden"
+                }}>
+                    <div className="player-title" style={{
+                        color: "#fff", fontWeight: 700, fontSize: 22,
+                        textShadow: "0 1px 8px #0006", overflow: "hidden",
+                        display: "-webkit-box", WebkitLineClamp: 1, WebkitBoxOrient: "vertical"
+                    }}>{song?.title}</div>
+                    <div className="player-artist" style={{
+                        color: "#8ca0c6", fontWeight: 400, fontSize: 15,
+                        opacity: 0.95, marginTop: 2, whiteSpace: "nowrap",
+                        overflow: "hidden", textOverflow: "ellipsis"
+                    }}>{song?.artistName || song?.albumName}</div>
                 </div>
 
                 {/* Controls */}
-                <div className="player-controls">
+                <div className="player-controls" style={{
+                    flex: "0 0 170px", display: 'flex', gap: 18, alignItems: "center"
+                }}>
                     <button
                         className="player-btn"
                         onClick={() => !adPlaying && handleSongChange("prev")}
@@ -346,7 +375,7 @@ function SongPlay({ sidebarWidth = 0 }) {
                         disabled={adPlaying}
                         style={adPlaying ? { opacity: 0.5, pointerEvents: "none" } : {}}
                     >
-                        <span className="material-icons">skip_previous</span>
+                        <i className="bi bi-skip-backward-fill"></i>
                     </button>
                     <button
                         className="player-btn main"
@@ -355,7 +384,7 @@ function SongPlay({ sidebarWidth = 0 }) {
                         disabled={adPlaying}
                         style={adPlaying ? { opacity: 0.5, pointerEvents: "none" } : {}}
                     >
-                        <span className="material-icons">{isPlaying ? "pause" : "play_arrow"}</span>
+                        <i className={isPlaying ? "bi bi-pause-fill" : "bi bi-play-fill"}></i>
                     </button>
                     <button
                         className="player-btn"
@@ -364,84 +393,71 @@ function SongPlay({ sidebarWidth = 0 }) {
                         disabled={adPlaying}
                         style={adPlaying ? { opacity: 0.5, pointerEvents: "none" } : {}}
                     >
-                        <span className="material-icons">skip_next</span>
+                        <i className="bi bi-skip-forward-fill"></i>
                     </button>
                 </div>
 
-                {/* Progress - Only show on large screens */}
-                {window.innerWidth > 1200 && (
-                    <div className="player-progress-wrap">
-                        <input
-                            type="range"
-                            min={0}
-                            max={durationSec}
-                            value={currentTime}
-                            onChange={handleSeek}
-                            className="player-progress"
-                        />
-                        <div className="player-time">
-                            <span>{formatTime(currentTime)}</span>
-                            <span>{song ? song.duration.substring(3) : "0:00"}</span>
-                        </div>
+                {/* Progress */}
+                <div className="player-progress-wrap" style={{
+                    flex: "2 2 320px", maxWidth: 340, padding: "0 24px"
+                }}>
+                    <input
+                        type="range"
+                        min={0}
+                        max={durationSec}
+                        value={currentTime}
+                        onChange={handleSeek}
+                        className="player-progress"
+                        style={{
+                            width: "100%",
+                            accentColor: "#3ed8ff",
+                            background: `linear-gradient(90deg, #3ed8ff ${(currentTime / durationSec) * 100}%, #23283e ${(currentTime / durationSec) * 100}%)`,
+                            height: 6, borderRadius: 4
+                        }}
+                    />
+                    <div className="d-flex justify-content-between mt-1" style={{ color: "#8ca0c6", fontSize: 13 }}>
+                        <span>{formatTime(currentTime)}</span>
+                        <span>{song ? song.duration.substring(3) : "0:00"}</span>
                     </div>
-                )}
+                </div>
 
-                {}
-                <div className="player-actions">
-                    {/* Volume control - Only show on large screens */}
-                    {window.innerWidth > 768 && (
-                        <>
-                            <span className="material-icons player-volume-icon">volume_up</span>
-                            <input type="range" min={0} max={1} step={0.01} value={volume} onChange={handleVolume}
-                                className="player-volume" />
-                        </>
-                    )}
-                    
-                    {/* Show Details button - Only show on large screens */}
-                    {window.innerWidth > 768 && (
-                        <button className="player-btn" title={t("song_detail.comments") || "Show Details"} onClick={() => setShowDetail(true)}>
-                            <span className="material-icons">expand_less</span>
-                        </button>
-                    )}
-                    
-                    {/* Download and Favorite buttons - Only show on large screens */}
-                    {window.innerWidth > 1200 && (
-                        <>
-                            <button className={`player-btn like${liked ? " liked" : ""}`}
-                                title={t("favorite") || "Favorite"}
-                                onClick={toggleWishlist}
-                            >
-                                <span className="material-icons">{liked ? "favorite" : "favorite_border"}</span>
-                            </button>
-                            <button className="player-btn" title={t("song_detail.download_song") || "Download"} onClick={handleDownload}>
-                                <span className="material-icons">file_download</span>
-                            </button>
-                        </>
-                    )}
-                    
-                    {/* Add to Playlist button - Only show on large screens */}
-                    {window.innerWidth > 768 && (
-                        <button
-                            className="player-btn"
-                            title={t("song_detail.add_to_playlist") || "Add to Playlist"}
-                            onClick={() => {
-                                const token = localStorage.getItem("accessToken");
-                                if (!token) {
-                                    toast.info(t("weekly_top_10.login_to_add_playlist") || "Please login to add songs to your playlist!", { autoClose: 2000 });
-                                    return;
-                                }
-                                fetchUserPlaylists();
-                                setAddToPlaylistModal(true);
-                                setSelectedPlaylistId(null);
-                            }}
-                        >
-                            <span className="material-icons">add_box</span>
-                        </button>
-                    )}
-                    
-                    {/* Close button - Always show */}
+                {/* Right Controls */}
+                <div className="player-actions" style={{
+                    flex: "0 0 160px", marginRight: '10px', display: "flex", gap: 12, alignItems: "center"
+                }}>
+                    <i className="bi bi-volume-up" style={{ fontSize: 19, color: "#8ca0c6" }}></i>
+                    <input type="range" min={0} max={1} step={0.01} value={volume} onChange={handleVolume}
+                        style={{ width: 60, accentColor: "#3ed8ff" }} />
+                    <button className={`player-btn like${liked ? " liked" : ""}`}
+                        title={t("favorite") || "Favorite"}
+                        onClick={toggleWishlist}
+                    >
+                        <i className={liked ? "bi bi-heart-fill" : "bi bi-heart"}></i>
+                    </button>
+                    <button className="player-btn" title={t("song_detail.download_song") || "Download"} onClick={handleDownload}>
+                        <i className="bi bi-download"></i>
+                    </button>
+                    <button className="player-btn" title={t("song_detail.comments") || "Show Details"} onClick={() => setShowDetail(true)}>
+                        <i className="bi bi-chevron-up"></i>
+                    </button>
+                    <button
+                        className="player-btn"
+                        title={t("song_detail.add_to_playlist") || "Add to Playlist"}
+                        onClick={() => {
+                            const token = localStorage.getItem("accessToken");
+                            if (!token) {
+                                toast.info(t("weekly_top_10.login_to_add_playlist") || "Please login to add songs to your playlist!", { autoClose: 2000 });
+                                return;
+                            }
+                            fetchUserPlaylists();
+                            setAddToPlaylistModal(true);
+                            setSelectedPlaylistId(null);
+                        }}
+                    >
+                        <i className="bi bi-plus-square"></i>
+                    </button>
                     <button className="player-btn close" title={t("common.close") || "Close Player"} onClick={stopPlayer}>
-                        <span className="material-icons">close</span>
+                        <i className="bi bi-x-lg"></i>
                     </button>
                 </div>
 
@@ -487,7 +503,7 @@ function SongPlay({ sidebarWidth = 0 }) {
                     }
                     try {
                         const token = localStorage.getItem("accessToken");
-                        await axios.post(`${BASE_API_URL}/api/v1/user/playlist/add-song?playlistId=${selectedPlaylistId}&songId=${song.id}`, {}, {
+                        await axios.post(`/api/v1/user/playlist/add-song?playlistId=${selectedPlaylistId}&songId=${song.id}`, {}, {
                             headers: { Authorization: `Bearer ${token}` }
                         });
                         message.success(t("weekly_top_10.added_to_playlist"));
@@ -676,387 +692,74 @@ function SongPlay({ sidebarWidth = 0 }) {
             ) : null}
 
             <style>{`
-.songplay-root.improved-player {
-    background: rgba(24,28,43,0.85);
-    backdrop-filter: blur(12px);
-    width: 100vw;
-    min-height: 90px;
-    padding: 0 32px;
-    position: fixed;
-    left: 0;
-    bottom: 0;
-    z-index: 1100;
-    box-shadow: 0 8px 32px #3ed8ff33;
-    display: flex;
-    align-items: center;
-    overflow: hidden;
-    transition: box-shadow 0.2s, background 0.2s;
+.improved-player {
+    animation: fadeInUp 0.4s;
 }
-.player-thumb-img {
-    width: 72px;
-    height: 72px;
-    border-radius: 16px;
-    object-fit: cover;
-    box-shadow: 0 2px 16px #29aaff44;
-}
-.player-info {
-    flex: 1;
-    padding: 0 24px 5px 18px;
-    overflow: hidden;
-}
-.player-title {
-    color: #fff;
-    font-weight: 700;
-    font-size: 22px;
-    text-shadow: 0 1px 8px #0006;
-    overflow: hidden;
-    display: -webkit-box;
-    -webkit-line-clamp: 1;
-    -webkit-box-orient: vertical;
-}
-.player-artist {
-    color: #8ca0c6;
-    font-weight: 400;
-    font-size: 15px;
-    opacity: 0.95;
-    margin-top: 2px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-.player-controls {
-    flex: 0 0 170px;
-    display: flex;
-    gap: 18px;
-    align-items: center;
-}
-.player-progress-wrap {
-    flex: 2 2 320px;
-    max-width: 340px;
-    padding: 0 24px;
-}
-.player-progress {
-    width: 100%;
-    accent-color: #3ed8ff;
-    background: linear-gradient(90deg, #3ed8ff 0%, #23283e 0%);
-    height: 6px;
-    border-radius: 4px;
-    outline: none;
-    border: none;
-}
-.player-time {
-    display: flex;
-    justify-content: space-between;
-    color: #8ca0c6;
-    font-size: 13px;
-    margin-top: 4px;
-}
-.player-actions {
-    flex: 0 0 160px;
-    margin-right: 10px;
-    display: flex;
-    gap: 12px;
-    align-items: center;
-}
-.player-volume-icon {
-    font-size: 19px;
-    color: #8ca0c6;
-}
-.player-volume {
-    width: 60px;
-    accent-color: #3ed8ff;
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(40px);}
+    to { opacity: 1; transform: translateY(0);}
 }
 .player-btn {
-    background: rgba(255,255,255,0.12);
+    background: none;
     border: none;
-    border-radius: 50%;
     color: #fff;
     font-size: 22px;
-    width: 48px;
-    height: 48px;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: background 0.18s, color 0.18s, box-shadow 0.18s;
-    box-shadow: none;
-    outline: none;
-    margin: 0 2px;
+    transition: background 0.18s, color 0.18s;
+    box-shadow: none !important;
 }
 .player-btn:hover, .player-btn:focus {
-    background: rgba(62,216,255,0.18);
+    background: #3ed8ff33;
     color: #3ed8ff;
     outline: none;
-    box-shadow: 0 2px 8px #3ed8ff33;
-}
-.player-btn:active {
-    background: rgba(62,216,255,0.28);
-    color: #3ed8ff;
+    box-shadow: none !important;
 }
 .player-btn.main {
     background: linear-gradient(135deg, #3ed8ff 60%, #1fa2ff 100%);
     color: #23283e;
     font-size: 28px;
-    width: 56px;
-    height: 56px;
-    box-shadow: 0 2px 12px #3ed8ff33;
-    border: none;
-}
-.player-btn.main:hover, .player-btn.main:focus {
-    background: linear-gradient(135deg, #29aaff 60%, #1890ff 100%);
-    color: #23283e;
-    box-shadow: 0 4px 16px #3ed8ff44;
+    width: 48px;
+    height: 48px;
+    box-shadow: none !important;
 }
 .player-btn.like.liked {
     color: #ff416c;
-    background: rgba(255,65,108,0.15);
+    background: #fff1;
 }
 .player-btn.close {
     color: #fff9;
     font-size: 20px;
     margin-left: 8px;
-    background: rgba(255,255,255,0.10);
 }
-.player-btn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    box-shadow: none;
+.player-progress::-webkit-slider-thumb {
+    background: #3ed8ff;
+    border-radius: 50%;
+    width: 16px;
+    height: 16px;
+    box-shadow: none !important;
+    border: none;
 }
-@media (max-width: 1024px) {
-    .player-btn { width: 40px; height: 40px; font-size: 18px; }
-    .player-btn.main { width: 48px; height: 48px; font-size: 22px; }
-    .player-thumb-img {
-        width: 60px;
-        height: 60px;
-        border-radius: 12px;
-    }
-    .player-title {
-        font-size: 18px;
-    }
-    .player-artist {
-        font-size: 13px;
-    }
-    .player-controls {
-        gap: 12px;
-    }
-    .player-progress-wrap {
-        max-width: 280px;
-        padding: 0 12px;
-    }
-    .player-time {
-        font-size: 11px;
-    }
-    .player-actions {
-        gap: 8px;
-    }
-    .player-volume {
-        width: 40px;
-    }
+.player-progress {
+    outline: none;
+    border-radius: 4px;
+    height: 6px;
+    background: #23283e;
+    transition: background 0.2s;
+    box-shadow: none !important;
+    border: none;
 }
-@media (max-width: 768px) {
-    .songplay-root.improved-player {
-        min-height: 70px;
-        padding: 0 8px;
-    }
-    .player-btn { width: 32px; height: 32px; font-size: 15px; }
-    .player-btn.main { width: 40px; height: 40px; font-size: 18px; }
-    .player-thumb-img {
-        width: 40px;
-        height: 40px;
-        border-radius: 8px;
-    }
-    .player-info {
-        padding: 0 8px 5px 8px;
-    }
-    .player-title {
-        font-size: 14px;
-    }
-    .player-artist {
-        font-size: 11px;
-    }
-    .player-controls {
-        flex: 0 0 80px;
-        gap: 8px;
-    }
-    .player-progress-wrap {
-        max-width: 160px;
-        padding: 0 4px;
-    }
-    .player-time {
-        font-size: 10px;
-    }
-    .player-actions {
-        flex: 0 0 80px;
-        margin-right: 5px;
-        gap: 6px;
-    }
-    .player-volume-icon {
-        font-size: 14px;
-    }
-    .player-volume {
-        width: 28px;
-    }
+.player-thumb img {
+    transition: box-shadow 0.2s, transform 0.2s;
+    box-shadow: none !important;
 }
-@media (max-width: 576px) {
-    .songplay-root.improved-player {
-        min-height: 100px !important;
-        padding: 0 12px !important;
-    }
-    .player-btn {
-        width: 56px !important;
-        height: 56px !important;
-        font-size: 28px !important;
-        margin: 0 8px !important;
-    }
-    .player-btn.main {
-        width: 72px !important;
-        height: 72px !important;
-        font-size: 36px !important;
-    }
-    .player-thumb-img {
-        width: 64px !important;
-        height: 64px !important;
-        border-radius: 12px !important;
-    }
-    .player-info {
-        padding: 0 12px 5px 12px !important;
-    }
-    .player-title {
-        font-size: 16px !important;
-        font-weight: 600 !important;
-    }
-    .player-artist {
-        font-size: 13px !important;
-    }
-    .player-controls {
-        flex: 0 0 120px !important;
-        gap: 12px !important;
-    }
-    .player-progress-wrap {
-        max-width: 120px !important;
-        padding: 0 8px !important;
-    }
-    .player-time {
-        font-size: 11px !important;
-    }
-    .player-actions {
-        flex: 0 0 100px !important;
-        margin-right: 8px !important;
-        gap: 8px !important;
-    }
-    .player-volume-icon {
-        font-size: 18px !important;
-    }
-    .player-volume {
-        width: 40px !important;
-    }
-}
-@media (max-width: 480px) {
-    .songplay-root.improved-player {
-        min-height: 90px !important;
-        padding: 0 8px !important;
-    }
-    .player-btn {
-        width: 48px !important;
-        height: 48px !important;
-        font-size: 24px !important;
-        margin: 0 6px !important;
-    }
-    .player-btn.main {
-        width: 60px !important;
-        height: 60px !important;
-        font-size: 30px !important;
-    }
-    .player-thumb-img {
-        width: 56px !important;
-        height: 56px !important;
-        border-radius: 10px !important;
-    }
-    .player-info {
-        padding: 0 10px 5px 10px !important;
-    }
-    .player-title {
-        font-size: 14px !important;
-        font-weight: 600 !important;
-    }
-    .player-artist {
-        font-size: 12px !important;
-    }
-    .player-controls {
-        flex: 0 0 100px !important;
-        gap: 10px !important;
-    }
-    .player-progress-wrap {
-        max-width: 100px !important;
-        padding: 0 6px !important;
-    }
-    .player-time {
-        font-size: 10px !important;
-    }
-    .player-actions {
-        flex: 0 0 90px !important;
-        margin-right: 6px !important;
-        gap: 6px !important;
-    }
-    .player-volume-icon {
-        font-size: 16px !important;
-    }
-    .player-volume {
-        width: 35px !important;
-    }
-}
-@media (max-width: 360px) {
-    .songplay-root.improved-player {
-        min-height: 80px !important;
-        padding: 0 6px !important;
-    }
-    .player-btn {
-        width: 44px !important;
-        height: 44px !important;
-        font-size: 22px !important;
-        margin: 0 4px !important;
-    }
-    .player-btn.main {
-        width: 56px !important;
-        height: 56px !important;
-        font-size: 28px !important;
-    }
-    .player-thumb-img {
-        width: 48px !important;
-        height: 48px !important;
-        border-radius: 8px !important;
-    }
-    .player-info {
-        padding: 0 8px 5px 8px !important;
-    }
-    .player-title {
-        font-size: 13px !important;
-        font-weight: 600 !important;
-    }
-    .player-artist {
-        font-size: 11px !important;
-    }
-    .player-controls {
-        flex: 0 0 90px !important;
-        gap: 8px !important;
-    }
-    .player-progress-wrap {
-        max-width: 80px !important;
-        padding: 0 4px !important;
-    }
-    .player-time {
-        font-size: 9px !important;
-    }
-    .player-actions {
-        flex: 0 0 80px !important;
-        margin-right: 4px !important;
-        gap: 4px !important;
-    }
-    .player-volume-icon {
-        font-size: 14px !important;
-    }
-    .player-volume {
-        width: 30px !important;
-    }
+.player-thumb img:hover {
+    box-shadow: none !important;
+    transform: scale(1.04);
 }
 `}</style>
         </>
