@@ -38,7 +38,7 @@ export default function PlaylistCard({ playlist, onEdit, onDelete, onPlay }) {
                 />
                 <Button
                     shape="circle"
-                    icon={<PlayCircleOutlined style={{ fontSize: 28 }} />}
+                    icon={<PlayCircleOutlined style={{ fontSize: 32 }} />}
                     size="large"
                     style={{
                         position: "absolute",
@@ -47,14 +47,19 @@ export default function PlaylistCard({ playlist, onEdit, onDelete, onPlay }) {
                         background: "#fff",
                         color: "#23242b",
                         boxShadow: "0 2px 8px #0003",
-                        border: "none"
+                        border: "none",
+                        width: 48,
+                        height: 48,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center"
                     }}
                     onClick={onPlay}
                 />
                 <Dropdown menu={menu} trigger={['click']}>
                     <Button
                         shape="circle"
-                        icon={<MoreOutlined />}
+                        icon={<MoreOutlined style={{ fontSize: 20 }} />}
                         size="large"
                         style={{
                             position: "absolute",
@@ -62,7 +67,12 @@ export default function PlaylistCard({ playlist, onEdit, onDelete, onPlay }) {
                             bottom: 12,
                             background: "#fff",
                             color: "#23242b",
-                            border: "none"
+                            border: "none",
+                            width: 44,
+                            height: 44,
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center"
                         }}
                         onClick={e => e.stopPropagation()}
                     />

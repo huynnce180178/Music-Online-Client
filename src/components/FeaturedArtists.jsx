@@ -6,8 +6,22 @@ import { toast, ToastContainer } from "react-toastify";
 import { useTranslation } from 'react-i18next';
 import BASE_API_URL from "../services/base.api.url";
 
+// Responsive hook
+function useIsMobile() {
+    const [isMobile, setIsMobile] = useState(false);
+    useEffect(() => {
+        const check = () => setIsMobile(window.innerWidth < 768);
+        check();
+        window.addEventListener('resize', check);
+        return () => window.removeEventListener('resize', check);
+    }, []);
+    return isMobile;
+}
+
 export default function FeaturedArtists() {
     const { t } = useTranslation();
+    const isMobile = useIsMobile();
+    
     function getInitialCount() {
         if (window.innerWidth < 576) return 1;
         if (window.innerWidth < 992) return 2;
@@ -55,11 +69,15 @@ export default function FeaturedArtists() {
         <div style={{
             width: "100%",
             background: "#181c2b",
-            padding: "0 0 48px 0",
+            padding: isMobile ? "0 0 24px 0" : "0 0 48px 0",
             display: "flex",
             justifyContent: "center",
         }}>
-            <div className="container-fluid" style={{ maxWidth: 1550, padding: "0 48px", position: "relative" }}>
+            <div className="container-fluid" style={{ 
+                maxWidth: 1550, 
+                padding: isMobile ? "0 16px" : "0 48px", 
+                position: "relative" 
+            }}>
 
                 {/* Arrow Left */}
                 <button onClick={handlePrev} disabled={!canPrev} style={{

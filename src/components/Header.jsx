@@ -188,10 +188,10 @@ function NotificationDropdown() {
                                             <Tooltip title={t('notification.mark_as_read')} key="mark">
                                                 <Button
                                                     type="text"
-                                                    icon={<CheckCircleOutlined style={{ color: "#3ed8ff", fontSize: 18 }} />}
-                                                    size="small"
+                                                    icon={<CheckCircleOutlined style={{ color: "#3ed8ff", fontSize: 20 }} />}
+                                                    size="middle"
                                                     onClick={() => handleMarkAsRead(item.id)}
-                                                    style={{ borderRadius: 12 }}
+                                                    style={{ borderRadius: 12, minWidth: 40, minHeight: 40 }}
                                                 />
                                             </Tooltip>
                                         ),
@@ -199,9 +199,9 @@ function NotificationDropdown() {
                                             <Button
                                                 type="text"
                                                 danger
-                                                icon={<DeleteOutlined />}
-                                                size="small"
-                                                style={{ borderRadius: 12 }}
+                                                icon={<DeleteOutlined style={{ fontSize: 18 }} />}
+                                                size="middle"
+                                                style={{ borderRadius: 12, minWidth: 40, minHeight: 40 }}
                                                 onClick={() => handleDelete(item.id)}
                                             />
                                         </Tooltip>
@@ -376,20 +376,12 @@ function Header({ setModalType, onMenuClick, onSearch }) {
     };
 
     // Dropdown menu cho user
-    const hasOnlyUserOrPremium =
-        Array.isArray(roles) &&
-        roles.length > 0 &&
-        roles.every(role => role === "ROLE_USER" || role === "ROLE_PREMIUM");
-
     const userMenu = {
         items: [
             { key: "profile", label: t('header.profile'), icon: <UserOutlined />, onClick: () => setShowProfile(true) },
-            // Chỉ hiển thị nút switch-role nếu user có nhiều role và không chỉ là user/premium
-            ...(
-                roles.length > 1 && !hasOnlyUserOrPremium
-                    ? [{ key: "switch-role", label: t('header.switch_role'), icon: <GlobalOutlined />, onClick: () => setShowRoleModal(true) }]
-                    : []
-            ),
+            ...(roles.length > 1
+                ? [{ key: "switch-role", label: t('header.switch_role'), icon: <GlobalOutlined />, onClick: () => setShowRoleModal(true) }]
+                : []),
             { key: "logout", label: t('header.logout'), icon: <LogoutOutlined />, onClick: handleLogout }
         ]
     };
@@ -487,9 +479,9 @@ function Header({ setModalType, onMenuClick, onSearch }) {
                                 background: "#232b3e",
                                 color: "#fff",
                                 border: "none",
-                                fontSize: 22,
-                                minWidth: 40,
-                                minHeight: 40,
+                                fontSize: 24,
+                                minWidth: 48,
+                                minHeight: 48,
                                 marginRight: 8,
                                 display: "flex",
                                 alignItems: "center",
@@ -522,11 +514,11 @@ function Header({ setModalType, onMenuClick, onSearch }) {
                             </Space>
                         }
                         style={{
-                            width: isMobile ? 160 : 320,
+                            width: isMobile ? 200 : 320,
                             borderRadius: 24,
                             background: "#232b3e",
                             color: "#fff",
-                            fontSize: isMobile ? 13 : 16
+                            fontSize: isMobile ? 14 : 16
                         }}
                         className="custom-input"
                         aria-label="Search"

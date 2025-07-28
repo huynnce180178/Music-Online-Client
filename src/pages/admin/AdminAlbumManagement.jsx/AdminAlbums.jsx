@@ -158,7 +158,7 @@ export default function AdminAlbums() {
                 size={isTablet ? "small" : "middle"}
                 scroll={isTablet ? { x: 600 } : undefined}
                 locale={{
-                    emptyText: <Empty description={t('admin_albums.no_albums')} imageStyle={{ filter: "invert(0.7)" }} />,
+                    emptyText: <Empty description={t('admin_albums.no_albums')} imageStyle={{ filter: "invert(0.7)" }} />, 
                 }}
                 style={{ borderRadius: 12 }}
             />
@@ -182,4 +182,4 @@ export default function AdminAlbums() {
             </Modal>
         </div>
     );
-}
+} 

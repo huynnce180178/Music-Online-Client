@@ -8,6 +8,18 @@ import PropTypes from "prop-types";
 import { useTranslation } from 'react-i18next';
 import BASE_API_URL from "../services/base.api.url";
 
+// Responsive hook
+function useIsMobile() {
+    const [isMobile, setIsMobile] = useState(false);
+    useEffect(() => {
+        const check = () => setIsMobile(window.innerWidth < 768);
+        check();
+        window.addEventListener('resize', check);
+        return () => window.removeEventListener('resize', check);
+    }, []);
+    return isMobile;
+}
+
 function SongRow({ song, index, onSelect, onDownload, onAddToPlaylist, t }) {
     const borderGradient = "linear-gradient(90deg, #252B4D 0%, #161A2D 100%)";
     const menuItems = [
@@ -150,15 +162,15 @@ SongRow.propTypes = {
 };
 
 export default function WeeklyTop10() {
+    const { playSong } = useContext(PlayerContext) || {};
     const [songs, setSongs] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [showUpgradeModal, setShowUpgradeModal] = useState(false);
     const [playlistModal, setPlaylistModal] = useState({ open: false, songId: null });
     const [userPlaylists, setUserPlaylists] = useState([]);
     const [selectedPlaylistId, setSelectedPlaylistId] = useState(null);
-    const [showUpgradeModal, setShowUpgradeModal] = useState(false);
-
-    const playerCtx = useContext(PlayerContext) || {};
-    const { playSong } = playerCtx;
     const { t } = useTranslation();
+    const isMobile = useIsMobile();
 
     useEffect(() => {
         axios.get(`${BASE_API_URL}/api/v1/guest/TopSongOfWeak`)
@@ -238,26 +250,29 @@ export default function WeeklyTop10() {
             className="w-100"
             style={{
                 background: "#181c2b",
-                padding: "0 0 40px 0",
+                padding: isMobile ? "0 0 24px 0" : "0 0 40px 0",
             }}
         >
-            <div className="container" style={{ maxWidth: "100%", padding: "0 2vw" }}>
+            <div className="container" style={{ 
+                maxWidth: "100%", 
+                padding: isMobile ? "0 16px" : "0 2vw" 
+            }}>
                 <h2
                     className="fw-bold"
                     style={{
                         color: "#3ed8ff",
                         fontWeight: 700,
-                        fontSize: 28,
+                        fontSize: isMobile ? 24 : 28,
                         fontFamily: "'Quicksand', 'Montserrat', sans-serif",
                         letterSpacing: 1,
-                        marginBottom: 25,
+                        marginBottom: isMobile ? 16 : 25,
                     }}
                 >
                     {t('weekly_top_10.title')}
                 </h2>
-                <div className="row">
-                    <div className="col-md-6">
-                        {songs.slice(0, 5).map((song, idx) => (
+                <div className={isMobile ? "row" : "row"}>
+                    <div className={isMobile ? "col-12" : "col-md-6"}>
+                        {songs.slice(0, isMobile ? 10 : 5).map((song, idx) => (
                             <SongRow
                                 key={song.songId}
                                 song={song}
@@ -269,19 +284,21 @@ export default function WeeklyTop10() {
                             />
                         ))}
                     </div>
-                    <div className="col-md-6">
-                        {songs.slice(5, 10).map((song, idx) => (
-                            <SongRow
-                                key={song.songId}
-                                song={song}
-                                index={idx + 5}
-                                onSelect={handleSelectSong}
-                                t={t}
-                                onDownload={handleDownloadSong}
-                                onAddToPlaylist={handleAddToPlaylist}
-                            />
-                        ))}
-                    </div>
+                    {!isMobile && (
+                        <div className="col-md-6">
+                            {songs.slice(5, 10).map((song, idx) => (
+                                <SongRow
+                                    key={song.songId}
+                                    song={song}
+                                    index={idx + 5}
+                                    onSelect={handleSelectSong}
+                                    t={t}
+                                    onDownload={handleDownloadSong}
+                                    onAddToPlaylist={handleAddToPlaylist}
+                                />
+                            ))}
+                        </div>
+                    )}
                 </div>
             </div>
 

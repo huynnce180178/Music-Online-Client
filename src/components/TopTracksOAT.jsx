@@ -24,13 +24,28 @@ export default function TopTracksOAT() {
         fetch(`${BASE_API_URL}/api/v1/guest/TopSongs`)
             .then(res => res.json())
             .then(data => {
-                const mapped = data.map(song => ({
-                    id: song.songId || song.id,
-                    title: song.title,
-                    cover: song.profilePicUrl,
-                    artist: song.artistName,
-                }));
-                setSongs(mapped);
+                // Check if data is an array and has content
+                if (Array.isArray(data) && data.length > 0) {
+                    const mapped = data.map(song => ({
+                        id: song.songId || song.id,
+                        title: song.title,
+                        cover: song.profilePicUrl,
+                        artist: song.artistName,
+                    }));
+                    setSongs(mapped);
+                } else if (data && Array.isArray(data.data)) {
+                    // Handle case where data is wrapped in a data property
+                    const mapped = data.data.map(song => ({
+                        id: song.songId || song.id,
+                        title: song.title,
+                        cover: song.profilePicUrl,
+                        artist: song.artistName,
+                    }));
+                    setSongs(mapped);
+                } else {
+                    console.warn("Top tracks data is not in expected format:", data);
+                    setSongs([]);
+                }
             })
             .catch(() => setSongs([]));
     }, []);

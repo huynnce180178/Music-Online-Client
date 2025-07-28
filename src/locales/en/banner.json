@@ -13,6 +13,6 @@
   "banner.albums": "10+ albums",
   "banner.listen_now": "Listen Now",
   "banner.add_to_queue": "Add To Queue",
-  "banner.please_login_first": "You need to log in to use this feature.",
+  "banner.no_banners_approved": "No banners approved!",
   "no_banners_approved": "No banners approved!"
 } 

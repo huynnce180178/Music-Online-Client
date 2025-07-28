@@ -13,11 +13,5 @@
   "admin_users.status_active": "Hoạt động",
   "admin_users.status_blocked": "Bị khóa",
   "admin_users.action": "Thao tác",
-  "admin_users.edit": "Sửa",
-  "admin_users.save": "Lưu",
-  "admin_users.cancel": "Hủy",
-  "admin_users.edit_role_title": "Thiết lập vai trò cho người dùng",
-  "admin_users.select_roles": "Chọn vai trò",
-  "admin_users.search_placeholder": "Tìm kiếm người dùng",
-  "admin_users.no_users_found": "Không tìm thấy người dùng nào"
-}
+  "admin_users.search_placeholder": "Tìm kiếm người dùng"
+} 

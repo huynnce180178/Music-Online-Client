@@ -30,14 +30,30 @@ export default function NewReleases() {
         fetch(`${BASE_API_URL}/api/v1/guest/ablum/new-releases`)
             .then(res => res.json())
             .then(data => {
-                const mapped = data.map(album => ({
-                    id: album.id,
-                    title: album.title,
-                    cover: album.coverUrl,
-                    artist: album.artistName,
-                    time: album.createdAtStr,
-                }));
-                setNewReleases(mapped);
+                // Check if data is an array and has content
+                if (Array.isArray(data) && data.length > 0) {
+                    const mapped = data.map(album => ({
+                        id: album.id,
+                        title: album.title,
+                        cover: album.coverUrl,
+                        artist: album.artistName,
+                        time: album.createdAtStr,
+                    }));
+                    setNewReleases(mapped);
+                } else if (data && Array.isArray(data.data)) {
+                    // Handle case where data is wrapped in a data property
+                    const mapped = data.data.map(album => ({
+                        id: album.id,
+                        title: album.title,
+                        cover: album.coverUrl,
+                        artist: album.artistName,
+                        time: album.createdAtStr,
+                    }));
+                    setNewReleases(mapped);
+                } else {
+                    console.warn("New releases data is not in expected format:", data);
+                    setNewReleases([]);
+                }
             })
             .catch(err => {
                 console.error("Lỗi fetch:", err);
@@ -92,7 +108,7 @@ export default function NewReleases() {
                                 style={{
                                     color: "#fff", fontSize: 32,
                                     marginRight: bp === "mobile" ? 4 : 12,
-                                    marginTop: 18, zIndex: 5, minWidth: 40
+                                    marginTop: 18, zIndex: 5, minWidth: 48, minHeight: 48
                                 }}
                                 onClick={() => canPrev && setStartIdx(startIdx - 1)}
                                 disabled={!canPrev}

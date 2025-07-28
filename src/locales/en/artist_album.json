@@ -25,18 +25,5 @@
   "approved": "Approved",
   "deleted_by_admin": "Deleted by Admin",
   "deleted_by_artist": "Self Delete",
-  "request_restore": "Request Restore",
-  "update_success": "Album updated successfully!",
-  "add_success": "Album added successfully!",
-  "operation_failed": "Album operation failed!",
-  "delete_confirm": "Are you sure you want to delete this album?",
-  "delete": "Delete",
-  "cancel": "Cancel",
-  "delete_success": "Album deleted!",
-  "delete_failed": "Cannot delete album!",
-  "old_cover": "Old cover",
-  "album_name_placeholder": "Enter album name",
-  "release_date_placeholder": "Select release date",
-  "release_date_future_only": "Only future release dates are allowed",
-  "release_date_too_old": "Release date is too far in the past"
-}
+  "request_restore": "Request Restore"
+} 

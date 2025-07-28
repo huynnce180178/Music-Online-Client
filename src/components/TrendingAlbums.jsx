@@ -26,18 +26,66 @@ export default function TrendingAlbums() {
     const [startIdx, setStartIdx] = useState(0);
 
     useEffect(() => {
-        fetch(`${BASE_API_URL}/api/v1/guest/Top10Album`)
-            .then(res => res.json())
-            .then(data => {
-                const mapped = data.map(album => ({
-                    id: album.albumId,
-                    title: album.albumName,
-                    artist: album.totalViews + " views",
-                    cover: album.albumImage || "/img/default-cover.png",
-                }));
-                setAlbums(mapped);
-            })
-            .catch(() => setAlbums([]));
+        // Try multiple endpoints to find the correct one
+        const endpoints = [
+            `${BASE_API_URL}/api/v1/guest/Top10Album`,
+            `${BASE_API_URL}/api/v1/guest/ablum/trending`,
+            `${BASE_API_URL}/api/v1/guest/album/trending`,
+            `${BASE_API_URL}/api/v1/guest/ablum/top10`,
+            `${BASE_API_URL}/api/v1/guest/album/top10`
+        ];
+        
+        const tryEndpoint = async (index = 0) => {
+            if (index >= endpoints.length) {
+                console.error('All trending album endpoints failed');
+                setAlbums([]);
+                return;
+            }
+            
+            const endpoint = endpoints[index];
+            console.log(`Trying trending albums endpoint ${index + 1}:`, endpoint);
+            
+            try {
+                const res = await fetch(endpoint);
+                if (!res.ok) {
+                    throw new Error(`HTTP ${res.status}`);
+                }
+                
+                const data = await res.json();
+                console.log(`Trending albums endpoint ${index + 1} response:`, data);
+                
+                // Check if data is an array and has content
+                if (Array.isArray(data) && data.length > 0) {
+                    const mapped = data.map(album => ({
+                        id: album.albumId || album.id,
+                        title: album.albumName || album.title,
+                        artist: album.totalViews + " views",
+                        cover: album.albumImage || album.coverUrl || "/img/default-cover.png",
+                    }));
+                    setAlbums(mapped);
+                    console.log('Set trending albums successfully:', mapped.length);
+                } else if (data && Array.isArray(data.data)) {
+                    // Handle case where data is wrapped in a data property
+                    const mapped = data.data.map(album => ({
+                        id: album.albumId || album.id,
+                        title: album.albumName || album.title,
+                        artist: album.totalViews + " views",
+                        cover: album.albumImage || album.coverUrl || "/img/default-cover.png",
+                    }));
+                    setAlbums(mapped);
+                    console.log('Set trending albums from data.data:', mapped.length);
+                } else {
+                    console.warn(`Trending albums endpoint ${index + 1} returned empty or invalid data:`, data);
+                    tryEndpoint(index + 1);
+                    return;
+                }
+            } catch (error) {
+                console.error(`Trending albums endpoint ${index + 1} failed:`, error.message);
+                tryEndpoint(index + 1);
+            }
+        };
+        
+        tryEndpoint();
     }, []);
 
     useEffect(() => {

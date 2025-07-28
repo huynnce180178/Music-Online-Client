@@ -25,18 +25,5 @@
   "approved": "Đã duyệt",
   "deleted_by_admin": "Bị admin xóa",
   "deleted_by_artist": "Tự xóa",
-  "request_restore": "Yêu cầu khôi phục",
-  "release_date_too_old": "Ngày phát hành quá xa về quá khứ",
-  "release_date_future_only": "Chỉ được chọn ngày phát hành trong tương lai",
-  "update_success": "Cập nhật album thành công!",
-  "add_success": "Thêm album thành công!",
-  "operation_failed": "Thao tác album thất bại!",
-  "delete_confirm": "Bạn có chắc chắn muốn xóa album này?",
-  "delete": "Xóa",
-  "cancel": "Hủy",
-  "delete_success": "Xóa album thành công!",
-  "delete_failed": "Không thể xóa album!",
-  "old_cover": "Ảnh cũ",
-  "album_name_placeholder": "Nhập tên album",
-  "release_date_placeholder": "Chọn ngày phát hành"
-}
+  "request_restore": "Yêu cầu khôi phục"
+} 

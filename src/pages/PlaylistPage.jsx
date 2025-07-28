@@ -6,8 +6,6 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from 'react-i18next';
 import BASE_API_URL from "../services/base.api.url";
 
-const PLAYLIST_API = `${BASE_API_URL}/api/v1/user/playlist`;
-
 export default function PlaylistPage() {
     const { t } = useTranslation();
     const [playlists, setPlaylists] = useState([]);
@@ -41,7 +39,7 @@ export default function PlaylistPage() {
     const fetchPlaylists = useCallback(async (showError = false) => {
         setLoading(true);
         try {
-            const { data } = await axios.get(PLAYLIST_API, {
+            const { data } = await axios.get(`${BASE_API_URL}/api/v1/user/playlist`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setPlaylists(data.data || []);
@@ -138,7 +136,7 @@ export default function PlaylistPage() {
         console.log("Deleting playlist id:", id);
         setLoading(true);
         try {
-            await axios.delete(`${PLAYLIST_API}/delete/${id}`, {
+            await axios.delete(`${BASE_API_URL}/api/v1/user/playlist/delete/${id}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             message.success("Deleted playlist!");
@@ -166,7 +164,7 @@ export default function PlaylistPage() {
                 if (values.image && values.image[0]) {
                     formData.append("imageUrl", values.image[0].originFileObj);
                 }
-                await axios.put(`${PLAYLIST_API}/update/${editing.id}`, formData, {
+                await axios.put(`${BASE_API_URL}/api/v1/user/playlist/update/${editing.id}`, formData, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                         "Content-Type": "multipart/form-data"
@@ -180,7 +178,7 @@ export default function PlaylistPage() {
                     return;
                 }
                 formData.append("imageUrl", values.image[0].originFileObj);
-                await axios.post(`${PLAYLIST_API}/add`, formData, {
+                await axios.post(`${BASE_API_URL}/api/v1/user/playlist/add`, formData, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                         "Content-Type": "multipart/form-data"
@@ -205,7 +203,7 @@ export default function PlaylistPage() {
     const handleSetPublic = useCallback(async (playlist, isPublic) => {
         setLoading(true);
         try {
-            await axios.put(`${PLAYLIST_API}/set-public/${playlist.id}?isPublic=${isPublic}`, {}, {
+            await axios.put(`${BASE_API_URL}/api/v1/user/playlist/set-public/${playlist.id}?isPublic=${isPublic}`, {}, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             message.success("Updated public status!");
@@ -497,7 +495,7 @@ export default function PlaylistPage() {
                                                             >
                                                                 <Button
                                                                     shape="circle"
-                                                                    icon={<MoreOutlined />}
+                                                                    icon={<MoreOutlined style={{ fontSize: 18 }} />}
                                                                     size="middle"
                                                                     onClick={e => {
                                                                         e.stopPropagation();
@@ -509,7 +507,12 @@ export default function PlaylistPage() {
                                                                         color: "#23242e",
                                                                         boxShadow: "0 2px 12px #3ed8ff55",
                                                                         fontWeight: 700,
-                                                                        transition: "background 0.2s, color 0.2s"
+                                                                        transition: "background 0.2s, color 0.2s",
+                                                                        width: 44,
+                                                                        height: 44,
+                                                                        display: "flex",
+                                                                        alignItems: "center",
+                                                                        justifyContent: "center"
                                                                     }}
                                                                     className="playlist-action-btn"
                                                                     disabled={shareCodeModal.open}

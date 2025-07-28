@@ -4,12 +4,25 @@ import SubscriptionModalPlan from "./SubscriptionModalPlan";
 import { useTranslation } from 'react-i18next';
 import BASE_API_URL from "../services/base.api.url";
 
+// Responsive hook
+function useIsMobile() {
+    const [isMobile, setIsMobile] = useState(false);
+    useEffect(() => {
+        const check = () => setIsMobile(window.innerWidth < 768);
+        check();
+        window.addEventListener('resize', check);
+        return () => window.removeEventListener('resize', check);
+    }, []);
+    return isMobile;
+}
+
 export default function BannerList() {
     const [banners, setBanners] = useState([]);
     const [banner, setBanner] = useState(null);
     const [isPremium, setIsPremium] = useState(false);
     const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
     const { t } = useTranslation();
+    const isMobile = useIsMobile();
 
     // Kiểm tra role khi mount
     useEffect(() => {
@@ -52,11 +65,14 @@ export default function BannerList() {
             <div style={{
                 width: "100%",
                 background: "#181c2b",
-                padding: "20px 0",
+                padding: isMobile ? "16px 0" : "20px 0",
                 display: "flex",
                 justifyContent: "center"
             }}>
-                <span style={{ color: "#fff", fontSize: 18 }}>{t('banner.no_banners_approved')}</span>
+                <span style={{ 
+                    color: "#fff", 
+                    fontSize: isMobile ? 16 : 18 
+                }}>{t('banner.no_banners_approved')}</span>
             </div>
         );
     }
@@ -66,15 +82,15 @@ export default function BannerList() {
             <div style={{
                 width: "100%",
                 background: "#181c2b",
-                padding: "32px 0",
+                padding: isMobile ? "16px 0" : "32px 0",
                 display: "flex",
                 justifyContent: "center"
             }}>
                 <div
                     style={{
                         width: "100%",
-                        maxWidth: 1100,
-                        borderRadius: 18,
+                        maxWidth: isMobile ? "95%" : 1100,
+                        borderRadius: isMobile ? 12 : 18,
                         overflow: "hidden",
                         boxShadow: "0 4px 24px #3ed8ff22",
                         cursor: banner.redirectUrl ? "pointer" : "default",
@@ -87,7 +103,7 @@ export default function BannerList() {
                         alt={banner.title}
                         style={{
                             width: "100%",
-                            height: 150,
+                            height: isMobile ? 100 : 150,
                             objectFit: "cover",
                             display: "block",
                             background: "#23283e"

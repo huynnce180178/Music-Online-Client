@@ -24,13 +24,13 @@ export default function AdminComments({ statusDefault }) {
         try {
             const token = localStorage.getItem("accessToken");
             const config = { headers: { Authorization: `Bearer ${token}` } };
-            let url = "/api/v1/admin/commentReport/getAll";
+            let url = `${BASE_API_URL}/api/v1/admin/commentReport/getAll`;
             let params = { page: 0, limit: 100, sortBy: "id", orderBy: "asc" };
             if (status !== "ALL") {
-                url = "/api/v1/admin/commentReport/getAllByStatus";
+                url = `${BASE_API_URL}/api/v1/admin/commentReport/getAllByStatus`;
                 params = { status };
             }
-            const res = await axios.get(`${BASE_API_URL}${url}`, {
+            const res = await axios.get(url, {
                 ...config,
                 params,
             });

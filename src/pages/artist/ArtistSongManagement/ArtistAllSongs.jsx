@@ -12,14 +12,13 @@ export default function ArtistAllSongs() {
     const [albums, setAlbums] = useState([]);
     const [genres, setGenres] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [selectedAlbum] = useState(null);
+    const [selectedAlbum, setSelectedAlbum] = useState(null);
     const [modalOpen, setModalOpen] = useState(false);
     const [editingSong, setEditingSong] = useState(null);
     const [form] = Form.useForm();
 
     const screens = useBreakpoint();
     const isTablet = !screens.lg;
-    const isMobile = !screens.md;
 
     const token = localStorage.getItem("accessToken");
     const config = { headers: { Authorization: `Bearer ${token}` } };
@@ -77,9 +76,9 @@ export default function ArtistAllSongs() {
     useEffect(() => {
         const style = document.createElement("style");
         style.innerHTML = `
-        .ant-table { background-color: #101426 !important; color: #fff !important; border-radius: 0 !important; }
-        .ant-table-thead > tr > th { background-color: #181C2B !important; color: #fff !important; border-bottom: 2px solid #3ed8ff !important; border-radius: 0 !important; }
-        .ant-table-tbody > tr > td { background-color: #101426 !important; color: #fff !important; border-radius: 0 !important; }
+        .ant-table { background-color: #101426 !important; color: #fff !important; }
+        .ant-table-thead > tr > th { background-color: #181C2B !important; color: #fff !important; border-bottom: 2px solid #3ed8ff !important; }
+        .ant-table-tbody > tr > td { background-color: #101426 !important; color: #fff !important; }
         .ant-table-tbody > tr:hover > td { background-color: #1f2233 !important; }
         .ant-empty-description { color: #999 !important; }
         .ant-empty-image { filter: invert(0.7); }
@@ -101,7 +100,11 @@ export default function ArtistAllSongs() {
         return () => document.head.removeChild(style);
     }, []);
 
-
+    const handleAlbumChange = (albumId) => {
+        setSelectedAlbum(albumId || null);
+        if (!albumId) fetchSongs();
+        else fetchSongs(albumId);
+    };
 
     const handleDelete = (id) => {
         Modal.confirm({
@@ -270,15 +273,15 @@ export default function ArtistAllSongs() {
             title: t('index'),
             key: "index",
             align: "center",
-            render: (text, record, index) => index + 1,
-            width: isMobile ? 36 : isTablet ? 50 : 50,
+            render: (text, record, index) => (isTablet ? 0 : 0) + index + 1,
+            width: 50,
         },
         {
             title: t('cover'),
             dataIndex: "profilePicUrl",
             key: "profilePicUrl",
-            render: url => url && <Image src={url} width={isMobile ? 28 : isTablet ? 40 : 60} height={isMobile ? 28 : isTablet ? 40 : 60} style={{ objectFit: "cover", borderRadius: 8 }} />,
-            width: isMobile ? 36 : isTablet ? 50 : 80,
+            render: url => url && <Image src={url} width={isTablet ? 40 : 60} height={isTablet ? 40 : 60} style={{ objectFit: "cover", borderRadius: 8 }} />,
+            width: isTablet ? 50 : 80,
             align: "center",
         },
         {
@@ -286,24 +289,24 @@ export default function ArtistAllSongs() {
             align: "center",
             dataIndex: "title",
             key: "title",
-            width: isMobile ? 70 : isTablet ? 110 : 200,
-            ellipsis: isTablet || isMobile,
+            width: isTablet ? 110 : 200,
+            ellipsis: isTablet,
         },
         {
             title: t('duration'),
             align: "center",
             dataIndex: "duration",
             key: "duration",
-            width: isMobile ? 40 : isTablet ? 70 : 100,
-            ellipsis: isTablet || isMobile,
+            width: isTablet ? 70 : 100,
+            ellipsis: isTablet,
         },
         {
             title: t('views'),
             align: "center",
             dataIndex: "views",
             key: "views",
-            width: isMobile ? 40 : isTablet ? 70 : 100,
-            ellipsis: isTablet || isMobile,
+            width: isTablet ? 70 : 100,
+            ellipsis: isTablet,
         },
         {
             title: t('preview'),
@@ -311,63 +314,52 @@ export default function ArtistAllSongs() {
             key: "play",
             render: (_, song) => (
                 <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-                    <audio controls src={song.fileUrl} style={{ width: isMobile ? 28 : isTablet ? 40 : 180 }} />
+                    <audio controls src={song.fileUrl} style={{ width: isTablet ? 40 : 180 }} />
                 </div>
             ),
-            width: isMobile ? 36 : isTablet ? 48 : 200,
+            width: isTablet ? 48 : 200,
         },
-        {
+        !isTablet && {
             title: t('actions'),
             align: "center",
             key: "action",
             render: (_, song) => (
                 <Space>
-                    <Button
-                        icon={<EyeOutlined />}
-                        onClick={() => handleViewLyrics(song.id, song.title)}
-                        title={t('view_lyrics')}
-                        size={isMobile || isTablet ? "small" : undefined}
-                    >
-                        {!isMobile && !isTablet && t('view_lyrics')}
-                    </Button>
-                    <Button
-                        icon={<PlusOutlined />}
-                        onClick={() => handleAddToAlbum(song.id)}
-                        title={t('add_to_album')}
-                        size={isMobile || isTablet ? "small" : undefined}
-                    >
-                        {!isMobile && !isTablet && t('add_to_album')}
-                    </Button>
+                    <Button icon={<EyeOutlined />} onClick={() => handleViewLyrics(song.id, song.title)} title={t('view_lyrics')} />
+                    <Button icon={<PlusOutlined />} onClick={() => handleAddToAlbum(song.id)} title={t('add_to_album')} />
                     {song.albumId && (
-                        <Button
-                            danger
-                            icon={<DeleteOutlined />}
-                            onClick={() => handleRemoveFromAlbum(song.id, song.albumId)}
-                            title={t('remove_from_album')}
-                            size={isMobile || isTablet ? "small" : undefined}
-                        >
-                            {!isMobile && !isTablet && t('remove_from_album')}
+                        <Button danger onClick={() => handleRemoveFromAlbum(song.id, song.albumId)} title={t('remove_from_album')}>
+                            {t('remove_from_album')}
                         </Button>
                     )}
-                    <Button
-                        icon={<DeleteOutlined />}
-                        danger
-                        onClick={() => handleDelete(song.id)}
-                        title={t('delete_song')}
-                        size={isMobile || isTablet ? "small" : undefined}
-                    >
-                        {!isMobile && !isTablet && t('delete_song')}
-                    </Button>
+                    <Button icon={<DeleteOutlined />} danger onClick={() => handleDelete(song.id)} title={t('delete_song')} />
                 </Space>
             ),
-            width: isMobile ? 90 : isTablet ? 120 : 300,
+            width: 300,
+        },
+        isTablet && {
+            title: "",
+            key: "action",
+            render: (_, song) => (
+                <Space>
+                    <Button icon={<PlusOutlined style={{ fontSize: 16 }} />} size="middle" onClick={() => handleAddToAlbum(song.id)} />
+                    {song.albumId && (
+                        <Button danger size="middle" onClick={() => handleRemoveFromAlbum(song.id, song.albumId)}>
+                            <DeleteOutlined style={{ fontSize: 16 }} />
+                        </Button>
+                    )}
+                    <Button icon={<DeleteOutlined style={{ fontSize: 16 }} />} danger size="middle" onClick={() => handleDelete(song.id)} />
+                </Space>
+            ),
+            width: 90,
+            align: "center",
         }
-    ];
+    ].filter(Boolean);
 
     return (
         <div
             style={{
-                padding: isMobile ? 4 : isTablet ? 8 : 24,
+                padding: isTablet ? 8 : 24,
                 width: "100%",
                 height: "100%",
                 boxSizing: "border-box",
@@ -380,10 +372,10 @@ export default function ArtistAllSongs() {
                 style={{
                     marginBottom: 16,
                     display: "flex",
-                    flexDirection: isMobile ? "column" : isTablet ? "column" : "row",
+                    flexDirection: isTablet ? "column" : "row",
                     gap: 8,
-                    alignItems: isMobile ? "stretch" : isTablet ? "stretch" : "center",
-                    justifyContent: isMobile ? "flex-start" : isTablet ? "flex-start" : "space-between",
+                    alignItems: isTablet ? "stretch" : "center",
+                    justifyContent: isTablet ? "flex-start" : "space-between",
                     width: "100%",
                 }}
             >
@@ -391,8 +383,8 @@ export default function ArtistAllSongs() {
                     type="primary"
                     icon={<PlusOutlined />}
                     onClick={() => openModal()}
-                    size={isMobile ? "small" : isTablet ? "middle" : "large"}
-                    style={{ width: isMobile ? "100%" : isTablet ? "100%" : undefined }}
+                    size={isTablet ? "middle" : "large"}
+                    style={{ width: isTablet ? "100%" : undefined }}
                 >
                     {t('add_song')}
                 </Button>
@@ -402,7 +394,7 @@ export default function ArtistAllSongs() {
                     flex: 1,
                     width: "100%",
                     maxWidth: "100vw",
-                    overflowX: isMobile ? "auto" : isTablet ? "auto" : "visible",
+                    overflowX: isTablet ? "auto" : "visible",
                     margin: 0,
                 }}
             >
@@ -412,11 +404,11 @@ export default function ArtistAllSongs() {
                     rowKey="id"
                     loading={loading}
                     pagination={false}
-                    size={isMobile ? "small" : isTablet ? "small" : "middle"}
-                    scroll={isMobile ? { x: 480 } : isTablet ? { x: 700 } : undefined}
+                    size={isTablet ? "small" : "middle"}
+                    scroll={isTablet ? { x: 700 } : undefined}
                     style={{
                         background: "#181d36",
-                        minWidth: isMobile ? 480 : isTablet ? 700 : undefined,
+                        minWidth: isTablet ? 700 : undefined,
                         width: "100%",
                     }}
                     locale={{ emptyText: t('no_data') }}
@@ -434,10 +426,6 @@ export default function ArtistAllSongs() {
                 footer={null}
                 destroyOnHidden
                 confirmLoading={loading}
-                centered
-                width={isMobile ? 320 : isTablet ? 400 : 600}
-                style={{ top: isMobile ? 10 : undefined }}
-                bodyStyle={{ padding: isMobile ? 12 : isTablet ? 18 : 24 }}
             >
                 <Form
                     form={form}
@@ -509,4 +497,4 @@ export default function ArtistAllSongs() {
             </Modal>
         </div>
     );
-}
+} 

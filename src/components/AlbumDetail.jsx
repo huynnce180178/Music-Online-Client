@@ -137,7 +137,7 @@ export default function AlbumDetail() {
     const { playSong } = useContext(PlayerContext);
 
     useEffect(() => {
-        fetch(`${BASE_API_URL}/api/v1/guest/ablum/${albumId}/songs`)
+        fetch(`${BASE_API_URL}/api/v1/guest/album/${albumId}/songs`)
             .then(res => res.json())
             .then(data => {
                 if (data && data.data) {

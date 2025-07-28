@@ -3,15 +3,10 @@ import { Link } from "react-router-dom";
 import { useTranslation } from 'react-i18next';
 import BASE_API_URL from "../services/base.api.url";
 
-// Phân loại breakpoint chi tiết hơn
 function getBreakpoint() {
-    const w = window.innerWidth;
-    if (w < 400) return "xs"; // mobile siêu nhỏ
-    if (w < 600) return "sm"; // mobile thường
-    if (w < 800) return "md"; // mobile lớn/phablet
-    if (w < 1024) return "tablet";
-    if (w < 1440) return "desktop";
-    return "xl";
+    if (window.innerWidth < 600) return "mobile";
+    if (window.innerWidth < 1024) return "tablet";
+    return "desktop";
 }
 
 const areaNames = [
@@ -24,20 +19,13 @@ const areaNames = [
     "wide",     // HipHop
 ];
 
-// Responsive grid template cho từng breakpoint
-const gridTemplateAreas = (bp) => {
-    if (bp === "xs" || bp === "sm")
+const gridTemplateAreas = (breakpoint) => {
+    if (breakpoint === "mobile")
         return `"big" "small1" "small2" "small3" "tall" "small4" "wide"`;
-    if (bp === "md")
-        return `"big small1" "small2 small3" "tall small4" "wide wide"`;
-    if (bp === "tablet")
+    if (breakpoint === "tablet")
         return `"big big small1 small2" "wide wide small3 tall" "small4 small4 small4 tall"`;
-    if (bp === "desktop")
-        return `"big small1 small2 small3 tall"
-                "big small4 wide wide tall"`;
-    // xl
-    return `"big small1 small2 small3 tall wide"
-            "big small4 small4 small4 tall wide"`;
+    return `"big small1 small2 small3 tall"
+            "big small4 wide wide tall"`;
 };
 
 export default function TopGenres() {
@@ -49,13 +37,27 @@ export default function TopGenres() {
         fetch(`${BASE_API_URL}/api/v1/guest/Top10Genre`)
             .then(res => res.json())
             .then(data => {
-                // Đảm bảo 7 tile luôn được lấp đầy
-                const mapped = data.slice(0, 7).map((genre) => ({
-                    name: genre.genreName,
-                    image: genre.genreImage || "/img/default-cover.png",
-                    totalViews: genre.totalViews,
-                }));
-                setGenres(mapped);
+                // Check if data is an array and has content
+                if (Array.isArray(data) && data.length > 0) {
+                    // Đảm bảo 7 tile luôn được lấp đầy
+                    const mapped = data.slice(0, 7).map((genre, idx) => ({
+                        name: genre.genreName,
+                        image: genre.genreImage || "/img/default-cover.png",
+                        totalViews: genre.totalViews,
+                    }));
+                    setGenres(mapped);
+                } else if (data && Array.isArray(data.data)) {
+                    // Handle case where data is wrapped in a data property
+                    const mapped = data.data.slice(0, 7).map((genre, idx) => ({
+                        name: genre.genreName,
+                        image: genre.genreImage || "/img/default-cover.png",
+                        totalViews: genre.totalViews,
+                    }));
+                    setGenres(mapped);
+                } else {
+                    console.warn("Top genres data is not in expected format:", data);
+                    setGenres([]);
+                }
             })
             .catch(() => setGenres([]));
     }, []);
@@ -77,42 +79,33 @@ export default function TopGenres() {
         });
     }
 
-    // Responsive grid size & style
-    let gridTemplate = gridTemplateAreas(breakpoint);
-    let colCount = 1, rowHeight = 110, gap = 14, borderRadius = 16, fontSizeTitle = 18, fontSizeGenre = 15, paddingMain = "16px 0 12px 0", paddingInner = "0 8px";
-    if (breakpoint === "sm") {
-        colCount = 1; rowHeight = 120; gap = 16; borderRadius = 18; fontSizeTitle = 20; fontSizeGenre = 16; paddingMain = "22px 0 18px 0"; paddingInner = "0 10px";
-    } else if (breakpoint === "md") {
-        colCount = 2; rowHeight = 140; gap = 18; borderRadius = 20; fontSizeTitle = 22; fontSizeGenre = 17; paddingMain = "28px 0 22px 0"; paddingInner = "0 18px";
-    } else if (breakpoint === "tablet") {
-        colCount = 4; rowHeight = 160; gap = 22; borderRadius = 22; fontSizeTitle = 24; fontSizeGenre = 18; paddingMain = "38px 0 30px 0"; paddingInner = "0 32px";
-    } else if (breakpoint === "desktop") {
-        colCount = 5; rowHeight = 210; gap = 28; borderRadius = 24; fontSizeTitle = 28; fontSizeGenre = 18; paddingMain = "48px 0 40px 0"; paddingInner = "0 40px";
-    } else if (breakpoint === "xl") {
-        colCount = 6; rowHeight = 230; gap = 32; borderRadius = 28; fontSizeTitle = 32; fontSizeGenre = 20; paddingMain = "60px 0 48px 0"; paddingInner = "0 60px";
-    }
+    // Responsive grid size - Sửa lỗi chồng lên nhau
+    const gridTemplate = gridTemplateAreas(breakpoint);
+    const colCount = breakpoint === "mobile" ? 1 : (breakpoint === "tablet" ? 4 : 5);
+    const rowHeight = breakpoint === "mobile" ? 140 : (breakpoint === "tablet" ? 160 : 210);
+    const gap = breakpoint === "mobile" ? 16 : (breakpoint === "tablet" ? 20 : 28);
 
     return (
         <div style={{
             width: "100%",
             background: "#181c2b",
-            padding: paddingMain,
+            padding: breakpoint === "mobile" ? "28px 0 24px 0" : "48px 0 40px 0",
         }}>
             <div style={{
                 maxWidth: 1550,
                 margin: "0 auto",
-                padding: paddingInner,
+                padding: breakpoint === "mobile" ? "0 12px" : "0 40px",
             }}>
                 <div style={{
                     display: "flex",
                     justifyContent: "space-between",
                     alignItems: "center",
-                    marginBottom: gap,
+                    marginBottom: breakpoint === "mobile" ? 20 : 24,
                 }}>
                     <span style={{
                         color: "#3ed8ff",
                         fontWeight: 700,
-                        fontSize: fontSizeTitle,
+                        fontSize: breakpoint === "mobile" ? 20 : 28,
                         fontFamily: "'Quicksand', 'Montserrat', sans-serif",
                         paddingBottom: 4,
                     }}>
@@ -122,7 +115,7 @@ export default function TopGenres() {
                         to="/genres-viewmore"
                         style={{
                             color: "#fff",
-                            fontSize: fontSizeGenre,
+                            fontSize: breakpoint === "mobile" ? 14 : 17,
                             fontFamily: "'Quicksand', 'Montserrat', sans-serif",
                             fontWeight: 400,
                             cursor: "pointer",
@@ -134,43 +127,34 @@ export default function TopGenres() {
                     </Link>
                 </div>
 
-                <div style={{
-                    display: "grid",
-                    gridTemplateAreas: gridTemplate,
-                    gridTemplateColumns: `repeat(${colCount}, 1fr)`,
-                    gridAutoRows: rowHeight,
-                    gap: gap,
-                    width: "100%",
-                    minHeight: rowHeight * (colCount === 1 ? 7 : 2.2),
-                }}>
-                    {genresWithFill.slice(0, 7).map((genre, idx) => {
-                        let style = {
-                            gridArea: areaNames[idx],
-                            borderRadius: borderRadius,
-                            overflow: "hidden",
-                            position: "relative",
-                            cursor: genre.isFill ? "default" : "pointer",
-                            background: "#23283e",
-                            boxShadow: "0 6px 26px #3ed8ff25",
-                            transition: "transform 0.18s",
-                            display: "flex",
-                            alignItems: "flex-end",
-                            minHeight: 0,
-                        };
-                        // Kích thước đặc biệt cho từng tile
-                        if (areaNames[idx] === "big") style.minHeight = rowHeight * (colCount === 1 ? 1 : 2) + gap;
-                        if (areaNames[idx] === "tall") style.minHeight = rowHeight * (colCount === 1 ? 1 : 2) + gap;
-                        if (areaNames[idx] === "wide") style.minWidth = "100%";
-                        if (areaNames[idx].startsWith("small")) style.minHeight = rowHeight;
-
-                        return (
+                {/* MOBILE: vertical list, TABLET/DESKTOP: grid */}
+                {breakpoint === "mobile" ? (
+                    <div style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: gap,
+                        width: "100%",
+                    }}>
+                        {genresWithFill.slice(0, 7).map((genre, idx) => (
                             <div
                                 key={idx}
-                                style={style}
-                                onMouseOver={e => { if (!genre.isFill) e.currentTarget.style.transform = "scale(1.035)" }}
-                                onMouseOut={e => { if (!genre.isFill) e.currentTarget.style.transform = "scale(1)" }}
+                                style={{
+                                    width: "100%",
+                                    minHeight: rowHeight,
+                                    borderRadius: 16,
+                                    overflow: "hidden",
+                                    position: "relative",
+                                    cursor: genre.isFill ? "default" : "pointer",
+                                    background: "#23283e",
+                                    boxShadow: "0 6px 26px #3ed8ff25",
+                                    transition: "transform 0.18s",
+                                    display: "flex",
+                                    alignItems: "flex-end",
+                                    marginBottom: 0,
+                                }}
+                                onMouseOver={e => {}}
+                                onMouseOut={e => {}}
                             >
-                                {/* Ảnh */}
                                 <img
                                     src={genre.image}
                                     alt={genre.name}
@@ -185,7 +169,6 @@ export default function TopGenres() {
                                         left: 0, top: 0, zIndex: 0,
                                     }}
                                 />
-                                {/* Overlay */}
                                 <div style={{
                                     position: "absolute",
                                     left: 0,
@@ -195,18 +178,17 @@ export default function TopGenres() {
                                     background: "linear-gradient(0deg, #181c2b99 76%, #181c2b0d 98%)",
                                     zIndex: 1,
                                 }} />
-                                {/* Tên genre + sub */}
                                 <div style={{
                                     position: "relative",
                                     zIndex: 2,
                                     color: "#fff",
                                     fontWeight: 700,
-                                    fontSize: areaNames[idx] === "big" ? fontSizeGenre + 4 : fontSizeGenre,
+                                    fontSize: 18,
                                     fontFamily: "'Quicksand', 'Montserrat', sans-serif",
                                     textShadow: "0 2px 8px #181f2a99",
-                                    padding: areaNames[idx] === "big" ? `0 0 ${gap * 2}px ${gap * 2}px` : `0 0 ${gap}px ${gap}px`,
+                                    padding: "0 0 18px 18px",
                                     width: "100%",
-                                    minHeight: 36,
+                                    minHeight: 28,
                                     display: "flex",
                                     justifyContent: "space-between",
                                     alignItems: "flex-end"
@@ -215,18 +197,122 @@ export default function TopGenres() {
                                         {t('genres.' + genre.name, genre.name)}
                                         <div style={{
                                             fontWeight: 400,
-                                            fontSize: fontSizeGenre - 1,
+                                            fontSize: 12,
                                             color: "#b9cbe8",
-                                            marginTop: 5,
+                                            marginTop: 3,
                                             fontFamily: "'Quicksand', 'Montserrat', sans-serif",
                                         }}>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        )
-                    })}
-                </div>
+                        ))}
+                    </div>
+                ) : (
+                    <div style={{
+                        display: "grid",
+                        gridTemplateAreas: gridTemplate,
+                        gridTemplateColumns: `repeat(${colCount}, 1fr)`,
+                        gridAutoRows: `${rowHeight}px`,
+                        gap: `${gap}px`,
+                        width: "100%",
+                        minHeight: `${rowHeight * 2.2}px`,
+                    }}>
+                        {genresWithFill.slice(0, 7).map((genre, idx) => {
+                            let style = {
+                                gridArea: areaNames[idx],
+                                borderRadius: 24,
+                                overflow: "hidden",
+                                position: "relative",
+                                cursor: genre.isFill ? "default" : "pointer",
+                                background: "#23283e",
+                                boxShadow: "0 6px 26px #3ed8ff25",
+                                transition: "transform 0.18s",
+                                display: "flex",
+                                alignItems: "flex-end",
+                                minHeight: `${rowHeight}px`,
+                            };
+                            // Kích thước đặc biệt cho từng tile - Sửa lỗi chồng lên nhau
+                            if (areaNames[idx] === "big") {
+                                style.minHeight = `${(rowHeight * 2) + gap}px`;
+                            }
+                            if (areaNames[idx] === "tall") {
+                                style.minHeight = `${(rowHeight * 2) + gap}px`;
+                            }
+                            if (areaNames[idx] === "wide") {
+                                style.minWidth = "100%";
+                            }
+                            if (areaNames[idx].startsWith("small")) {
+                                style.minHeight = `${rowHeight}px`;
+                            }
+
+                            return (
+                                <div
+                                    key={idx}
+                                    style={style}
+                                    onMouseOver={e => { if (!genre.isFill) e.currentTarget.style.transform = "scale(1.035)" }}
+                                    onMouseOut={e => { if (!genre.isFill) e.currentTarget.style.transform = "scale(1)" }}
+                                >
+                                    {/* Ảnh */}
+                                    <img
+                                        src={genre.image}
+                                        alt={genre.name}
+                                        style={{
+                                            width: "100%",
+                                            height: "100%",
+                                            objectFit: "cover",
+                                            display: "block",
+                                            filter: genre.isFill ? "grayscale(0.8) blur(2px)" : "brightness(1.11) contrast(1.08)",
+                                            transition: "filter 0.2s",
+                                            position: "absolute",
+                                            left: 0, top: 0, zIndex: 0,
+                                        }}
+                                    />
+                                    {/* Overlay làm sáng hơn mẫu trước! */}
+                                    <div style={{
+                                        position: "absolute",
+                                        left: 0,
+                                        right: 0,
+                                        bottom: 0,
+                                        top: 0,
+                                        background: "linear-gradient(0deg, #181c2b99 76%, #181c2b0d 98%)",
+                                        zIndex: 1,
+                                    }} />
+                                    {/* Tên genre + sub */}
+                                    <div style={{
+                                        position: "relative",
+                                        zIndex: 2,
+                                        color: "#fff",
+                                        fontWeight: 700,
+                                        fontSize: areaNames[idx] === "big" ? (breakpoint === "mobile" ? 18 : 22) : (breakpoint === "mobile" ? 14 : 18),
+                                        fontFamily: "'Quicksand', 'Montserrat', sans-serif",
+                                        textShadow: "0 2px 8px #181f2a99",
+                                        padding: areaNames[idx] === "big" ? 
+                                            (breakpoint === "mobile" ? "0 0 20px 20px" : "0 0 30px 30px") : 
+                                            (breakpoint === "mobile" ? "0 0 12px 12px" : "0 0 18px 18px"),
+                                        width: "100%",
+                                        minHeight: breakpoint === "mobile" ? 28 : 36,
+                                        display: "flex",
+                                        justifyContent: "space-between",
+                                        alignItems: "flex-end"
+                                    }}>
+                                        <div>
+                                            {t('genres.' + genre.name, genre.name)}
+                                            <div style={{
+                                                fontWeight: 400,
+                                                fontSize: breakpoint === "mobile" ? 12 : 15,
+                                                color: "#b9cbe8",
+                                                marginTop: breakpoint === "mobile" ? 3 : 5,
+                                                fontFamily: "'Quicksand', 'Montserrat', sans-serif",
+                                            }}>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )
+                        })}
+                    </div>
+                )}
             </div>
         </div>
     );

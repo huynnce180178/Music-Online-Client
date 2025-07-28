@@ -11,76 +11,74 @@ import { Modal } from "antd";
 import { PlayerProvider } from "../context/PlayerContext";
 import PropTypes from "prop-types";
 
-// Components
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import Login from "../components/Login";
 import Register from "../components/Register";
-import SongPlay from "../components/SongPlay";
-import AlbumDetail from "../components/AlbumDetail";
-import PaymentPage from "../components/PaymentPage";
-import ArtistProfile from "../components/ArtistProfile";
-import SearchResult from "../components/SearchResult";
-import GenresList from "../components/GenresList";
-import ActivateAccount from "../components/ActiveAccount";
-import ResetPassword from "../components/ResetPassword";
 
-// Pages
 import HomePage from "../pages/HomePage";
 import AlbumsPage from "../pages/AlbumsPage";
 import ArtistsPage from "../pages/ArtistsPage";
 import GenresPage from "../pages/GenresPage";
 import TopTracksPage from "../pages/TopTracksPage";
 import DownloadPage from "../pages/DownloadPage";
+import GenresList from "../components/GenresList";
 import HistoryPage from "../pages/HistoryPage";
 import FavoritePage from "../pages/FavoritePage";
+import SongPlay from "../components/SongPlay";
+import ActivateAccount from "../components/ActiveAccount";
+import ResetPassword from "../components/ResetPassword";
 import ProfilePage from "../pages/ProfilePage";
 import PlaylistPage from "../pages/PlaylistPage";
 import PlaylistSongsPage from "../pages/PlaylistSongsPage";
 
-// Admin Layout & Pages
 import AdminLayout from "./AdminLayout";
 import AdminDashboard from "../pages/admin/AdminDashboard";
 import AdminUsers from "../pages/admin/AdminUsers";
 import AdminSongs from "../pages/admin/AdminSongManagement.jsx/AdminSongs";
-import AdminPendingSongs from "../pages/admin/AdminSongManagement.jsx/AdminPendingSongs";
-import AdminSongsDeletedByArtist from "../pages/admin/AdminSongManagement.jsx/AdminSongsDeletedByArtist";
-import AdminSongsDeletedByAdmin from "../pages/admin/AdminSongManagement.jsx/AdminSongsDeletedByAdmin";
-import AdminAlbums from "../pages/admin/AdminAlbumManagement.jsx/AdminAlbums";
-import AdminPendingAlbums from "../pages/admin/AdminAlbumManagement.jsx/AdminPendingAlbums";
-import AdminAlbumsDeletedByAdmin from "../pages/admin/AdminAlbumManagement.jsx/AdminAlbumsDeletedByAdmin";
-import AdminAlbumsRejected from "../pages/admin/AdminAlbumManagement.jsx/AdminAlbumsRejected";
 import AdminGenres from "../pages/admin/AdminGenres";
 import AdminComments from "../pages/admin/AdminCommentManagement.jsx/AdminComments";
 import AdminPendingComments from "../pages/admin/AdminCommentManagement.jsx/AdminPendingComments";
 import AdminRejectedComments from "../pages/admin/AdminCommentManagement.jsx/AdminRejectedComments";
 import AdminUpgrades from "../pages/admin/AdminUpgrades";
 import AdminBanners from "../pages/admin/AdminBanners";
+import AdminPendingSongs from "../pages/admin/AdminSongManagement.jsx/AdminPendingSongs";
+import AdminSongsDeletedByArtist from "../pages/admin/AdminSongManagement.jsx/AdminSongsDeletedByArtist";
+import AdminSongsDeletedByAdmin from "../pages/admin/AdminSongManagement.jsx/AdminSongsDeletedByAdmin";
+
+import ArtistLayout from "./ArtistLayout";
+import ArtistDashboard from "../pages/artist/ArtistDashboard";
+import AlbumDetail from "../components/AlbumDetail";
+import PaymentPage from "../components/PaymentPage";
+import PaymentLayout from "./PaymentLayout";
+import ArtistProfile from "../components/ArtistProfile";
+import SearchResult from "../components/SearchResult";
 import AdminAdvertisement from "../pages/admin/AdminAdvertisementManagement.jsx/AdminAdvertisement";
 import AdminPendingAdvertisements from "../pages/admin/AdminAdvertisementManagement.jsx/AdminPendingAdvertisements";
+import ArtistRejectedAdvertisements from "../pages/artist/ArtistAdvertisementManagement/ArtistRejectedAdvertisements";
+import ArtistAdvertisement from "../pages/artist/ArtistAdvertisementManagement/ArtistAdvertisement";
+import PaymentSuccess from "./PaymentSuccess";
+import PaymentFail from "./PaymentFailed";
 
-// Artist Layout & Pages
-import ArtistLayout from "./ArtistLayout";
+import AdminAlbums from "../pages/admin/AdminAlbumManagement.jsx/AdminAlbums";
+import AdminPendingAlbums from "../pages/admin/AdminAlbumManagement.jsx/AdminPendingAlbums";
+import AdminAlbumsDeletedByAdmin from "../pages/admin/AdminAlbumManagement.jsx/AdminAlbumsDeletedByAdmin";
+import AdminAlbumsRejected from "../pages/admin/AdminAlbumManagement.jsx/AdminAlbumsRejected";
+
+// Artist song management imports
 import ArtistAllSongs from '../pages/artist/ArtistSongManagement/ArtistAllSongs';
 import ArtistPendingSongs from '../pages/artist/ArtistSongManagement/ArtistPendingSongs';
 import ArtistRejectedSongs from '../pages/artist/ArtistSongManagement/ArtistRejectedSongs';
 import ArtistDeletedSongs from '../pages/artist/ArtistSongManagement/ArtistDeletedSongs';
 import ArtistDeletedByAdminSongs from '../pages/artist/ArtistSongManagement/ArtistDeletedByAdminSongs';
+
 import ArtistAllAlbums from '../pages/artist/ArtistAlbumManagement/ArtistAllAlbums';
 import ArtistRejectedAlbums from '../pages/artist/ArtistAlbumManagement/ArtistRejectedAlbums';
 import ArtistPendingAlbums from '../pages/artist/ArtistAlbumManagement/ArtistPendingAlbums';
 import ArtistDeletedAlbums from '../pages/artist/ArtistAlbumManagement/ArtistDeletedAlbums';
 import ArtistDeletedByAdminAlbums from '../pages/artist/ArtistAlbumManagement/ArtistDeletedByAdminAlbums';
-import ArtistRejectedAdvertisements from "../pages/artist/ArtistAdvertisementManagement/ArtistRejectedAdvertisements";
-import ArtistAdvertisement from "../pages/artist/ArtistAdvertisementManagement/ArtistAdvertisement";
 
-// Payment
-import PaymentLayout from "./PaymentLayout";
-import PaymentSuccess from "./PaymentSuccess";
-import PaymentFail from "./PaymentFailed";
-
-// Main layout for normal user pages
 function MainLayout({
   modalType,
   isMobile,
@@ -92,9 +90,11 @@ function MainLayout({
   setCollapsed,
   onSearch,
 }) {
+  // (Nếu cần key cho Outlet thì dùng dòng dưới)
+  // const location = useLocation();
+
   return (
     <>
-      {/* Sidebar */}
       {!modalType && (
         <Sidebar
           collapsed={isMobile ? false : collapsed}
@@ -104,7 +104,6 @@ function MainLayout({
           isMobile={isMobile}
         />
       )}
-      {/* Overlay for mobile sidebar */}
       {isMobile && sidebarVisible && (
         <div
           onClick={() => setSidebarVisible(false)}
@@ -116,7 +115,6 @@ function MainLayout({
           }}
         />
       )}
-      {/* Main content */}
       <div
         style={{
           minHeight: "100vh",
@@ -126,31 +124,27 @@ function MainLayout({
           flexDirection: "column",
         }}
       >
-        {/* Header */}
         <Header
           setModalType={setModalType}
           onMenuClick={() => setSidebarVisible(true)}
           isMobile={isMobile}
           onSearch={onSearch}
         />
-        {/* Page content */}
         <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
+          {/* <Outlet key={location.pathname} /> // Nếu muốn, nhưng KHÔNG bắt buộc */}
           <Outlet />
         </div>
-        {/* Footer */}
         <Footer />
       </div>
     </>
   );
 }
 
-// Routing structure
 function AppRoutes(props) {
   const location = useLocation();
   const navigate = useNavigate();
   const isAdmin = location.pathname.startsWith("/admin");
 
-  // Search handler
   const handleSearch = (query) => {
     if (!query.trim()) return;
     navigate(`/search?keyword=${encodeURIComponent(query)}`);
@@ -158,7 +152,6 @@ function AppRoutes(props) {
 
   return (
     <>
-      {/* Auth Modal */}
       <Modal
         open={!!props.modalType}
         onCancel={() => props.setModalType(null)}
@@ -187,9 +180,7 @@ function AppRoutes(props) {
         ) : null}
       </Modal>
 
-      {/* App Routes */}
       <Routes>
-        {/* Admin routes */}
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<AdminDashboard />} />
           <Route path="users" element={<AdminUsers />} />
@@ -207,12 +198,12 @@ function AppRoutes(props) {
           <Route path="comments/rejected" element={<AdminRejectedComments />} />
           <Route path="upgrades" element={<AdminUpgrades />} />
           <Route path="banners" element={<AdminBanners />} />
-          <Route path="Advertisements" element={<AdminAdvertisement />} />
+          <Route path="advertisements" element={<AdminAdvertisement />} />
           <Route path="advertisements/pending" element={<AdminPendingAdvertisements />} />
         </Route>
 
-        {/* Artist routes */}
         <Route path="/artist" element={<ArtistLayout />}>
+          <Route index element={<ArtistDashboard />} />
           <Route path="albums" element={<ArtistAllAlbums />} />
           <Route path="albums/pending" element={<ArtistPendingAlbums />} />
           <Route path="albums/rejected" element={<ArtistRejectedAlbums />} />
@@ -224,10 +215,9 @@ function AppRoutes(props) {
           <Route path="songs/deleted" element={<ArtistDeletedSongs />} />
           <Route path="songs/deleted-by-admin" element={<ArtistDeletedByAdminSongs />} />
           <Route path="advertisements/approved" element={<ArtistAdvertisement />} />
-          <Route path="/artist/rejected" element={<ArtistRejectedAdvertisements />} />
+          <Route path="advertisements/rejected" element={<ArtistRejectedAdvertisements />} />
         </Route>
 
-        {/* Payment routes */}
         <Route
           path="/payment/:planId"
           element={
@@ -236,10 +226,10 @@ function AppRoutes(props) {
             </PaymentLayout>
           }
         />
+
         <Route path="/payment/success" element={<PaymentSuccess />} />
         <Route path="/payment/fail" element={<PaymentFail />} />
 
-        {/* Main user routes */}
         <Route
           path="/"
           element={
@@ -255,9 +245,10 @@ function AppRoutes(props) {
           <Route path="artists" element={<ArtistsPage />} />
           <Route path="artist/:artistId" element={<ArtistProfile />} />
           <Route path="genres" element={<GenresPage />} />
+          <Route path="genres/:genreId/songs" element={<GenresList />} />
+          <Route path="genres-viewmore" element={<GenresList />} />
           <Route path="top-tracks" element={<TopTracksPage />} />
           <Route path="downloads" element={<DownloadPage />} />
-          <Route path="genres-viewmore" element={<GenresList />} />
           <Route path="favourites" element={<FavoritePage />} />
           <Route path="history" element={<HistoryPage />} />
           <Route path="album/:albumId" element={<AlbumDetail />} />
@@ -266,27 +257,24 @@ function AppRoutes(props) {
           <Route path="search" element={<SearchResult />} />
         </Route>
 
-        {/* Profile & Auth routes */}
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/auth/forgot-password" element={<ResetPassword />} />
         <Route path="/auth/activate" element={<ActivateAccount />} />
       </Routes>
 
-      {/* Song player (not for admin) */}
       {!isAdmin && <SongPlay sidebarWidth={props.sidebarWidth} />}
     </>
   );
 }
 
-// App entry point
 export default function Index({ children }) {
   const [collapsed, setCollapsed] = useState(false);
   const [modalType, setModalType] = useState(null);
   const [sidebarVisible, setSidebarVisible] = useState(false);
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 600);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 576);
 
   useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth <= 600);
+    const handleResize = () => setIsMobile(window.innerWidth <= 576);
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
@@ -313,7 +301,6 @@ export default function Index({ children }) {
   );
 }
 
-// PropTypes validation
 MainLayout.propTypes = {
   children: PropTypes.node,
   modalType: PropTypes.string,
@@ -324,20 +311,6 @@ MainLayout.propTypes = {
   sidebarVisible: PropTypes.bool,
   collapsed: PropTypes.bool,
   setCollapsed: PropTypes.func,
-  onSearch: PropTypes.func,
-};
-
-AppRoutes.propTypes = {
-  modalType: PropTypes.string,
-  setModalType: PropTypes.func,
-  isMobile: PropTypes.bool,
-  sidebarWidth: PropTypes.number,
-  setSidebarVisible: PropTypes.func,
-  sidebarVisible: PropTypes.bool,
-  collapsed: PropTypes.bool,
-  setCollapsed: PropTypes.func,
-  onSearch: PropTypes.func,
-  children: PropTypes.node,
 };
 
 Index.propTypes = {

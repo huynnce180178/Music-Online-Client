@@ -13,6 +13,6 @@
   "banner.albums": "album",
   "banner.listen_now": "Nghe ngay",
   "banner.add_to_queue": "Thêm vào hàng chờ",
-  "banner.please_login_first": "Bạn cần đăng nhập để sử dụng chức năng này.",
+  "banner.no_banners_approved": "Chưa có banner nào được duyệt!",
   "no_banners_approved": "Chưa có banner nào được duyệt!"
-}
+} 

@@ -236,10 +236,17 @@ function RenderComment({
             <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                 <Tooltip title="Reply">
                     <Button
-                        size="small"
+                        size="middle"
                         type="text"
-                        icon={<CommentOutlined />}
-                        style={{ color: "#29aaff" }}
+                        icon={<CommentOutlined style={{ fontSize: 16 }} />}
+                        style={{ 
+                            color: "#29aaff",
+                            minWidth: 40,
+                            minHeight: 40,
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center"
+                        }}
                         onClick={() => setReplyTo(comment)}
                     />
                 </Tooltip>
@@ -265,18 +272,20 @@ function RenderComment({
                     )}
                     <div style={{ position: "relative", display: "inline-block" }}>
                         <Button
-                            size="small"
+                            size="middle"
                             type="text"
                             style={{
                                 color: "#3ed8ff",
                                 background: "#eaf6fb",
                                 borderRadius: 16,
                                 fontWeight: 600,
-                                padding: "0 10px"
+                                padding: "0 12px",
+                                height: 36,
+                                minWidth: 40
                             }}
                             onClick={() => setShowReactions(v => !v)}
                         >
-                            <LikeOutlined />
+                            <LikeOutlined style={{ fontSize: 16 }} />
                         </Button>
                         {showReactions && (
                             <div

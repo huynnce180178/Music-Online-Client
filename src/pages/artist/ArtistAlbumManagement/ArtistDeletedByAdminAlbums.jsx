@@ -12,7 +12,6 @@ export default function ArtistDeletedByAdminAlbums() {
     const [loading, setLoading] = useState(false);
     const screens = useBreakpoint();
     const isTablet = !screens.lg;
-    const isMobile = !screens.md;
     const token = localStorage.getItem("accessToken");
     const config = { headers: { Authorization: `Bearer ${token}` } };
     const { t } = useTranslation();
@@ -47,7 +46,7 @@ export default function ArtistDeletedByAdminAlbums() {
     const handleRequestRestore = async (albumId) => {
         try {
             await axios.post(
-                `${BASE_API_URL}/api/v1/artist/album/${albumId}/request-restore`,
+                `${BASE_API_URL}/artist/album/${albumId}/request-restore`,
                 {},
                 config
             );
@@ -65,14 +64,6 @@ export default function ArtistDeletedByAdminAlbums() {
             align: "center",
             width: 50,
             render: (text, record, index) => index + 1,
-        },
-        {
-            title: t('cover'),
-            dataIndex: "coverImageUrl",
-            key: "coverImageUrl",
-            render: url => url && <Image src={url} width={isTablet ? 40 : 60} height={isTablet ? 40 : 60} style={{ objectFit: "cover", borderRadius: 8 }} />,
-            width: isTablet ? 50 : 80,
-            align: "center",
         },
         {
             title: t('album_name'),
@@ -129,7 +120,14 @@ export default function ArtistDeletedByAdminAlbums() {
                 );
             }
         },
-
+        {
+            title: t('cover'),
+            dataIndex: "coverImageUrl",
+            key: "coverImageUrl",
+            render: url => url && <Image src={url} width={isTablet ? 40 : 60} height={isTablet ? 40 : 60} style={{ objectFit: "cover", borderRadius: 8 }} />,
+            width: isTablet ? 50 : 80,
+            align: "center",
+        },
         {
             title: t('actions'),
             align: "center",
@@ -150,18 +148,18 @@ export default function ArtistDeletedByAdminAlbums() {
     ];
 
     return (
-        <div style={{ padding: isMobile ? 4 : isTablet ? 8 : 24 }}>
+        <div style={{ padding: isTablet ? 8 : 24 }}>
             <Table
                 columns={columns}
                 dataSource={albums}
                 rowKey="id"
                 loading={loading}
                 pagination={false}
-                size={isMobile ? "small" : isTablet ? "small" : "middle"}
-                scroll={isMobile ? { x: 480 } : isTablet ? { x: 400 } : undefined}
-                style={{ background: "#181d36", minWidth: isMobile ? 480 : isTablet ? 400 : undefined }}
+                size={isTablet ? "small" : "middle"}
+                scroll={isTablet ? { x: 400 } : undefined}
+                style={{ background: "#181d36" }}
                 locale={{ emptyText: t('no_data') }}
             />
         </div>
     );
-}
+} 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { PlayerContext } from "../context/PlayerContext";
+import { PlayerContext } from "../context/PlayerContext"; // ✅ Thêm context
 import { useTranslation } from 'react-i18next';
 import BASE_API_URL from "../services/base.api.url";
 
@@ -31,13 +31,28 @@ export default function TrendingTracks() {
         fetch(`${BASE_API_URL}/api/v1/guest/TopSongsInMonth`)
             .then(res => res.json())
             .then(data => {
-                const mapped = data.map(track => ({
-                    id: track.id || track.songId,
-                    title: track.title,
-                    cover: track.profilePicUrl,
-                    artist: track.artistName,
-                }));
-                setNewReleases(mapped);
+                // Check if data is an array and has content
+                if (Array.isArray(data) && data.length > 0) {
+                    const mapped = data.map(track => ({
+                        id: track.id || track.songId,
+                        title: track.title,
+                        cover: track.profilePicUrl,
+                        artist: track.artistName,
+                    }));
+                    setNewReleases(mapped);
+                } else if (data && Array.isArray(data.data)) {
+                    // Handle case where data is wrapped in a data property
+                    const mapped = data.data.map(track => ({
+                        id: track.id || track.songId,
+                        title: track.title,
+                        cover: track.profilePicUrl,
+                        artist: track.artistName,
+                    }));
+                    setNewReleases(mapped);
+                } else {
+                    console.warn("Trending tracks data is not in expected format:", data);
+                    setNewReleases([]);
+                }
             })
             .catch(err => {
                 console.error("Lỗi fetch:", err);

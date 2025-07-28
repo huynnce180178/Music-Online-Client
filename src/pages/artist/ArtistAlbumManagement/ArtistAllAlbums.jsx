@@ -15,7 +15,6 @@ export default function ArtistAllAlbums() {
     const [modalOpen, setModalOpen] = useState(false);
     const screens = useBreakpoint();
     const isTablet = !screens.lg;
-    const isMobile = !screens.md;
     const artistId = localStorage.getItem("userId");
     const token = localStorage.getItem("accessToken");
     const config = { headers: { Authorization: `Bearer ${token}` } };
@@ -51,7 +50,7 @@ export default function ArtistAllAlbums() {
 
     const handleFinish = async (values) => {
         if (!values.cover || values.cover.length === 0) {
-            message.error(t('please_select_cover_image'));
+            message.error("Please select a cover image!");
             return;
         }
         setLoading(true);
@@ -66,7 +65,7 @@ export default function ArtistAllAlbums() {
         try {
             if (editingId) {
                 await axios.put(
-                    `${BASE_API_URL}/api/v1/artist/album/update/${editingId}`,
+                    `${BASE_API_URL}/artist/album/update/${editingId}`,
                     formData,
                     {
                         ...config,
@@ -77,10 +76,10 @@ export default function ArtistAllAlbums() {
                         onUploadProgress: () => setLoading(true),
                     }
                 );
-                message.success(t('update_success'));
+                message.success("Album updated successfully!");
             } else {
                 await axios.post(
-                    `${BASE_API_URL}/api/v1/artist/album/add`,
+                    `${BASE_API_URL}/artist/album/add`,
                     formData,
                     {
                         ...config,
@@ -91,14 +90,14 @@ export default function ArtistAllAlbums() {
                         onUploadProgress: () => setLoading(true),
                     }
                 );
-                message.success(t('add_success'));
+                message.success("Album added successfully!");
             }
             setModalOpen(false);
             setEditingId(null);
             form.resetFields();
             fetchAlbums();
         } catch {
-            message.error(t('operation_failed'));
+            message.error("Album operation failed!");
         }
         setLoading(false);
     };
@@ -116,20 +115,20 @@ export default function ArtistAllAlbums() {
 
     const handleDelete = async (id) => {
         Modal.confirm({
-            title: t('delete_confirm'),
-            okText: t('delete'),
+            title: "Are you sure you want to delete this album?",
+            okText: "Delete",
             okType: "danger",
-            cancelText: t('cancel'),
+            cancelText: "Cancel",
             onOk: async () => {
                 try {
                     await axios.delete(
-                        `${BASE_API_URL}/api/v1/artist/album/delete/${id}`,
+                        `${BASE_API_URL}/artist/album/delete/${id}`,
                         config
                     );
-                    message.success(t('delete_success'));
+                    message.success("Album deleted!");
                     fetchAlbums();
                 } catch {
-                    message.error(t('delete_failed'));
+                    message.error("Cannot delete album!");
                 }
             }
         });
@@ -140,42 +139,42 @@ export default function ArtistAllAlbums() {
             title: t('index'),
             key: "index",
             align: "center",
-            width: isMobile ? 36 : isTablet ? 50 : 50,
+            width: 50,
             render: (text, record, index) => index + 1,
-        },
-        {
-            title: t('cover'),
-            dataIndex: "coverImageUrl",
-            key: "coverImageUrl",
-            render: url => url && <Image src={url} width={isMobile ? 28 : isTablet ? 40 : 60} height={isMobile ? 28 : isTablet ? 40 : 60} style={{ objectFit: "cover", borderRadius: 8 }} />,
-            width: isMobile ? 36 : isTablet ? 50 : 80,
-            align: "center",
         },
         {
             title: t('album_name'),
             align: "center",
             dataIndex: "titleAlbum",
             key: "titleAlbum",
-            width: isMobile ? 70 : isTablet ? 120 : 180,
-            ellipsis: isTablet || isMobile,
+            width: isTablet ? 120 : 180,
+            ellipsis: isTablet,
         },
         {
             title: t('release_date'),
             align: "center",
             dataIndex: "releaseDateStr",
             key: "releaseDateStr",
-            width: isMobile ? 60 : isTablet ? 110 : 160,
-            ellipsis: isTablet || isMobile,
+            width: isTablet ? 110 : 160,
+            ellipsis: isTablet,
         },
         {
             title: t('type'),
             align: "center",
             dataIndex: "type",
             key: "type",
-            width: isMobile ? 40 : isTablet ? 70 : 100,
-            ellipsis: isTablet || isMobile,
+            width: isTablet ? 70 : 100,
+            ellipsis: isTablet,
         },
-        !isTablet && !isMobile && {
+        {
+            title: t('cover'),
+            dataIndex: "coverImageUrl",
+            key: "coverImageUrl",
+            render: url => url && <Image src={url} width={isTablet ? 40 : 60} height={isTablet ? 40 : 60} style={{ objectFit: "cover", borderRadius: 8 }} />,
+            width: isTablet ? 50 : 80,
+            align: "center",
+        },
+        !isTablet && {
             title: t('actions'),
             align: "center",
             key: "action",
@@ -187,7 +186,7 @@ export default function ArtistAllAlbums() {
             ),
             width: 140,
         },
-        (isTablet || isMobile) && {
+        isTablet && {
             title: '',
             key: 'action',
             render: (_, album) => (
@@ -196,32 +195,32 @@ export default function ArtistAllAlbums() {
                     <Button icon={<DeleteOutlined />} size="small" danger onClick={() => handleDelete(album.id)} />
                 </Space>
             ),
-            width: isMobile ? 48 : 80,
+            width: 80,
             align: "center",
         }
     ].filter(Boolean);
 
     return (
-        <div style={{ padding: isMobile ? 4 : isTablet ? 8 : 24 }}>
+        <div style={{ padding: isTablet ? 8 : 24 }}>
             <Button
                 type="primary"
                 icon={<PlusOutlined />}
                 onClick={() => { setEditingId(null); form.resetFields(); setModalOpen(true); }}
-                size={isMobile ? "small" : isTablet ? "middle" : "large"}
-                style={{ marginBottom: 16, width: isMobile ? "100%" : undefined }}
+                size={isTablet ? "middle" : "large"}
+                style={{ marginBottom: 16 }}
             >
                 {t('add_album')}
             </Button>
-            <div style={{ width: "100%", overflowX: isMobile ? "auto" : isTablet ? "auto" : "visible" }}>
+            <div style={{ width: "100%", overflowX: isTablet ? "auto" : "visible" }}>
                 <Table
                     columns={columns}
                     dataSource={albums}
                     rowKey="id"
                     loading={loading}
                     pagination={false}
-                    size={isMobile ? "small" : isTablet ? "small" : "middle"}
-                    scroll={isMobile ? { x: 480 } : isTablet ? { x: 400 } : undefined}
-                    style={{ background: "#181d36", minWidth: isMobile ? 480 : isTablet ? 400 : undefined }}
+                    size={isTablet ? "small" : "middle"}
+                    scroll={isTablet ? { x: 400 } : undefined}
+                    style={{ background: "#181d36" }}
                     locale={{ emptyText: t('no_data') }}
                 />
             </div>
@@ -233,10 +232,6 @@ export default function ArtistAllAlbums() {
                 footer={null}
                 destroyOnHidden
                 confirmLoading={loading}
-                centered
-                width={isMobile ? 320 : isTablet ? 400 : 600}
-                style={{ top: isMobile ? 10 : undefined }}
-                bodyStyle={{ padding: isMobile ? 12 : isTablet ? 18 : 24 }}
             >
                 <Form
                     form={form}
@@ -249,7 +244,7 @@ export default function ArtistAllAlbums() {
                             src={albums.find(a => a.id === editingId).coverImageUrl}
                             width={100}
                             style={{ marginBottom: 8 }}
-                            alt={t('old_cover')}
+                            alt="Old cover"
                         />
                     )}
                     <Form.Item
@@ -257,7 +252,7 @@ export default function ArtistAllAlbums() {
                         name="titleAlbum"
                         rules={[{ required: true, message: t('please_enter_album_name') }]}
                     >
-                        <Input placeholder={t('album_name_placeholder')} />
+                        <Input />
                     </Form.Item>
                     <Form.Item
                         label={t('cover_image')}
@@ -278,25 +273,9 @@ export default function ArtistAllAlbums() {
                     <Form.Item
                         label={t('release_date')}
                         name="releaseDate"
-                        rules={[
-                            { required: true, message: t('please_select_release_date') },
-                            {
-                                validator: (_, value) => {
-                                    if (!value) return Promise.resolve();
-                                    const inputDate = new Date(value);
-                                    const now = new Date();
-                                    if (inputDate < now) {
-                                        return Promise.reject(t('release_date_future_only'));
-                                    }
-                                    if (inputDate.getFullYear() < 1900) {
-                                        return Promise.reject(t('release_date_too_old'));
-                                    }
-                                    return Promise.resolve();
-                                }
-                            }
-                        ]}
+                        rules={[{ required: true, message: t('please_select_release_date') }]}
                     >
-                        <Input type="datetime-local" placeholder={t('release_date_placeholder')} />
+                        <Input type="datetime-local" />
                     </Form.Item>
                     <Form.Item
                         label={t('type')}
@@ -320,4 +299,4 @@ export default function ArtistAllAlbums() {
             </Modal>
         </div>
     );
-}
+} 

@@ -36,7 +36,6 @@ export default function ArtistAdvertisement() {
 
     const screens = useBreakpoint();
     const isTablet = !screens.lg;
-    const isMobile = !screens.md;
     const { t } = useTranslation();
 
     useEffect(() => {
@@ -86,7 +85,7 @@ export default function ArtistAdvertisement() {
         try {
             const token = localStorage.getItem("accessToken");
             const res = await axios.get(
-                `${BASE_API_URL}/api/v1/artist/advertisements/approved`,
+                `${BASE_API_URL}/artist/advertisements/approved`,
                 { headers: { Authorization: `Bearer ${token}` } }
             );
             setAds(Array.isArray(res.data.data) ? res.data.data : []);
@@ -112,7 +111,7 @@ export default function ArtistAdvertisement() {
             setRenewLoading(true);
             const token = localStorage.getItem("accessToken");
             await axios.post(
-                `${BASE_API_URL}/api/v1/artist/advertisements/renew/${renewModal.record.id}`,
+                `${BASE_API_URL}/artist/advertisements/renew/${renewModal.record.id}`,
                 {},
                 {
                     headers: { Authorization: `Bearer ${token}` },
@@ -167,7 +166,7 @@ export default function ArtistAdvertisement() {
             }
 
             const token = localStorage.getItem("accessToken");
-            await axios.post(`${BASE_API_URL}/api/v1/artist/advertisements/create`, formData, {
+            await axios.post(`${BASE_API_URL}/artist/advertisements/create`, formData, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             message.success(t('artist_ad.advertisement_request_submitted'));
@@ -203,21 +202,21 @@ export default function ArtistAdvertisement() {
             title: t('index'),
             key: 'index',
             align: 'center',
-            width: isMobile ? 36 : isTablet ? 50 : 50,
             render: (_, __, index) => index + 1,
         },
+
         {
             title: type === 'AUDIO' ? t('artist_ad.preview') : t('artist_ad.banner'),
             key: 'media',
             align: 'center',
             render: (_, ad) =>
                 type === 'AUDIO' ? (
-                    <audio controls src={ad.mediaUrl} style={{ width: isMobile ? 80 : isTablet ? 120 : 220, borderRadius: 8 }} />
+                    <audio controls src={ad.mediaUrl} style={{ width: isTablet ? 120 : 220, borderRadius: 8 }} />
                 ) : (
                     <Image
                         src={ad.mediaUrl}
-                        width={isMobile ? 36 : isTablet ? 60 : 100}
-                        height={isMobile ? 36 : isTablet ? 60 : 100}
+                        width={isTablet ? 60 : 100}
+                        height={isTablet ? 60 : 100}
                         style={{ objectFit: 'cover', borderRadius: 12, boxShadow: '0 0 8px rgba(0,0,0,0.5)' }}
                         preview={false}
                         alt={t('artist_ad.banner')}
@@ -272,24 +271,24 @@ export default function ArtistAdvertisement() {
             loading={loading}
             rowKey="id"
             pagination={{ pageSize: 10, showSizeChanger: true }}
-            size={isMobile ? "small" : isTablet ? "small" : "middle"}
-            scroll={isMobile ? { x: 480 } : isTablet ? { x: 800 } : undefined}
+            size={isTablet ? "small" : "middle"}
+            scroll={isTablet ? { x: 800 } : undefined}
             locale={{ emptyText: t('artist_ad.no_data') }}
-            style={{ borderRadius: 12, minWidth: isMobile ? 480 : isTablet ? 800 : undefined }}
+            style={{ borderRadius: 12 }}
         />
     );
 
     return (
-        <div style={{ padding: isMobile ? 4 : isTablet ? 8 : 16 }}>
+        <div style={{ padding: isTablet ? 8 : 16 }}>
             <Button
                 type="primary"
                 icon={<PlusOutlined />}
                 onClick={openAddModal}
-                style={{ marginBottom: 16, width: isMobile ? "100%" : undefined }}
-                size={isMobile ? "small" : isTablet ? "middle" : "large"}
+                style={{ marginBottom: 16 }}
             >
                 {t('artist_ad.add_advertisement')}
             </Button>
+
             <Tabs
                 defaultActiveKey="AUDIO"
                 items={[
@@ -305,6 +304,7 @@ export default function ArtistAdvertisement() {
                     },
                 ]}
             />
+
             {/* Add Advertisement Modal */}
             <Modal
                 title={t('artist_ad.submit_new_advertisement')}
