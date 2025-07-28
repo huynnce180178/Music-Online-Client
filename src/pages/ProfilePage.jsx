@@ -508,62 +508,6 @@ export default function ProfilePage({ isDrawer }) {
                     </Form>
                 )}
             </div>
-            <style>
-                {`
-                @media (max-width: 600px) {
-                    .ant-modal-content {
-                        padding: 10px 2vw !important;
-                        border-radius: 14px !important;
-                    }
-                    .ant-modal-title {
-                        font-size: 16px !important;
-                        padding: 8px 0 !important;
-                    }
-                    .ant-modal-body {
-                        padding: 0 !important;
-                    }
-                    .ant-btn {
-                        font-size: 13px !important;
-                    }
-                    .ant-avatar {
-                        width: 70px !important;
-                        height: 70px !important;
-                        min-width: 70px !important;
-                        min-height: 70px !important;
-                    }
-                }
-                @media (max-width: 900px) {
-                    .profile-main-container {
-                        padding: 18px 2vw !important;
-                        min-width: 0 !important;
-                        max-width: 98vw !important;
-                    }
-                    .profile-content-card {
-                        padding: 18px 2vw 12px 2vw !important;
-                        max-width: 98vw !important;
-                        border-radius: 18px !important;
-                    }
-                }
-                @media (max-width: 400px) {
-                    .profile-main-container {
-                        padding: 8px 1vw !important;
-                        min-width: 0 !important;
-                        max-width: 100vw !important;
-                    }
-                    .profile-content-card {
-                        padding: 8px 1vw 8px 1vw !important;
-                        max-width: 100vw !important;
-                        border-radius: 10px !important;
-                    }
-                    .ant-avatar {
-                        width: 44px !important;
-                        height: 44px !important;
-                        min-width: 44px !important;
-                        min-height: 44px !important;
-                    }
-                }
-                `}
-            </style>
         </div>
     );
 
@@ -654,18 +598,18 @@ export default function ProfilePage({ isDrawer }) {
     return (
         <>
             {isDrawer ? (
-                <div className="profile-main-container" style={{ width: "100%", height: "100%", overflow: "auto", background: "transparent" }}>
+                <div style={{ width: "100%", height: "100%", overflow: "auto", background: "transparent" }}>
                     {ProfileContent}
                 </div>
             ) : (
-                <div className="profile-main-container" style={{
+                <div style={{
                     background: "#181c2b",
                     minHeight: "100vh",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center"
                 }}>
-                    <div className="profile-content-card" style={{
+                    <div style={{
                         background: "linear-gradient(135deg, #181c2b 70%, #23243a 100%)",
                         borderRadius: "2rem",
                         boxShadow: "0 8px 32px 0 rgba(21, 21, 30, 0.19)",

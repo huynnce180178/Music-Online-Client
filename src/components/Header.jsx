@@ -522,15 +522,11 @@ function Header({ setModalType, onMenuClick, onSearch }) {
                             </Space>
                         }
                         style={{
-                            width: isMobile ? "100vw" : 320,
-                            maxWidth: isMobile ? "calc(100vw - 120px)" : 320,
-                            minWidth: isMobile ? 90 : 160,
+                            width: isMobile ? 160 : 320,
                             borderRadius: 24,
                             background: "#232b3e",
                             color: "#fff",
-                            fontSize: isMobile ? 13 : 16,
-                            marginLeft: isMobile ? 0 : undefined,
-                            marginRight: isMobile ? 0 : undefined,
+                            fontSize: isMobile ? 13 : 16
                         }}
                         className="custom-input"
                         aria-label="Search"
@@ -836,94 +832,6 @@ function Header({ setModalType, onMenuClick, onSearch }) {
                 show={showSubscriptionModal}
                 onClose={() => setShowSubscriptionModal(false)}
             />
-            <style>
-                {`
-                .custom-input input::placeholder { color: #fff; }
-                @media (max-width: 900px) {
-                    .ant-layout-header {
-                        padding: 0 4vw !important;
-                        height: 56px !important;
-                    }
-                    .custom-input {
-                        width: 100vw !important;
-                        max-width: calc(100vw - 120px) !important;
-                        min-width: 90px !important;
-                        font-size: 13px !important;
-                    }
-                    .ant-space {
-                        gap: 4px !important;
-                    }
-                }
-                @media (max-width: 600px) {
-                    .ant-layout-header {
-                        padding: 0 2vw !important;
-                        height: 48px !important;
-                    }
-                    .custom-input {
-                        width: 100vw !important;
-                        max-width: calc(100vw - 80px) !important;
-                        min-width: 70px !important;
-                        font-size: 12px !important;
-                    }
-                    .ant-btn, .ant-space {
-                        font-size: 12px !important;
-                    }
-                    .ant-avatar {
-                        width: 28px !important;
-                        height: 28px !important;
-                        min-width: 28px !important;
-                        min-height: 28px !important;
-                    }
-                    .ant-dropdown-menu {
-                        min-width: 120px !important;
-                        font-size: 12px !important;
-                    }
-                    .gold-premium-btn {
-                        min-width: 36px !important;
-                        padding: 0 !important;
-                    }
-                    .ant-modal-content {
-                        padding: 8px 4vw !important;
-                    }
-                }
-                @media (max-width: 400px) {
-                    .ant-layout-header {
-                        padding: 0 1vw !important;
-                        height: 40px !important;
-                    }
-                    .custom-input {
-                        width: 100vw !important;
-                        max-width: calc(100vw - 60px) !important;
-                        min-width: 40px !important;
-                        font-size: 10px !important;
-                    }
-                    .ant-btn, .ant-space {
-                        font-size: 10px !important;
-                    }
-                    .ant-avatar {
-                        width: 22px !important;
-                        height: 22px !important;
-                        min-width: 22px !important;
-                        min-height: 22px !important;
-                    }
-                }
-                /* Notification dropdown responsive */
-                @media (max-width: 500px) {
-                    .notification-list {
-                        max-width: 96vw !important;
-                        min-width: 0 !important;
-                    }
-                    .ant-dropdown {
-                        min-width: 0 !important;
-                        width: 98vw !important;
-                    }
-                    .ant-dropdown .ant-spin-nested-loading,
-                    .ant-dropdown .ant-spin-container {
-                        max-width: 98vw !important;
-                    }
-                }
-                `}
-            </style>
         </>
     );
 }
