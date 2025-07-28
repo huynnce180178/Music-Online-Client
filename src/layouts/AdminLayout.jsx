@@ -356,7 +356,6 @@ export default function AdminLayout({ children }) {
                                 height: 40,
                             }}
                         >
-                            {!isMobile && t('sidebar.back_to_homepage')}
                         </Button>
                     </div>
                     <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
