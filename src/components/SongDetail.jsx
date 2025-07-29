@@ -312,66 +312,41 @@ export default function SongDetail({ songId, onClose }) {
 }
 .song-detail-content {
     display: flex;
-    flex-direction: row;
-    align-items: flex-start;
-    justify-content: center;
-    gap: 48px;
-    width: 100%;
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 48px 5vw 0 5vw;
-    position: relative;
+    flex: 1;
     z-index: 1;
-    min-height: calc(100vh - 96px);
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+    padding: 48px 32px 0 32px;
+    gap: 48px;
+    min-height: calc(100vh - 48px);
+    overflow: hidden;
 }
-
 .song-detail-left {
+    flex: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-start;
-    gap: 24px;
-    width: 100%;
-    max-width: 480px;
-    background: rgba(24,28,43,0.98);
-    border-radius: 32px;
-    box-shadow: 0 8px 32px rgba(62, 216, 255, 0.2);
-    padding: 48px 32px;
-    border: 1px solid rgba(62, 216, 255, 0.1);
 }
-
 .song-detail-right {
+    flex: 1;
+    min-width: 0;
     display: flex;
     flex-direction: column;
-    align-items: center;
     justify-content: flex-start;
-    gap: 24px;
-    width: 100%;
-    max-width: 480px;
-    background: rgba(24,28,43,0.98);
-    border-radius: 32px;
-    box-shadow: 0 8px 32px rgba(62, 216, 255, 0.2);
-    padding: 48px 32px;
-    border: 1px solid rgba(62, 216, 255, 0.1);
-    min-height: 600px;
-    overflow-y: auto;
+    height: 100vh;
+    overflow: hidden;
 }
-
-.song-detail-mobile {
-    display: none;
-}
-
 .player-img {
-    width: 280px;
-    height: 280px;
-    border-radius: 24px;
+    width: 330px;
+    height: 330px;
+    border-radius: 20px;
     object-fit: cover;
     box-shadow: 0 12px 48px rgba(0,0,0,0.6);
     margin-bottom: 32px;
     transition: transform 0.3s, box-shadow 0.3s;
     margin-top: 12px;
 }
-
 .song-title {
     color: #fff;
     font-weight: 700;
@@ -381,28 +356,24 @@ export default function SongDetail({ songId, onClose }) {
     line-height: 1.1;
     text-align: center;
 }
-
 .song-meta {
     color: #fff;
     opacity: 0.85;
     font-size: 16px;
     margin-bottom: 4px;
 }
-
 .player-controls {
     display: flex;
     align-items: center;
     gap: 18px;
     margin-bottom: 16px;
 }
-
 .song-progress {
     width: 100%;
     max-width: 340px;
     margin-bottom: 4px;
     margin-top: 2px;
 }
-
 .progress-bar {
     width: 100%;
     height: 6px;
@@ -413,7 +384,6 @@ export default function SongDetail({ songId, onClose }) {
     appearance: none;
     cursor: pointer;
 }
-
 .progress-bar::-webkit-slider-thumb {
     appearance: none;
     width: 16px;
@@ -424,7 +394,6 @@ export default function SongDetail({ songId, onClose }) {
     border: none;
     box-shadow: 0 2px 8px rgba(62, 216, 255, 0.3);
 }
-
 .progress-bar::-moz-range-thumb {
     width: 16px;
     height: 16px;
@@ -434,16 +403,13 @@ export default function SongDetail({ songId, onClose }) {
     border: none;
     box-shadow: 0 2px 8px rgba(62, 216, 255, 0.3);
 }
-
 .progress-bar:disabled {
     opacity: 0.5;
     cursor: not-allowed;
 }
-
 .progress-bar:disabled::-webkit-slider-thumb {
     cursor: not-allowed;
 }
-
 .progress-time {
     display: flex;
     justify-content: space-between;
@@ -455,7 +421,6 @@ export default function SongDetail({ songId, onClose }) {
     padding: 0 4px;
     font-variant-numeric: tabular-nums;
 }
-
 .lyrics-scroll {
     -ms-overflow-style: none;
     scrollbar-width: none;
@@ -469,40 +434,13 @@ export default function SongDetail({ songId, onClose }) {
     min-height: 150px;
     max-height: calc(100vh - 210px);
     overflow-y: auto;
-    background: rgba(44,68,106,0.08);
-    border-radius: 12px;
-    box-shadow: inset 0 2px 8px rgba(62,216,255,0.1);
-    border: 1px solid rgba(62,216,255,0.1);
-    transition: all 0.3s ease;
 }
-
-.lyrics-scroll:hover {
-    background: rgba(44,68,106,0.12);
-    box-shadow: inset 0 2px 12px rgba(62,216,255,0.15);
-}
-
 .lyrics-scroll::-webkit-scrollbar {
     display: none;
 }
-
-/* Custom scrollbar for better UX */
-.lyrics-scroll::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-.lyrics-scroll::-webkit-scrollbar-thumb {
-    background: rgba(62,216,255,0.3);
-    border-radius: 10px;
-}
-
-.lyrics-scroll::-webkit-scrollbar-thumb:hover {
-    background: rgba(62,216,255,0.5);
-}
-
 .tabs-lyrics-comments .ant-tabs-nav {
     font-size: 18px;
 }
-
 .player-btn {
     background: rgba(255,255,255,0.1);
     border: none;
@@ -519,26 +457,22 @@ export default function SongDetail({ songId, onClose }) {
     outline: none;
     box-shadow: none;
 }
-
 .player-btn:hover {
     background: rgba(255,255,255,0.2);
     transform: scale(1.05);
     color: #fff;
 }
-
 .player-btn:focus {
     background: rgba(255,255,255,0.2);
     color: #fff;
     outline: none;
     box-shadow: none;
 }
-
 .player-btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
     transform: none;
 }
-
 .player-btn.main {
     width: 56px;
     height: 56px;
@@ -546,22 +480,18 @@ export default function SongDetail({ songId, onClose }) {
     font-size: 24px;
     color: #23283e;
 }
-
 .player-btn.main:hover {
     background: linear-gradient(135deg, #29aaff 60%, #1890ff 100%);
     color: #23283e;
 }
-
 .player-btn.like.liked {
     color: #ff4757;
     background: rgba(255, 71, 87, 0.1);
 }
-
 .player-btn.like.liked:hover {
     color: #ff4757;
     background: rgba(255, 71, 87, 0.2);
 }
-
 .volume-slider {
     width: 70px;
     height: 4px;
@@ -573,64 +503,9 @@ export default function SongDetail({ songId, onClose }) {
     cursor: pointer;
     accent-color: #3ed8ff;
 }
-
 .volume-slider:disabled {
     opacity: 0.5;
     cursor: not-allowed;
-}
-
-/* ==== Responsive desktop (min-width: 1200px) ==== */
-@media (min-width: 1200px) {
-    .song-detail-content {
-        gap: 64px !important;
-        max-width: 1600px !important;
-    }
-    
-    .song-detail-left,
-    .song-detail-right {
-        max-width: 520px !important;
-    }
-    
-    .player-img {
-        width: 320px !important;
-        height: 320px !important;
-    }
-    
-    .song-title {
-        font-size: 42px !important;
-    }
-    
-    .lyrics-scroll {
-        font-size: 20px !important;
-        max-height: calc(100vh - 240px) !important;
-    }
-}
-
-/* ==== Responsive laptop (max-width: 1199px) ==== */
-@media (max-width: 1199px) and (min-width: 1101px) {
-    .song-detail-content {
-        gap: 40px !important;
-        max-width: 1200px !important;
-    }
-    
-    .song-detail-left,
-    .song-detail-right {
-        max-width: 460px !important;
-    }
-    
-    .player-img {
-        width: 260px !important;
-        height: 260px !important;
-    }
-    
-    .song-title {
-        font-size: 32px !important;
-    }
-    
-    .lyrics-scroll {
-        font-size: 18px !important;
-        max-height: calc(100vh - 220px) !important;
-    }
 }
 
 /* ==== Responsive tablet (max-width: 1100px) ==== */
@@ -641,27 +516,6 @@ export default function SongDetail({ songId, onClose }) {
         padding: 34px 5vw 0 5vw !important;
         max-width: 99vw !important;
     }
-    
-    .song-detail-left {
-        width: 100% !important;
-        max-width: 600px !important;
-    }
-    
-    .song-detail-right {
-        display: none !important;
-    }
-    
-    .song-detail-mobile {
-        display: block !important;
-        width: 100% !important;
-        max-width: 600px !important;
-        background: rgba(24,28,43,0.98);
-        border-radius: 32px;
-        box-shadow: 0 8px 32px rgba(62, 216, 255, 0.2);
-        padding: 48px 32px;
-        border: 1px solid rgba(62, 216, 255, 0.1);
-    }
-    
     .player-img {
         width: 210px !important;
         height: 210px !important;
@@ -728,22 +582,6 @@ export default function SongDetail({ songId, onClose }) {
 
 /* ==== Responsive mobile (max-width: 600px) ==== */
 @media (max-width: 600px) {
-    .song-detail-content {
-        flex-direction: column !important;
-        gap: 20px !important;
-        padding: 20px 2vw 0 2vw !important;
-    }
-    
-    .song-detail-left {
-        padding: 24px 16px !important;
-        border-radius: 16px !important;
-    }
-    
-    .song-detail-mobile {
-        padding: 24px 16px !important;
-        border-radius: 16px !important;
-    }
-    
     .song-title {
         font-size: 18px !important;
         margin-bottom: 5px !important;
@@ -856,7 +694,6 @@ export default function SongDetail({ songId, onClose }) {
                 />
 
                 <div className="song-detail-content">
-                    {/* Left side - Song info and controls */}
                     <div className="song-detail-left">
                         <img
                             className="player-img"
@@ -911,7 +748,7 @@ export default function SongDetail({ songId, onClose }) {
                                 className="player-btn"
                                 onClick={safePrevSong}
                                 disabled={adPlaying}
-                                title={t("sidebar.song") || "Previous Song"}
+                                title="Previous Song"
                                 style={adPlaying ? { opacity: 0.5, pointerEvents: "none" } : {}}
                             >
                                 <i className="bi bi-skip-backward-fill"></i>
@@ -1007,45 +844,8 @@ export default function SongDetail({ songId, onClose }) {
                                 <span className="time-total">{song?.duration}</span>
                             </div>
                         </div>
-                    </div>
 
-                    {/* Right side - Lyrics and Comments (PC only) */}
-                    <div className="song-detail-right">
-                        <Tabs
-                            defaultActiveKey="lyrics"
-                            centered
-                            className="tabs-lyrics-comments"
-                            items={[
-                                {
-                                    key: "lyrics",
-                                    label: <span style={{ color: "#29aaff", fontWeight: 700 }}>{t('song_detail.lyrics')}</span>,
-                                    children: <div className="lyrics-scroll">{lyrics}</div>
-                                },
-                                {
-                                    key: "comments",
-                                    label: <span style={{ color: "#29aaff", fontWeight: 700 }}>{t('song_detail.comments')}</span>,
-                                    children: (
-                                        <div className="lyrics-scroll">
-                                            <CommentTab songId={songId} currentUser={currentUser} />
-                                        </div>
-                                    )
-                                }
-                            ]}
-                            tabBarStyle={{
-                                background: "transparent",
-                                color: "#29aaff",
-                                fontWeight: 700,
-                                fontSize: 18,
-                                borderBottom: "1.5px solid #333",
-                                marginBottom: 18,
-                                textShadow: "0 2px 8px rgba(41, 170, 255, 0.3)"
-                            }}
-                            style={{ width: "100%", marginTop: 8 }}
-                        />
-                    </div>
-
-                    {/* Mobile only - Lyrics and Comments below */}
-                    <div className="song-detail-mobile">
+                        {/* --- ĐƯA Tabs LÊN NGAY DƯỚI progress --- */}
                         <Tabs
                             defaultActiveKey="lyrics"
                             centered
