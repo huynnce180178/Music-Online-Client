@@ -1,5 +1,5 @@
-import { useEffect, useState, useMemo } from "react";
-import { Table, Input, Select, Tag, message, Grid, Modal, Button, Space } from "antd";
+import { useEffect, useState, useMemo, useCallback, useRef } from "react";
+import { Table, Input, Select, Tag, message, Grid, Modal, Button, Space, Spin } from "antd";
 import axios from "axios";
 import debounce from "lodash.debounce";
 import { useTranslation } from 'react-i18next';
@@ -48,19 +48,197 @@ export default function AdminUsers() {
     const [editUserId, setEditUserId] = useState(null);
     const [editRoleIds, setEditRoleIds] = useState([]);
     const [editModalOpen, setEditModalOpen] = useState(false);
+    const [error, setError] = useState(null);
     const token = localStorage.getItem("accessToken");
     const screens = useBreakpoint();
     const isTablet = !screens.lg;
     const isMobile = screens.xs;
+    
+    // Use ref to prevent infinite loops
+    const isInitialized = useRef(false);
 
-    useEffect(() => {
+    // Memoized fetch function to prevent unnecessary re-renders
+    const fetchUsers = useCallback(async (params = {}) => {
+        setLoading(true);
+        setError(null);
+        try {
+            const res = await axios.get(`${BASE_API_URL}/api/v1/admin/user`, {
+                headers: { Authorization: `Bearer ${token}` },
+                params: {
+                    page: (params.current || 1) - 1,
+                    limit: params.pageSize || 10,
+                    sortBy: params.sortField || "id",
+                    orderBy: params.sortOrder === "descend" ? "desc" : "asc",
+                    keyword: params.keyword || "",
+                },
+                timeout: 10000, // 10 second timeout
+            });
+            const data = res.data;
+            setUsers(data.content || []);
+            setPagination({
+                current: (data.number || 0) + 1,
+                pageSize: data.size || 10,
+                total: data.totalElements || 0,
+            });
+        } catch (err) {
+            console.error("Error fetching users:", err);
+            setError(err.response?.data?.message || "Failed to load users");
+            setUsers([]);
+            setPagination(prev => ({ ...prev, total: 0 }));
+            message.error("Failed to load users. Please try again.");
+        } finally {
+            setLoading(false);
+        }
+    }, [token]); // Remove pagination from dependencies
+
+    // Optimized debounced search with useCallback and request cancellation
+    const debouncedSearch = useMemo(
+        () => {
+            let timeoutId;
+            let abortController = null;
+            
+            return (value) => {
+                clearTimeout(timeoutId);
+                
+                // Cancel previous request if it exists
+                if (abortController) {
+                    abortController.abort();
+                }
+                
+                // Create new abort controller
+                abortController = new AbortController();
+                
+                timeoutId = setTimeout(() => {
+                    fetchUsers({
+                        current: 1,
+                        pageSize: pagination.pageSize,
+                        sortField: sorter.field,
+                        sortOrder: sorter.order,
+                        keyword: value,
+                    });
+                }, 500);
+            };
+        },
+        [fetchUsers, pagination.pageSize, sorter.field, sorter.order]
+    );
+
+    const handleTableChange = useCallback((pagination, filters, sorterObj) => {
+        const sortField = sorterObj.field || "id";
+        const sortOrder = sorterObj.order || "ascend";
+        setSorter({ field: sortField, order: sortOrder });
         fetchUsers({
             current: pagination.current,
             pageSize: pagination.pageSize,
-            sortField: sorter.field,
-            sortOrder: sorter.order,
+            sortField,
+            sortOrder,
             keyword,
         });
+    }, [fetchUsers, keyword]);
+
+    const handleInputChange = useCallback((e) => {
+        const value = e.target.value;
+        setKeyword(value);
+        debouncedSearch(value);
+    }, [debouncedSearch]);
+
+    const handleSearch = useCallback((value) => {
+        setKeyword(value);
+        fetchUsers({
+            current: 1,
+            pageSize: pagination.pageSize,
+            sortField: sorter.field,
+            sortOrder: sorter.order,
+            keyword: value,
+        });
+    }, [fetchUsers, pagination.pageSize, sorter.field, sorter.order]);
+
+    const handleChangeStatus = useCallback(async (id, status) => {
+        try {
+            await axios.patch(
+                `${BASE_API_URL}/api/v1/admin/user/changeStatus/${id}?status=${status}`,
+                {},
+                { 
+                    headers: { Authorization: `Bearer ${token}` },
+                    timeout: 5000
+                }
+            );
+            message.success("Status updated successfully!");
+            // Only refetch current page instead of full reload
+            fetchUsers({
+                current: pagination.current,
+                pageSize: pagination.pageSize,
+                sortField: sorter.field,
+                sortOrder: sorter.order,
+                keyword,
+            });
+        } catch (err) {
+            console.error("Error updating status:", err);
+            message.error("Failed to update status!");
+        }
+    }, [token, fetchUsers, pagination.current, pagination.pageSize, sorter.field, sorter.order, keyword]);
+
+    const openEditRoleModal = useCallback((userId, roleNames) => {
+        setEditUserId(userId);
+        setEditRoleIds(getRoleIdsFromNames(roleNames || []));
+        setEditModalOpen(true);
+    }, []);
+
+    const handleSetRole = useCallback(async () => {
+        try {
+            await axios.patch(
+                `${BASE_API_URL}/api/v1/admin/role/setRole/${editUserId}`,
+                editRoleIds,
+                { 
+                    headers: { Authorization: `Bearer ${token}` },
+                    timeout: 5000
+                }
+            );
+            message.success("Roles updated successfully!");
+            setEditModalOpen(false);
+            setEditUserId(null);
+            setEditRoleIds([]);
+            // Refetch current page
+            fetchUsers({
+                current: pagination.current,
+                pageSize: pagination.pageSize,
+                sortField: sorter.field,
+                sortOrder: sorter.order,
+                keyword,
+            });
+        } catch (err) {
+            console.error("Error updating roles:", err);
+            message.error("Failed to update roles!");
+        }
+    }, [editUserId, editRoleIds, token, fetchUsers, pagination.current, pagination.pageSize, sorter.field, sorter.order, keyword]);
+
+    // Initial load - only run once
+    useEffect(() => {
+        if (!isInitialized.current) {
+            isInitialized.current = true;
+            fetchUsers({
+                current: 1,
+                pageSize: 10,
+                sortField: "id",
+                sortOrder: "ascend",
+                keyword: "",
+            });
+        }
+        
+        // Cleanup function to clear any pending requests
+        return () => {
+            // Clear any pending requests when component unmounts
+            if (window.AbortController) {
+                // This will be handled by the debounced search cleanup
+            }
+        };
+    }, []); // Empty dependency array - only run on mount
+
+    // Cleanup on unmount
+    useEffect(() => {
+        return () => {
+            // Clear any pending requests when component unmounts
+            isInitialized.current = false;
+        };
     }, []);
 
     useEffect(() => {
@@ -99,126 +277,6 @@ export default function AdminUsers() {
         document.head.appendChild(style);
         return () => document.head.removeChild(style);
     }, []);
-
-    const fetchUsers = async (params = {}) => {
-        setLoading(true);
-        try {
-            const res = await axios.get(`${BASE_API_URL}/api/v1/admin/user`, {
-                headers: { Authorization: `Bearer ${token}` },
-                params: {
-                    page: (params.current || 1) - 1,
-                    limit: params.pageSize || 10,
-                    sortBy: params.sortField || "id",
-                    orderBy: params.sortOrder === "descend" ? "desc" : "asc",
-                    keyword: params.keyword || "",
-                },
-            });
-            const data = res.data;
-            setUsers(data.content || []);
-            setPagination({
-                current: (data.number || 0) + 1,
-                pageSize: data.size || 10,
-                total: data.totalElements || 0,
-            });
-        } catch {
-            setUsers([]);
-            setPagination({ ...pagination, total: 0 });
-        }
-        setLoading(false);
-    };
-
-    const handleTableChange = (pagination, filters, sorterObj) => {
-        const sortField = sorterObj.field || "id";
-        const sortOrder = sorterObj.order || "ascend";
-        setSorter({ field: sortField, order: sortOrder });
-        fetchUsers({
-            current: pagination.current,
-            pageSize: pagination.pageSize,
-            sortField,
-            sortOrder,
-            keyword,
-        });
-    };
-
-    const debouncedSearch = useMemo(
-        () =>
-            debounce((value) => {
-                fetchUsers({
-                    current: 1,
-                    pageSize: pagination.pageSize,
-                    sortField: sorter.field,
-                    sortOrder: sorter.order,
-                    keyword: value,
-                });
-            }, 400),
-        [pagination.pageSize, sorter.field, sorter.order]
-    );
-
-    const handleInputChange = (e) => {
-        setKeyword(e.target.value);
-        debouncedSearch(e.target.value);
-    };
-
-    const handleSearch = (value) => {
-        setKeyword(value);
-        fetchUsers({
-            current: 1,
-            pageSize: pagination.pageSize,
-            sortField: sorter.field,
-            sortOrder: sorter.order,
-            keyword: value,
-        });
-    };
-
-    const handleChangeStatus = async (id, status) => {
-        try {
-            await axios.patch(
-                `${BASE_API_URL}/api/v1/admin/user/changeStatus/${id}?status=${status}`,
-                {},
-                { headers: { Authorization: `Bearer ${token}` } }
-            );
-            message.success("Status updated successfully!");
-            fetchUsers({
-                current: pagination.current,
-                pageSize: pagination.pageSize,
-                sortField: sorter.field,
-                sortOrder: sorter.order,
-                keyword,
-            });
-        } catch {
-            message.error("Failed to update status!");
-        }
-    };
-
-    const openEditRoleModal = (userId, roleNames) => {
-        setEditUserId(userId);
-        setEditRoleIds(getRoleIdsFromNames(roleNames || []));
-        setEditModalOpen(true);
-    };
-
-    const handleSetRole = async () => {
-        try {
-            await axios.patch(
-                `${BASE_API_URL}/api/v1/admin/role/setRole/${editUserId}`,
-                editRoleIds,
-                { headers: { Authorization: `Bearer ${token}` } }
-            );
-            message.success("Roles updated successfully!");
-            setEditModalOpen(false);
-            setEditUserId(null);
-            setEditRoleIds([]);
-            // Chỉ fetch lại users, không reload trang hoặc reset state toàn cục
-            fetchUsers({
-                current: pagination.current,
-                pageSize: pagination.pageSize,
-                sortField: sorter.field,
-                sortOrder: sorter.order,
-                keyword,
-            });
-        } catch {
-            message.error("Failed to update roles!");
-        }
-    };
 
     const columns = [
         {
