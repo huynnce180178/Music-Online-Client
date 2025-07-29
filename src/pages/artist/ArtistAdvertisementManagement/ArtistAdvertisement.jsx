@@ -135,19 +135,28 @@ export default function ArtistAdvertisement() {
 
     // --- Add Advertisement Handler ---
     const openAddModal = () => {
+        // Kiểm tra tổng số quảng cáo (audio + banner)
+        if (ads.length >= 4) {
+            message.error(t('artist_ad.limit_reached') || "You can only have up to 4 advertisements.");
+            return;
+        }
         setAddModal(true);
         addForm.resetFields();
     };
     const handleAdd = async () => {
+        // Kiểm tra lại trước khi submit (tránh bypass qua UI)
+        if (ads.length >= 4) {
+            message.error(t('artist_ad.limit_reached') || "You can only have up to 4 advertisements.");
+            setAddModal(false);
+            return;
+        }
         try {
             const values = await addForm.validateFields();
             setAddLoading(true);
 
             const formData = new FormData();
             formData.append("adType", values.adType);
-            formData.append("startDate", values.startDate.format("YYYY-MM-DD"));
-            formData.append("endDate", values.endDate.format("YYYY-MM-DD"));
-            // Đảm bảo lấy đúng file từ Antd Upload
+
             let fileToUpload = null;
             if (values.mediaFile && values.mediaFile.file) {
                 fileToUpload = values.mediaFile.file.originFileObj || values.mediaFile.file;
@@ -196,6 +205,23 @@ export default function ArtistAdvertisement() {
             }
         }
         setAddLoading(false);
+    };
+
+    const handleDeleteAd = async (adId) => {
+        try {
+            const token = localStorage.getItem("accessToken");
+            await axios.delete(`${BASE_API_URL}/api/v1/artist/advertisements/${adId}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            message.success(t('artist_ad.delete_success') || "Advertisement deleted successfully!");
+            fetchMyAdvertisements();
+        } catch (err) {
+            message.error(
+                err?.response?.data?.message ||
+                t('artist_ad.delete_failed') ||
+                "Failed to delete advertisement!"
+            );
+        }
     };
 
     const getColumns = (type) => [
@@ -251,16 +277,35 @@ export default function ArtistAdvertisement() {
             title: t('artist_ad.actions'),
             key: 'actions',
             align: 'center',
-            width: 100,
+            width: 160,
             render: (_, record) => (
-                <Button
-                    icon={<EditOutlined style={{ color: '#fff' }} />}
-                    type='link'
-                    style={{ color: '#fff' }}
-                    onClick={() => openRenewModal(record)}
-                >
-                    {t('artist_ad.renew')}
-                </Button>
+                <>
+                    <Button
+                        icon={<EditOutlined style={{ color: '#fff' }} />}
+                        type='link'
+                        style={{ color: '#fff' }}
+                        onClick={() => openRenewModal(record)}
+                    >
+                        {t('artist_ad.renew')}
+                    </Button>
+                    <Button
+                        danger
+                        type="link"
+                        style={{ color: '#ff4d4f', marginLeft: 8 }}
+                        onClick={() => {
+                            Modal.confirm({
+                                title: t('artist_ad.confirm_delete') || "Confirm delete",
+                                content: t('artist_ad.confirm_delete_content') || "Are you sure you want to delete this advertisement?",
+                                okText: t('artist_ad.delete') || "Delete",
+                                okButtonProps: { danger: true },
+                                cancelText: t('artist_ad.cancel') || "Cancel",
+                                onOk: () => handleDeleteAd(record.id)
+                            });
+                        }}
+                    >
+                        {t('artist_ad.delete')}
+                    </Button>
+                </>
             ),
         },
     ];
@@ -329,44 +374,6 @@ export default function ArtistAdvertisement() {
                                 { label: t('artist_ad.audio'), value: "AUDIO" },
                                 { label: t('artist_ad.banner'), value: "BANNER" },
                             ]}
-                        />
-                    </Form.Item>
-                    <Form.Item
-                        name="startDate"
-                        label={t('artist_ad.start_date')}
-                        rules={[{ required: true, message: t('artist_ad.please_select_start_date') }]}
-                    >
-                        <DatePicker
-                            style={{ width: "100%" }}
-                            disabledDate={d => d < dayjs().startOf("day")}
-                        />
-                    </Form.Item>
-                    <Form.Item
-                        name="endDate"
-                        label={t('artist_ad.end_date')}
-                        dependencies={["startDate"]}
-                        rules={[
-                            { required: true, message: t('artist_ad.please_select_end_date') },
-                            ({ getFieldValue }) => ({
-                                validator(_, value) {
-                                    const start = getFieldValue("startDate");
-                                    if (!value || !start) return Promise.resolve();
-                                    let dayjsValue = value;
-                                    let dayjsStart = start;
-                                    if (!dayjs.isDayjs(dayjsValue)) dayjsValue = dayjs(dayjsValue);
-                                    if (!dayjs.isDayjs(dayjsStart)) dayjsStart = dayjs(dayjsStart);
-                                    if (!dayjsValue.isValid() || !dayjsStart.isValid()) return Promise.resolve();
-                                    if (typeof dayjsValue.isSameOrBefore !== 'function') return Promise.resolve();
-                                    if (dayjsValue.isSameOrBefore(dayjsStart, "day"))
-                                        return Promise.reject(new Error(t('artist_ad.end_date_after_start')));
-                                    return Promise.resolve();
-                                },
-                            }),
-                        ]}
-                    >
-                        <DatePicker
-                            style={{ width: "100%" }}
-                            disabledDate={d => d < dayjs().startOf("day")}
                         />
                     </Form.Item>
                     <Form.Item

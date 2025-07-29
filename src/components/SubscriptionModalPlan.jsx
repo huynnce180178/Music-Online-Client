@@ -1,8 +1,8 @@
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState, useRef } from 'react';
 import { Modal } from 'react-bootstrap';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { AiOutlineClose } from 'react-icons/ai';
+import { AiOutlineClose, AiOutlineLeft, AiOutlineRight } from 'react-icons/ai';
 import { PlayerContext } from '../context/PlayerContext';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useTranslation } from 'react-i18next';
@@ -12,8 +12,10 @@ import BASE_API_URL from "../services/base.api.url";
 export default function SubscriptionModalPlan({ show, onClose }) {
     const { t } = useTranslation();
     const [plans, setPlans] = useState([]);
+    const [currentPlanIndex, setCurrentPlanIndex] = useState(0);
     const navigate = useNavigate();
     const { stopPlayer } = useContext(PlayerContext);
+    const scrollRef = useRef();
 
     useEffect(() => {
         axios.get(`${BASE_API_URL}/api/v1/subscriptionPlan`)
@@ -32,26 +34,41 @@ export default function SubscriptionModalPlan({ show, onClose }) {
             case 'PREMIUM':
                 return {
                     bgColor: 'linear-gradient(135deg, #CD9B1D, #1A1A12)',
-                    textColor: '#fff',
                     btnBg: '#DCA419',
-                    btnColor: '#fff',
                 };
             case 'ARTIST':
                 return {
                     bgColor: 'linear-gradient(135deg, #4B2987, #1A1A12)',
-                    textColor: '#fff',
                     btnBg: '#9456FF',
-                    btnColor: '#fff',
                 };
             default:
                 return {
-                    bgColor: '#333',
-                    textColor: '#fff',
+                    bgColor: '#23283e',
                     btnBg: '#555',
-                    btnColor: '#fff',
                 };
         }
     };
+
+    // Swipe navigation for mobile
+    const touchStartY = useRef(null);
+    const handleTouchStart = (e) => {
+        touchStartY.current = e.touches[0].clientY;
+    };
+    const handleTouchEnd = (e) => {
+        if (!touchStartY.current) return;
+        const touchEndY = e.changedTouches[0].clientY;
+        const diff = touchStartY.current - touchEndY;
+        if (diff > 50 && currentPlanIndex < plans.length - 1) setCurrentPlanIndex(currentPlanIndex + 1);
+        if (diff < -50 && currentPlanIndex > 0) setCurrentPlanIndex(currentPlanIndex - 1);
+        touchStartY.current = null;
+    };
+
+    // Scroll to current plan on mobile
+    useEffect(() => {
+        if (window.innerWidth < 900 && scrollRef.current) {
+            scrollRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    }, [currentPlanIndex]);
 
     return (
         <Modal
@@ -60,106 +77,219 @@ export default function SubscriptionModalPlan({ show, onClose }) {
             backdrop="static"
             size="xl"
             centered
-            dialogClassName="custom-dialog"
-            contentClassName="custom-content"
+            dialogClassName="sub-modal-dialog"
+            contentClassName="sub-modal-content"
         >
-            <style>{`
-.custom-dialog {
+            <style>
+                {`
+:root {
+    --primary: #dca419;
+    --secondary: #23283e;
+    --radius-lg: 24px;
+    --radius-md: 16px;
+    --radius-sm: 10px;
+    --modal-bg: #0f111d;
+    --card-bg: #181c2b;
+    --text-light: #fff;
+    --text-muted: #bdbdbd;
+}
+.sub-modal-dialog {
     display: flex !important;
     align-items: center;
     justify-content: center;
-    height: 100vh;
+    min-height: 100vh;
     margin: 0 auto !important;
 }
-.custom-content {
-    position: relative;
-    background-color: #0f111d !important;
-    border-radius: 20px !important;
+.sub-modal-content {
+    background: var(--modal-bg) !important;
+    border-radius: var(--radius-lg) !important;
+    box-shadow: 0 0 0 2px var(--primary), 0 0 20px 4px #dca41955 !important;
     padding: 0 !important;
-    box-shadow: 0 0 0 2px #dca419aa, 0 0 20px 4px #dca41955 !important;
-    margin: 0 auto !important;
-    max-width: 410px !important;
-    width: auto !important;
-    min-width: unset !important;
+    max-width: 98vw;
+    min-width: 320px;
 }
 @media (max-width: 900px) {
-    .custom-content {
-        max-width: 96vw !important;
-        margin: 0 2vw !important;
-        border-radius: 16px !important;
+    .sub-modal-content {
+        border-radius: var(--radius-md) !important;
+        max-width: 95vw !important;
+        min-width: 95vw !important;
+        max-height: 90vh !important;
     }
 }
 @media (max-width: 600px) {
-    .custom-content {
-        max-width: 94vw !important;
-        margin: 0 3vw !important;
-        border-radius: 13px !important;
-        padding: 0 !important;
-    }
-    .plan-row-scroll {
-        gap: 6px;
-        max-width: 98vw;
-    }
-    .plan-card-col {
-        min-width: 91vw !important;
-        max-width: 92vw !important;
-        flex: 0 0 91vw !important;
-        padding: 0 !important;
-    }
-    .card {
-        font-size: 0.95rem !important;
-        border-radius: 13px !important;
-        padding: 0.7rem 0.6rem 0.7rem 0.6rem !important;
+    .sub-modal-content {
+        border-radius: var(--radius-sm) !important;
+        max-width: 99vw !important;
+        min-width: 99vw !important;
+        max-height: 95vh !important;
     }
 }
-.modal-body {
-    padding: 0 !important;
-    border-radius: 20px !important;
+.sub-modal-close-btn {
+    position: absolute;
+    top: 12px;
+    right: 16px;
+    z-index: 1050;
+    background: transparent;
+    border: none;
+    font-size: 24px;
+    color: var(--text-light);
+    cursor: pointer;
 }
-.plan-row-scroll {
+.sub-modal-scroll {
+    padding: 2rem 0;
+    background: var(--card-bg);
+    border-radius: var(--radius-lg);
+    max-height: 80vh;
+    overflow-y: auto;
     display: flex;
     flex-direction: row;
-    gap: 28px;
-    overflow-x: auto;
-    overflow-y: visible;
-    padding: 8px 0;
+    gap: 32px;
     justify-content: center;
-    max-width: 100%;
-    scrollbar-width: thin;
-    scrollbar-color: #dca419 #181c2b;
 }
-.plan-row-scroll::-webkit-scrollbar {
-    height: 8px;
-    background: #23283e;
+@media (max-width: 900px) {
+    .sub-modal-scroll {
+        flex-direction: column;
+        gap: 0;
+        padding: 1rem 0.5rem;
+        max-height: 70vh;
+        overflow-y: auto;
+        align-items: center;
+    }
 }
-.plan-row-scroll::-webkit-scrollbar-thumb {
-    background: #dca41977;
-    border-radius: 8px;
+.sub-plan-card-col {
+    min-width: 400px;
+    max-width: 420px;
+    flex: 0 0 400px;
+    display: flex;
+    justify-content: center;
 }
-.plan-card-col {
-    min-width: 350px;
-    max-width: 370px;
-    flex: 0 0 350px;
+@media (max-width: 900px) {
+    .sub-plan-card-col {
+        min-width: 100%;
+        max-width: 100%;
+        flex: none;
+        margin: 0 auto;
+    }
 }
-.plan-center-content {
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    justify-content: center !important;
-    text-align: center !important;
+.sub-plan-card {
+    background: var(--card-bg);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 2px 16px #0002;
+    color: var(--text-light);
+    padding: 2rem 1.5rem;
     width: 100%;
+    max-width: 420px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    transition: box-shadow 0.2s;
 }
-.plan-center-content h4,
-.plan-center-content h5,
-.plan-center-content h6,
-.plan-center-content p,
-.plan-center-content ul,
-.plan-center-content li {
-    text-align: center !important;
+@media (max-width: 900px) {
+    .sub-plan-card {
+        border-radius: var(--radius-md);
+        padding: 1.2rem 0.7rem;
+        max-width: 99vw;
+    }
+}
+@media (max-width: 600px) {
+    .sub-plan-card {
+        border-radius: var(--radius-sm);
+        padding: 0.8rem 0.2rem;
+        max-width: 88vw;
+    }
+}
+.sub-plan-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    text-align: center;
+}
+.sub-plan-price {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--primary);
+    margin: 0.5rem 0;
+    text-align: center;
+}
+.sub-plan-desc {
+    font-size: 1rem;
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
+    text-align: center;
+}
+.sub-plan-btn {
+    background: var(--primary);
+    color: var(--text-light);
+    border: none;
+    border-radius: 999px;
+    font-weight: bold;
+    padding: 0.8rem 0;
+    margin: 1rem 0;
     width: 100%;
+    font-size: 1rem;
+    transition: background 0.2s;
 }
-.plan-center-content ul {
-    padding-left: 0 !important;
+.sub-plan-btn:hover {
+    background: #b88c1a;
+}
+.sub-plan-features {
+    margin: 0.5rem 0 0 0;
+    padding: 0;
+    list-style: none;
+}
+.sub-plan-features li {
+    font-size: 0.98rem;
+    margin-bottom: 0.3rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.sub-plan-features li span {
+    color: var(--primary);
+    font-size: 1.1rem;
+}
+.sub-plan-nav {
+    display: none;
+}
+@media (max-width: 900px) {
+    .sub-plan-nav {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 16px;
+        margin: 1rem 0 0 0;
+    }
+    .sub-plan-arrow {
+        background: var(--secondary);
+        border: none;
+        color: var(--primary);
+        font-size: 1.5rem;
+        border-radius: 50%;
+        width: 38px;
+        height: 38px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+    .sub-plan-arrow:disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
+    }
+    .sub-plan-indicator {
+        display: flex;
+        gap: 6px;
+    }
+    .sub-plan-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #dca41944;
+    }
+    .sub-plan-dot.active {
+        background: var(--primary);
+    }
 }
 .plan-center-content li {
     justify-content: center !important;
@@ -169,84 +299,115 @@ export default function SubscriptionModalPlan({ show, onClose }) {
             <button
                 type="button"
                 onClick={onClose}
-                style={{
-                    position: 'absolute',
-                    top: 12,
-                    right: 16,
-                    zIndex: 1050,
-                    background: 'transparent',
-                    border: 'none',
-                    fontSize: 24,
-                    color: '#fff',
-                    cursor: 'pointer'
-                }}
+                className="sub-modal-close-btn"
                 aria-label="Close"
             >
                 <AiOutlineClose />
             </button>
 
-            <div className="container-fluid py-2" style={{ backgroundColor: '#181c2b', borderRadius: '20px', textAlign: 'center' }}>
-                <div className="mx-auto" style={{ maxWidth: '1000px' }}>
-                    <div
-                        className="plan-row-scroll"
-                        style={{
-                            // Nếu có 2 hoặc ít hơn, căn giữa, còn lại thì scroll ngang
-                            justifyContent: plans.length <= 2 ? "center" : "flex-start"
-                        }}
-                    >
-                        {plans.map(plan => {
-                            const styles = getCardStyle(plan.planType);
-                            return (
-                                <div
-                                    key={plan.id}
-                                    className="plan-card-col"
-                                    style={{
-                                        minWidth: '350px',
-                                        maxWidth: '370px',
-                                        flex: '0 0 350px',
-                                    }}
-                                >
+            <div className="container-fluid" style={{ padding: 0 }}>
+                <div className="sub-modal-scroll" ref={scrollRef}
+                    onTouchStart={handleTouchStart}
+                    onTouchEnd={handleTouchEnd}
+                >
+                    {/* Desktop: show all, Mobile: show only current */}
+                    {plans.length > 0 && (
+                        window.innerWidth < 900
+                            ? (
+                                <div className="sub-plan-card-col">
                                     <div
-                                        className="card shadow p-3 h-100"
+                                        className="sub-plan-card"
                                         style={{
-                                            background: styles.bgColor,
-                                            color: styles.textColor,
-                                            borderRadius: 24,
+                                            background: getCardStyle(plans[currentPlanIndex].planType).bgColor,
                                         }}
                                     >
-                                        <div className="card-body plan-center-content">
-                                            <h4 className="card-title fw-bold">{plan.planName}</h4>
-                                            <p>{plan.description.split(',')[0]}</p>
-                                            <h5 className="mt-2 mb-2 fw-bold">
-                                                {t('premium.from_only', { price: Number(plan.price).toLocaleString('vi-VN') })}
-                                            </h5>
-
-                                            <button
-                                                onClick={() => handleSelectPlan(plan.id)}
-                                                className="w-50 py-2 rounded-pill mb-3 border-0 fw-bold"
-                                                style={{
-                                                    backgroundColor: styles.btnBg,
-                                                    color: styles.btnColor,
-                                                }}
-                                            >
-                                                {t('premium.buy_now')}
-                                            </button>
-
-                                            <h6 className="fw-bold">{t('premium.special_privileges')}</h6>
-                                            <ul className="list-unstyled">
-                                                {plan.description.split(',').map((item, index) => (
-                                                    <li key={index} className="d-flex align-items-start mb-1">
-                                                        <span>✓ {item.trim()}</span>
-                                                    </li>
-                                                ))}
-                                            </ul>
+                                        <h4 className="sub-plan-title">{plans[currentPlanIndex].planName}</h4>
+                                        <div className="sub-plan-desc">{plans[currentPlanIndex].description.split(',')[0]}</div>
+                                        <div className="sub-plan-price">
+                                            {t('premium.from_only', { price: Number(plans[currentPlanIndex].price).toLocaleString('vi-VN') })}
                                         </div>
+                                        <button
+                                            onClick={() => handleSelectPlan(plans[currentPlanIndex].id)}
+                                            className="sub-plan-btn"
+                                        >
+                                            {t('premium.buy_now')}
+                                        </button>
+                                        <h6 style={{ fontWeight: 'bold', textAlign: 'center', marginBottom: '0.5rem' }}>
+                                            {t('premium.special_privileges')}
+                                        </h6>
+                                        <ul className="sub-plan-features">
+                                            {plans[currentPlanIndex].description.split(',').map((item, idx) => (
+                                                <li key={idx}><span>✓</span>{item.trim()}</li>
+                                            ))}
+                                        </ul>
                                     </div>
                                 </div>
-                            );
-                        })}
-                    </div>
+                            )
+                            : (
+                                plans.map((plan) => {
+                                    const styles = getCardStyle(plan.planType);
+                                    return (
+                                        <div key={plan.id} className="sub-plan-card-col">
+                                            <div
+                                                className="sub-plan-card"
+                                                style={{ background: styles.bgColor }}
+                                            >
+                                                <h4 className="sub-plan-title">{plan.planName}</h4>
+                                                <div className="sub-plan-desc">{plan.description.split(',')[0]}</div>
+                                                <div className="sub-plan-price">
+                                                    {t('premium.from_only', { price: Number(plan.price).toLocaleString('vi-VN') })}
+                                                </div>
+                                                <button
+                                                    onClick={() => handleSelectPlan(plan.id)}
+                                                    className="sub-plan-btn"
+                                                >
+                                                    {t('premium.buy_now')}
+                                                </button>
+                                                <h6 style={{ fontWeight: 'bold', textAlign: 'center', marginBottom: '0.5rem' }}>
+                                                    {t('premium.special_privileges')}
+                                                </h6>
+                                                <ul className="sub-plan-features">
+                                                    {plan.description.split(',').map((item, idx) => (
+                                                        <li key={idx}><span>✓</span>{item.trim()}</li>
+                                                    ))}
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    );
+                                })
+                            )
+                    )}
                 </div>
+                {/* Mobile navigation */}
+                {plans.length > 1 && window.innerWidth < 900 && (
+                    <div className="sub-plan-nav">
+                        <button
+                            className="sub-plan-arrow"
+                            onClick={() => setCurrentPlanIndex(currentPlanIndex - 1)}
+                            disabled={currentPlanIndex === 0}
+                            aria-label="Previous"
+                        >
+                            <AiOutlineLeft />
+                        </button>
+                        <div className="sub-plan-indicator">
+                            {plans.map((_, idx) => (
+                                <div
+                                    key={idx}
+                                    className={`sub-plan-dot${idx === currentPlanIndex ? ' active' : ''}`}
+                                    onClick={() => setCurrentPlanIndex(idx)}
+                                />
+                            ))}
+                        </div>
+                        <button
+                            className="sub-plan-arrow"
+                            onClick={() => setCurrentPlanIndex(currentPlanIndex + 1)}
+                            disabled={currentPlanIndex === plans.length - 1}
+                            aria-label="Next"
+                        >
+                            <AiOutlineRight />
+                        </button>
+                    </div>
+                )}
             </div>
         </Modal>
     );

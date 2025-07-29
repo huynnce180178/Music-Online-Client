@@ -235,10 +235,10 @@ export default function AdminUsers() {
             key: "profileImage",
             render: (url) => (
                 <img
-                    src={url || '/default-avatar.png'}
+                    src={url || '/img/default-avatar.png'}
                     alt={t('admin_users.avatar')}
                     onError={(e) => {
-                        e.target.src = '/default-avatar.png';
+                        e.target.src = '/img/default-avatar.png';
                     }}
                     style={{
                         width: isMobile ? 28 : isTablet ? 36 : 50,

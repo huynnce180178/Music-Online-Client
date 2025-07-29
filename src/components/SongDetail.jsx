@@ -442,6 +442,25 @@ export default function SongDetail({ songId, onClose }) {
 .tabs-lyrics-comments .ant-tabs-nav {
     font-size: 18px;
 }
+    .artist-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+    cursor: pointer;
+}
+
+.artist-link .artist-name {
+    font-size: 18px;
+    color: #fff; /* Đảm bảo chữ trắng cho desktop */
+    margin-left: 10px;
+    font-weight: 600;
+    transition: color 0.2s ease;
+}
+
+.artist-link .artist-name:hover {
+    color: #3ed8ff;
+}
 .player-btn {
     background: rgba(255,255,255,0.1);
     border: none;
@@ -526,9 +545,6 @@ export default function SongDetail({ songId, onClose }) {
         font-size: 45px !important;
         margin-bottom: 18px !important;
     }
-    .artist-link .artist-name {
-        font-size: 23px !important;
-    }
     .song-meta {
         font-size: 22px !important;
         margin-bottom: 8px !important;
@@ -551,6 +567,10 @@ export default function SongDetail({ songId, onClose }) {
     .volume-slider {
         width: 120px !important;
         height: 6px !important;
+    }
+    .artist-link .artist-name {
+        font-size: 23px !important;
+        color: #fff !important;
     }
     .song-progress {
         max-width: 500px !important;
@@ -587,10 +607,17 @@ export default function SongDetail({ songId, onClose }) {
         margin-bottom: 5px !important;
     }
     .artist-link .artist-name {
-        font-size: 13px !important;
+        font-size: 23px !important;
+        color: #fff !important;
     }
     .volume-container {
         display: none !important;
+    }
+    .player-controls {
+        margin-top: 8px !important;
+    }
+    .tabs-lyrics-comments {
+        margin-top: 6px !important;
     }
     .song-meta {
         font-size: 13px !important;
@@ -603,12 +630,16 @@ export default function SongDetail({ songId, onClose }) {
     }
     .song-progress {
         max-width: 70vw !important;
-        margin: 0 auto 4px auto !important;
+        margin-top: 6px !important;
+        margin-bottom: 6px !important;
+    }
+    .song-meta-hide-on-mobile {
+        display: none !important;
     }
     .lyrics-scroll {
         font-size: 15px !important;
         min-height: 110px !important;
-        max-height: 350px !important;
+        max-height: 400px !important;
         border-radius: 8px !important;
         padding: 0 10px 10px 10px !important;
         text-align: center !important;
@@ -645,7 +676,7 @@ export default function SongDetail({ songId, onClose }) {
     .comment-tab-container {
         width: 100% !important;
         padding: 0 2vw !important;
-        max-height: 350px !important;
+        max-height: 100% !important;
         box-sizing: border-box !important;
     }
 
@@ -768,10 +799,10 @@ export default function SongDetail({ songId, onClose }) {
                         <div className="song-meta">
                             <b>{t('song_detail.album')}:</b> {album ? album.titleAlbum : song?.albumName || "—"}
                         </div>
-                        <div className="song-meta">
+                        <div className="song-meta song-meta-hide-on-mobile">
                             <b>{t('song_detail.views')}:</b> {song?.views?.toLocaleString()}
                         </div>
-                        <div className="song-meta" style={{ marginBottom: 24 }}>
+                        <div className="song-meta song-meta-hide-on-mobile" style={{ marginBottom: 24 }}>
                             <b>{t('song_detail.duration')}:</b> {song?.duration}
                         </div>
 

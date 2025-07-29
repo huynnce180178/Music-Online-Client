@@ -96,13 +96,17 @@ function RenderComment({
         setReacting(false);
     };
 
-    const reactionSummary = reactions
-        .filter(r => r.count > 0)
-        .map(r => ({
+    // Use reactionCounts from backend response
+    const userReaction = comment.currentUserReaction;
+
+    // Reaction summary: show only reactions with count > 0
+    const reactionSummary = Array.isArray(reactions)
+        ? reactions.filter(r => r.count > 0).map(r => ({
             type: r.type,
             count: r.count,
             icon: REACTION_ICONS[r.type]
-        }));
+        }))
+        : [];
 
     const bgColors = [
         "rgba(255,255,255,0.03)",
@@ -128,7 +132,7 @@ function RenderComment({
                 transition: "background 0.2s"
             }}
         >
-            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 2 }}>
+            <div style={{ display: "flex", alignItems: "left", gap: 10, marginBottom: 2 }}>
                 <Avatar
                     style={{
                         background: "#eaf6fb",
@@ -143,7 +147,17 @@ function RenderComment({
                     {comment.username?.charAt(0).toUpperCase()}
                 </Avatar>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                    <span style={{ color: "#23283e", fontWeight: 600, fontSize: 15, marginRight: 8 }}>
+                    <span style={{
+                        color: "#23283e",
+                        fontWeight: 600,
+                        fontSize: 15,
+                        marginRight: 8,
+                        maxWidth: 160,
+                        display: "inline-block",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap"
+                    }} title={comment.username}>
                         {comment.username}
                     </span>
                     <span style={{ color: "#8ca0c6", fontSize: 12 }}>
@@ -233,7 +247,12 @@ function RenderComment({
                     {comment.content}
                 </div>
             )}
-            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <div style={{
+                display: "flex",
+                alignItems: "flex-start", // căn các nút lên phía trên
+                justifyContent: "flex-start", // căn trái
+                gap: 10
+            }}>
                 <Tooltip title="Reply">
                     <Button
                         size="small"
@@ -243,17 +262,23 @@ function RenderComment({
                         onClick={() => setReplyTo(comment)}
                     />
                 </Tooltip>
-                <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                <div style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 4
+                }}>
                     {reactionSummary.length > 0 && (
                         <div style={{
                             display: "flex",
                             alignItems: "center",
+                            justifyContent: "flex-start",
                             background: "#eaf6fb",
                             borderRadius: 16,
                             padding: "0 8px",
                             fontWeight: 600,
                             fontSize: 15,
-                            minHeight: 28
+                            minHeight: 28,
+                            width: "fit-content" // chỉ chiếm chiều ngang cần thiết
                         }}>
                             {reactionSummary.map(r => (
                                 <span key={r.type} style={{ display: "flex", alignItems: "center", marginRight: 6 }}>
@@ -268,7 +293,7 @@ function RenderComment({
                             size="small"
                             type="text"
                             style={{
-                                color: "#3ed8ff",
+                                color: userReaction ? "#ffb300" : "#3ed8ff",
                                 background: "#eaf6fb",
                                 borderRadius: 16,
                                 fontWeight: 600,
@@ -307,7 +332,7 @@ function RenderComment({
                                             setShowReactions(false);
                                         }}
                                         style={{
-                                            color: "#23283e",
+                                            color: userReaction === type ? "#ffb300" : "#23283e",
                                             fontSize: 18,
                                             background: "none",
                                             border: "none"
@@ -319,7 +344,8 @@ function RenderComment({
                     </div>
                 </div>
             </div>
-            {comment.replies && comment.replies.length > 0 && (
+            {/* Render replies recursively if present */}
+            {Array.isArray(comment.replies) && comment.replies.length > 0 && (
                 <div style={{ marginTop: 8 }}>
                     {comment.replies.map(child => (
                         <RenderComment
@@ -362,6 +388,7 @@ export default function CommentTab({ songId, currentUser }) {
     const fetchComments = async () => {
         try {
             const res = await axios.get(`${BASE_API_URL}/api/v1/comments/song/${songId}`);
+            // Use response directly, assuming it's already nested as needed
             setComments(Array.isArray(res.data) ? res.data : []);
         } catch {
             setComments([]);
@@ -439,6 +466,7 @@ export default function CommentTab({ songId, currentUser }) {
 
     return (
         <div style={{
+            margin: "0 8px", // ✅ thêm vào đây
             color: "#23283e",
             height: "100%",
             overflowY: "auto",
@@ -507,7 +535,7 @@ export default function CommentTab({ songId, currentUser }) {
                 }}
             >
                 {comments.length === 0 ? (
-                    <div style={{ color: "#8ca0c6", textAlign: "center", marginTop: 32 }}>{t('comment_tab.no_comments')}</div>
+                    <div style={{ color: "#8ca0c6", textAlign: "left", marginTop: 32 }}>{t('comment_tab.no_comments')}</div>
                 ) : (
                     comments.map(item => (
                         <RenderComment

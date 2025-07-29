@@ -15,7 +15,6 @@ function getInitialCount() {
 
 export default function GenresList() {
     const [genres, setGenres] = useState([]);
-    const [visibleCounts, setVisibleCounts] = useState({});
     const [startIdxs, setStartIdxs] = useState({});
     const playerCtx = useContext(PlayerContext) || {};
     const { playSong } = playerCtx;
@@ -29,14 +28,13 @@ export default function GenresList() {
 
     useEffect(() => {
         function handleResize() {
-            setVisibleCounts({});
             setStartIdxs({});
         }
         window.addEventListener("resize", handleResize);
         return () => window.removeEventListener("resize", handleResize);
     }, []);
 
-    const getCount = genreId => visibleCounts[genreId] || getInitialCount();
+    const getCount = () => getInitialCount();
     const getStartIdx = genreId => startIdxs[genreId] || 0;
 
     const handlePrev = (genreId) => {
@@ -50,13 +48,6 @@ export default function GenresList() {
         setStartIdxs(idxObj => ({
             ...idxObj,
             [genreId]: Math.min((idxObj[genreId] || 0) + getInitialCount(), songLen - getCount(genreId))
-        }));
-    };
-
-    const handleViewMore = (genreId, songLen) => {
-        setVisibleCounts(counts => ({
-            ...counts,
-            [genreId]: Math.min(getCount(genreId) + getInitialCount(), songLen)
         }));
     };
 
@@ -80,28 +71,6 @@ export default function GenresList() {
                         overflow: hidden;
                         text-overflow: ellipsis;
                     }
-                    .genre-view-more-btn {
-                        color: #fff;
-                        font-size: 16px;
-                        font-weight: 400;
-                        font-family: 'Quicksand', 'Montserrat', sans-serif;
-                        cursor: pointer;
-                        text-decoration: none;
-                        background: #3ed8ff;
-                        border-radius: 18px;
-                        padding: 6px 18px;
-                        margin-left: 12px;
-                        border: none;
-                        transition: background 0.2s;
-                        display: none;
-                    }
-                    .genre-view-more-btn:active {
-                        background: #2bb8d6;
-                    }
-                    @media (max-width: 600px) {
-                        .genre-header-title { font-size: 18px; }
-                        .genre-view-more-btn { display: inline-block !important; }
-                    }
                     `}
                 </style>
                 {genres.map((genre) => {
@@ -110,7 +79,6 @@ export default function GenresList() {
                     const songsToShow = genre.songs.slice(startIdx, startIdx + visibleCount);
                     const canPrev = startIdx > 0;
                     const canNext = startIdx + visibleCount < genre.songs.length;
-                    const showViewMore = visibleCount < genre.songs.length;
 
                     return (
                         <div key={genre.genreId} className="mb-5" style={{ position: 'relative' }}>
@@ -171,17 +139,6 @@ export default function GenresList() {
                                 <span className="genre-header-title">
                                     {t(`genres.${genre.genreName}`, genre.genreName)}
                                 </span>
-                                {showViewMore && (
-                                    <button
-                                        className="genre-view-more-btn"
-                                        onClick={e => {
-                                            e.preventDefault();
-                                            handleViewMore(genre.genreId, genre.songs.length);
-                                        }}
-                                    >
-                                        {t('top_genres.view_more', 'View More')}
-                                    </button>
-                                )}
                             </div>
                             {/* Song Card Grid */}
                             <div className="row g-4">

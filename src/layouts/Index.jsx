@@ -27,6 +27,7 @@ import ActivateAccount from "../components/ActiveAccount";
 import ResetPassword from "../components/ResetPassword";
 import OAuthCallback from "../components/OAuthCallback";
 import OAuthTest from "../components/OAuthTest";
+import MoodModal from "../components/MoodModal";
 
 // Pages
 import HomePage from "../pages/HomePage";
@@ -93,11 +94,12 @@ function MainLayout({
   collapsed,
   setCollapsed,
   onSearch,
+  showMood, // nhận prop này
 }) {
   return (
     <>
       {/* Sidebar */}
-      {!modalType && (
+      {!modalType && !showMood && ( // ẩn hoàn toàn khi showMood=true
         <Sidebar
           collapsed={isMobile ? false : collapsed}
           setCollapsed={isMobile ? () => { } : setCollapsed}
@@ -122,7 +124,7 @@ function MainLayout({
       <div
         style={{
           minHeight: "100vh",
-          marginLeft: !modalType && !isMobile ? sidebarWidth : 0,
+          marginLeft: (!modalType && !isMobile && !showMood) ? sidebarWidth : 0, // Sửa dòng này
           transition: "margin-left 0.3s cubic-bezier(.4,0,.2,1)",
           display: "flex",
           flexDirection: "column",
@@ -243,7 +245,7 @@ function AppRoutes(props) {
 
         {/* OAuth Callback */}
         <Route path="/oauth/callback" element={<OAuthCallback />} />
-        
+
         {/* OAuth Test (for development only) */}
         <Route path="/oauth/test" element={<OAuthTest />} />
 
@@ -255,10 +257,11 @@ function AppRoutes(props) {
               {...props}
               onSearch={handleSearch}
               key={location.pathname}
+              showMood={props.showMood} // truyền prop này
             />
           }
         >
-          <Route index element={<HomePage />} />
+          <Route index element={<HomePage setShowMood={props.setShowMood} setCollapsed={props.setCollapsed} />} />
           <Route path="albums" element={<AlbumsPage />} />
           <Route path="artists" element={<ArtistsPage />} />
           <Route path="artist/:artistId" element={<ArtistProfile />} />
@@ -292,6 +295,7 @@ export default function Index({ children }) {
   const [modalType, setModalType] = useState(null);
   const [sidebarVisible, setSidebarVisible] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 600);
+  const [showMood, setShowMood] = useState(false);
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth <= 600);
@@ -304,6 +308,11 @@ export default function Index({ children }) {
   return (
     <PlayerProvider>
       <Router>
+        <MoodModal
+          open={showMood}
+          onClose={() => setShowMood(false)}
+          onMoodSelected={() => setShowMood(false)}
+        />
         <AppRoutes
           modalType={modalType}
           setModalType={setModalType}
@@ -313,6 +322,8 @@ export default function Index({ children }) {
           sidebarVisible={sidebarVisible}
           collapsed={collapsed}
           setCollapsed={setCollapsed}
+          showMood={showMood}
+          setShowMood={setShowMood}
         >
           {children}
         </AppRoutes>
@@ -333,6 +344,7 @@ MainLayout.propTypes = {
   collapsed: PropTypes.bool,
   setCollapsed: PropTypes.func,
   onSearch: PropTypes.func,
+  showMood: PropTypes.bool, // thêm dòng này để validate prop showMood
 };
 
 AppRoutes.propTypes = {
@@ -346,6 +358,8 @@ AppRoutes.propTypes = {
   setCollapsed: PropTypes.func,
   onSearch: PropTypes.func,
   children: PropTypes.node,
+  showMood: PropTypes.bool,
+  setShowMood: PropTypes.func,
 };
 
 Index.propTypes = {

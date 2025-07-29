@@ -9,7 +9,7 @@ export default function BannerList() {
     const [banner, setBanner] = useState(null);
     const [isPremium, setIsPremium] = useState(false);
     const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
-    const { t } = useTranslation();
+    useTranslation();
 
     // Kiểm tra role khi mount
     useEffect(() => {
@@ -56,7 +56,6 @@ export default function BannerList() {
                 display: "flex",
                 justifyContent: "center"
             }}>
-                <span style={{ color: "#fff", fontSize: 18 }}>{t('banner.no_banners_approved')}</span>
             </div>
         );
     }

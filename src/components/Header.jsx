@@ -115,6 +115,9 @@ function NotificationDropdown() {
         }
     };
 
+    // Responsive width for dropdown
+    const isMobile = window.innerWidth < 500;
+
     return (
         <Dropdown
             trigger={["click"]}
@@ -122,17 +125,23 @@ function NotificationDropdown() {
             popupRender={() => (
                 <div
                     style={{
-                        width: 360,
+                        width: isMobile ? "100vw" : 360,
+                        minWidth: isMobile ? "100vw" : 360,
+                        maxWidth: isMobile ? "100vw" : 360,
+                        boxSizing: "border-box",
                         background: "#232b3e",
-                        borderRadius: 16,
+                        borderRadius: isMobile ? 0 : 16,
                         boxShadow: "0 8px 28px #3ed8ff25",
                         color: "#fff",
                         padding: 0,
-                        border: "1px solid #232b3e"
+                        border: "1px solid #232b3e",
+                        margin: isMobile ? "0" : undefined,
+                        left: isMobile ? "0" : undefined,
+                        right: isMobile ? "0" : undefined,
                     }}
                 >
                     <div style={{
-                        padding: "18px 24px 0 24px",
+                        padding: isMobile ? "14px 8px 0 12px" : "18px 24px 0 24px",
                         fontWeight: 800,
                         fontSize: 20,
                         color: "#3ed8ff",
@@ -153,7 +162,7 @@ function NotificationDropdown() {
                             </Popconfirm>
                         )}
                     </div>
-                    <div style={{ margin: "2px 0 12px 24px", fontSize: 14, color: "#8ca0c6", fontWeight: 500 }}>
+                    <div style={{ margin: isMobile ? "2px 0 10px 12px" : "2px 0 12px 24px", fontSize: 14, color: "#8ca0c6", fontWeight: 500 }}>
                         {unread > 0 ? t('notification.unread', { count: unread }) : t('notification.no_new')}
                     </div>
                     <Spin spinning={loading}>
@@ -162,9 +171,13 @@ function NotificationDropdown() {
                             style={{
                                 background: "none",
                                 color: "#fff",
-                                maxHeight: 370,
+                                maxHeight: isMobile ? "60vh" : 370,
                                 overflowY: "auto",
-                                paddingRight: 2
+                                paddingRight: isMobile ? 0 : 2,
+                                boxSizing: "border-box",
+                                width: isMobile ? "100vw" : "auto",
+                                minWidth: isMobile ? "100vw" : "auto",
+                                maxWidth: isMobile ? "100vw" : "auto",
                             }}
                             locale={{ emptyText: <Empty description={t('notification.empty')} image={Empty.PRESENTED_IMAGE_SIMPLE} /> }}
                             dataSource={notifications}
@@ -172,7 +185,7 @@ function NotificationDropdown() {
                                 <List.Item
                                     style={{
                                         background: item.read ? "#202549" : "#2d47be",
-                                        margin: "0 16px 14px 16px",
+                                        margin: isMobile ? "0 6px 10px 6px" : "0 16px 14px 16px",
                                         borderRadius: 14,
                                         borderLeft: item.read ? "4px solid transparent" : "4px solid #3ed8ff",
                                         boxShadow: item.read
@@ -180,7 +193,7 @@ function NotificationDropdown() {
                                             : "0 2px 8px #2dbeff28",
                                         position: "relative",
                                         transition: "background .18s",
-                                        padding: "20px 20px 12px 24px",
+                                        padding: isMobile ? "14px 12px 8px 16px" : "20px 20px 12px 24px",
                                         minHeight: 60
                                     }}
                                     actions={[
@@ -253,11 +266,16 @@ function NotificationDropdown() {
                 </div>
             )}
         >
-            <Badge count={unread} offset={[-6, 8]} size="default">
+            <Badge count={unread} offset={[0, 25]} size="small">
                 <Button
                     type="text"
                     icon={<BellOutlined style={{ color: "#3ed8ff", fontSize: 24 }} />}
-                    style={{ background: "#232b3e", borderRadius: "50%" }}
+                    style={{
+                        background: "#232b3e", borderRadius: "50%", marginLeft: 0, // dịch sang phải
+                        marginRight: 0, // dịch sang trái
+                        marginTop: 20,   // dịch xuống dưới
+                        marginBottom: 0 // dịch lên trên
+                    }}
                     onClick={fetchNotifications}
                     aria-label={t('notification.title')}
                 />
@@ -341,7 +359,7 @@ function Header({ setModalType, onMenuClick, onSearch }) {
             if (searchValue.trim()) {
                 onSearch(searchValue);
             }
-        }, 300);
+        }, 1000);
 
         return () => clearTimeout(timeout);
     }, [searchValue, onSearch]);
@@ -910,16 +928,30 @@ function Header({ setModalType, onMenuClick, onSearch }) {
                 /* Notification dropdown responsive */
                 @media (max-width: 500px) {
                     .notification-list {
-                        max-width: 96vw !important;
-                        min-width: 0 !important;
+                        max-width: 100vw !important;
+                        min-width: 100vw !important;
+                        width: 100vw !important;
+                        box-sizing: border-box !important;
+                        padding-right: 0 !important;
                     }
                     .ant-dropdown {
-                        min-width: 0 !important;
-                        width: 98vw !important;
+                        min-width: 100vw !important;
+                        width: 100vw !important;
+                        left: 0 !important;
+                        right: 0 !important;
+                        box-sizing: border-box !important;
+                        margin-top: 10px !important;
+                        border-radius: 0 !important;
                     }
                     .ant-dropdown .ant-spin-nested-loading,
                     .ant-dropdown .ant-spin-container {
-                        max-width: 98vw !important;
+                        max-width: 100vw !important;
+                        min-width: 100vw !important;
+                        width: 100vw !important;
+                        box-sizing: border-box !important;
+                    }
+                    .ant-empty {
+                        font-size: 13px !important;
                     }
                 }
                 `}
