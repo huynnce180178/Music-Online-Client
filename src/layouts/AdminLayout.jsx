@@ -50,8 +50,7 @@ export default function AdminLayout({ children }) {
     const [openKeys, setOpenKeys] = useState([]);
 
     useEffect(() => {
-        // Đừng tự động set openKeys khi chuyển route, chỉ set openKeys mặc định khi lần đầu vào trang
-        // Nếu muốn mở đúng group khi load lần đầu, chỉ set openKeys nếu openKeys.length === 0
+
         if (openKeys.length === 0) {
             if (location.pathname.startsWith("/admin/songs")) {
                 setOpenKeys(["song-management"]);
@@ -63,7 +62,6 @@ export default function AdminLayout({ children }) {
                 setOpenKeys(["comments-management"]);
             }
         }
-        // Không else setOpenKeys([]) để không đóng menu cha khi chọn menu con
     }, [location.pathname, openKeys.length]);
 
     useEffect(() => {

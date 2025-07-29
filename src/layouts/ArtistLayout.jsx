@@ -80,7 +80,23 @@ function NotificationDropdown() {
         setLoading(false);
     };
 
-    useEffect(() => { fetchNotifications(); }, []);
+    useEffect(() => { 
+        fetchNotifications(); 
+        
+        const interval = setInterval(() => {
+            fetchNotifications();
+        }, 500);
+        
+        const handleFocus = () => {
+            fetchNotifications();
+        };
+        window.addEventListener('focus', handleFocus);
+        
+        return () => {
+            clearInterval(interval);
+            window.removeEventListener('focus', handleFocus);
+        };
+    }, []);
 
     // Mark as read
     const handleMarkAsRead = async (id) => {

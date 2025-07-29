@@ -44,6 +44,7 @@ import forgotPassword from './forgot_password.json';
 import premium from './premium.json';
 import payment from './payment.json';
 import notification from './notification.json';
+import userBlock from './userBlock.json';
 export default {
   ...common,
   ...login,
@@ -91,4 +92,5 @@ export default {
   ...premium,
   ...payment,
   ...notification,
+  ...userBlock,
 }; 

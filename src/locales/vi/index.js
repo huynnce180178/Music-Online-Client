@@ -44,7 +44,7 @@ import forgotPassword from './forgot_password.json';
 import premium from './premium.json';
 import payment from './payment.json';
 import notification from './notification.json';
-
+import userBlock from './userBlock.json';
 export default {
   ...common,
   ...login,
@@ -75,7 +75,6 @@ export default {
   ...favorites,
   ...history,
   ...search,
-  ...artist_dashboard,
   ...artist_song,
   ...artist_album,
   ...artist_ad,
@@ -88,8 +87,10 @@ export default {
   ...admin_upgrades,
   ...admin_genres,
   ...admin_banners,
+  ...artist_dashboard,
   ...forgotPassword,
   ...premium,
   ...payment,
   ...notification,
+  ...userBlock,
 }; 

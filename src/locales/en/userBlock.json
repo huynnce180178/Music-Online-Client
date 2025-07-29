@@ -1,0 +1,8 @@
+{
+  "userBlock.blocked_title": "Account Blocked",
+  "userBlock.unblocked_title": "Account Unblocked",
+  "userBlock.logout_warning": "You will be automatically logged out in {{count}} seconds",
+  "userBlock.unblocked_message": "Your account has been restored. You can continue using the service.",
+  "userBlock.logout_now": "Logout Now",
+  "userBlock.ok": "OK"
+}

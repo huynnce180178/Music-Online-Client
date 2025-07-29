@@ -1,0 +1,8 @@
+{
+  "userBlock.blocked_title": "Tài khoản bị khóa",
+  "userBlock.unblocked_title": "Tài khoản đã được mở khóa",
+  "userBlock.logout_warning": "Bạn sẽ được đăng xuất tự động sau {{count}} giây",
+  "userBlock.unblocked_message": "Tài khoản của bạn đã được khôi phục. Bạn có thể tiếp tục sử dụng dịch vụ.",
+  "userBlock.logout_now": "Đăng xuất ngay",
+  "userBlock.ok": "OK"
+}
