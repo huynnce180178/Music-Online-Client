@@ -19,16 +19,17 @@ export default function SearchResult() {
     const [localFeaturing, setLocalFeaturing] = useState([]);
     const [startIdx, setStartIdx] = useState(0);
     const [visibleCount, setVisibleCount] = useState(() => {
-        if (window.innerWidth < 576) return 2;
-        if (window.innerWidth < 992) return 3;
-        return 5;
+        if (window.innerWidth < 576) return 1;
+        if (window.innerWidth < 1024) return 2;
+        return 4;
     });
 
+    // Resize handler for carousel count
     useEffect(() => {
         const handleResize = () => {
-            if (window.innerWidth < 576) setVisibleCount(2);
-            else if (window.innerWidth < 992) setVisibleCount(3);
-            else setVisibleCount(5);
+            if (window.innerWidth < 576) setVisibleCount(1);
+            else if (window.innerWidth < 1024) setVisibleCount(2);
+            else setVisibleCount(4);
             setStartIdx(0);
         };
         window.addEventListener("resize", handleResize);
@@ -43,14 +44,12 @@ export default function SearchResult() {
             setLoading(false);
             return;
         }
-
         setLoading(true);
         axios
             .get(`${BASE_API_URL}/api/v1/guest/fullTextSearch?keyword=${encodeURIComponent(query)}`)
             .then((res) => {
                 const data = res.data?.data;
                 if (!data) throw new Error("No data in response");
-
                 const topType = data.topResult?.type;
                 const top = data.topResult?.data;
                 if (topType === "Song") {
@@ -83,7 +82,6 @@ export default function SearchResult() {
                 } else {
                     setLocalTopResult(null);
                 }
-
                 setLocalSongs(
                     (data.songList || []).map((s) => ({
                         songId: s.id,
@@ -95,16 +93,12 @@ export default function SearchResult() {
                         views: s.views || 0,
                     }))
                 );
-
                 setLocalFeaturing(
-                    (data.albumList || []).map((album) => {
-                        const artist = (data.userList || []).find((u) => u.id === album.artistId);
-                        return {
-                            albumId: album.id,
-                            title: album.titleAlbum,
-                            image: album.coverImageUrl || "/img/default-cover.png",
-                        };
-                    })
+                    (data.albumList || []).map((album) => ({
+                        albumId: album.id,
+                        title: album.titleAlbum,
+                        image: album.coverImageUrl || "/img/default-cover.png",
+                    }))
                 );
             })
             .catch((err) => {
@@ -125,6 +119,35 @@ export default function SearchResult() {
             message.error("Song not found.");
         }
     };
+
+    // === Responsive CSS only for this page ===
+    // Bạn có thể chuyển vào file CSS module riêng nếu muốn
+    const responsiveCSS = `
+    @media (max-width: 1024px) {
+      .search-flex-main { flex-direction: column !important; gap: 22px !important; }
+      .search-top-result { max-width: 440px !important; margin: 0 auto 24px auto !important; }
+      .search-songs-list { max-width: 98vw !important; margin: 0 auto; }
+      .search-album-slider { padding: 0 12vw !important; }
+    }
+    @media (max-width: 600px) {
+      .search-main-container { padding: 18px 3vw !important; }
+      .search-flex-main { flex-direction: column !important; gap: 14px !important; }
+      .search-top-result { max-width: 99vw !important; min-width: unset !important; height: 220px !important; }
+      .search-songs-list { max-width: 99vw !important; }
+      .search-songs-list .ant-avatar { width: 44px !important; height: 44px !important; min-width: 44px !important;}
+      .search-songs-list div[style*="font-size: 16px"] { font-size: 13px !important; }
+      .search-songs-list div[style*="font-size: 12px"] { font-size: 11px !important; }
+      .search-album-slider {
+    justify-content: center !important;
+    display: flex !important;
+    padding: 0 !important;
+  }
+      .search-album-card { height: 140px !important; }
+      .search-album-card img { min-height: 140px !important; }
+      .search-album-card div[style*="font-size: 16px"] { font-size: 12px !important; }
+      .search-album-card div[style*="font-size: 12px"] { font-size: 10px !important; }
+    }
+    `;
 
     if (loading) {
         return (
@@ -158,15 +181,16 @@ export default function SearchResult() {
     }
 
     return (
-        <div style={{ color: "#fff", background: "#181c2b", padding: "40px 60px" }}>
+        <div className="search-main-container" style={{ color: "#fff", background: "#181c2b", padding: "40px 60px" }}>
+            <style>{responsiveCSS}</style>
             {/* Top result + Songs */}
-            <div style={{ display: "flex", gap: 40, marginBottom: 40 }}>
+            <div className="search-flex-main" style={{ display: "flex", gap: 40, marginBottom: 40, alignItems: "stretch" }}>
                 {/* Top Result */}
                 <div style={{ flex: 4 }}>
                     <h2 style={{ fontSize: 28, marginBottom: 25, color: "#3ed8ff" }}>{t('search.topResult')}</h2>
                     {localTopResult.type === "Song" ? (
-                        // Card Song giữ nguyên như cũ
                         <div
+                            className="search-top-result"
                             onClick={() => handlePlaySong(localTopResult.songId)}
                             style={{
                                 cursor: "pointer",
@@ -179,7 +203,10 @@ export default function SearchResult() {
                                 display: "flex",
                                 flexDirection: "column",
                                 justifyContent: "flex-end",
+                                minWidth: 210,
+                                maxWidth: 330,
                                 transition: "transform 0.2s, box-shadow 0.2s",
+                                margin: "0 auto",
                             }}
                             onMouseEnter={e => (e.currentTarget.style.transform = "scale(1.02)")}
                             onMouseLeave={e => (e.currentTarget.style.transform = "scale(1)")}
@@ -227,15 +254,17 @@ export default function SearchResult() {
                             </div>
                         </div>
                     ) : localTopResult.type === "Artist" ? (
-                        // CARD ARTIST mới
                         <div
+                            className="search-top-result"
                             style={{
                                 position: "relative",
                                 borderRadius: 24,
                                 overflow: "hidden",
                                 width: "100%",
                                 height: 320,
-                                minHeight: 320,
+                                minHeight: 220,
+                                maxWidth: 350,
+                                margin: "0 auto",
                                 background: "#23283e",
                                 boxShadow: "0 8px 40px #1a225566",
                                 cursor: "pointer",
@@ -280,7 +309,7 @@ export default function SearchResult() {
                                     bottom: 0,
                                     zIndex: 2,
                                     width: "100%",
-                                    padding: "22px 38px 18px 38px",
+                                    padding: "22px 10px 16px 10px",
                                     color: "#fff",
                                     textAlign: "center",
                                     pointerEvents: "none",
@@ -289,18 +318,18 @@ export default function SearchResult() {
                             >
                                 <div style={{
                                     fontWeight: 700,
-                                    fontSize: 30,
-                                    marginBottom: 10,
+                                    fontSize: 22,
+                                    marginBottom: 7,
                                     textShadow: "0 3px 18px #181c2bcc, 0 1px 4px #23283eaa"
                                 }}>
                                     {localTopResult.artistName}
                                 </div>
                                 <div style={{
-                                    fontSize: 17,
+                                    fontSize: 15,
                                     fontWeight: 400,
-                                    maxWidth: 600,
+                                    maxWidth: 320,
                                     margin: "0 auto",
-                                    lineHeight: 1.6,
+                                    lineHeight: 1.5,
                                     textShadow: "0 2px 8px #181c2b88"
                                 }}>
                                     {localTopResult.bio}
@@ -308,15 +337,17 @@ export default function SearchResult() {
                             </div>
                         </div>
                     ) : localTopResult.type === "Album" ? (
-                        // CARD ALBUM
                         <div
+                            className="search-top-result"
                             style={{
                                 position: "relative",
                                 borderRadius: 24,
                                 overflow: "hidden",
                                 width: "100%",
                                 height: 320,
-                                minHeight: 320,
+                                minHeight: 220,
+                                maxWidth: 350,
+                                margin: "0 auto",
                                 background: "#23283e",
                                 boxShadow: "0 8px 40px #1a225566",
                                 cursor: "pointer",
@@ -349,7 +380,7 @@ export default function SearchResult() {
                                     bottom: 0,
                                     zIndex: 2,
                                     width: "100%",
-                                    padding: "22px 38px 18px 38px",
+                                    padding: "22px 10px 16px 10px",
                                     color: "#fff",
                                     textAlign: "center",
                                     pointerEvents: "none",
@@ -358,21 +389,12 @@ export default function SearchResult() {
                             >
                                 <div style={{
                                     fontWeight: 700,
-                                    fontSize: 30,
-                                    marginBottom: 7,
+                                    fontSize: 22,
+                                    marginBottom: 5,
                                     textShadow: "0 3px 18px #181c2bcc, 0 1px 4px #23283eaa"
                                 }}>
                                     {localTopResult.albumName}
                                 </div>
-                                <div style={{
-                                    fontSize: 16,
-                                    color: "#e5ebfa",
-                                    fontWeight: 400,
-                                    marginBottom: 3,
-                                }}>
-                                    {localTopResult.releaseDate}
-                                </div>
-                                {/* Nếu muốn show thêm tên artist thì lấy từ userList ở đây */}
                             </div>
                         </div>
                     ) : null}
@@ -381,16 +403,16 @@ export default function SearchResult() {
                 {/* Songs */}
                 <div style={{ flex: 6 }}>
                     <h2 style={{ fontSize: 28, marginBottom: 25, color: "#3ed8ff" }}>{t('search.songs')}</h2>
-                    <div
+                    <div className="search-songs-list"
                         style={{
                             maxHeight: 300,
                             overflowY: "auto",
                             paddingRight: 8,
                             scrollbarWidth: "none",
                             msOverflowStyle: "none",
-                        }}
-                    >
-                        <style>{`div::-webkit-scrollbar { display: none; }`}</style>
+                            maxWidth: 460,
+                        }}>
+                        <style>{`div.search-songs-list::-webkit-scrollbar { display: none; }`}</style>
                         {localSongs.slice(0, 5).map((song, index) => (
                             <div
                                 key={index}
@@ -398,7 +420,7 @@ export default function SearchResult() {
                                 style={{
                                     display: "flex",
                                     alignItems: "center",
-                                    marginBottom: 16,
+                                    marginBottom: 12,
                                     padding: "8px 12px",
                                     borderRadius: 8,
                                     transition: "background 0.3s",
@@ -410,8 +432,8 @@ export default function SearchResult() {
                                 <Avatar
                                     src={song.profile_pic_url}
                                     shape="square"
-                                    size={64}
-                                    style={{ marginRight: 16, borderRadius: 8 }}
+                                    size={56}
+                                    style={{ marginRight: 12, borderRadius: 8, minWidth: 44 }}
                                 />
                                 <div style={{ flex: 1 }}>
                                     <div style={{ fontWeight: 500, fontSize: 16 }}>{song.songName}</div>
@@ -479,18 +501,19 @@ export default function SearchResult() {
                     >
                         &#62;
                     </button>
-                    <div
+                    <div className="search-album-slider"
                         style={{
                             display: "flex",
                             gap: 20,
                             overflow: "hidden",
-                            padding: "0 50px",
+                            padding: "0 120px",
                         }}
                     >
                         {localFeaturing
                             .slice(startIdx, startIdx + visibleCount)
                             .map((item, index) => (
                                 <div
+                                    className="search-album-card"
                                     key={index}
                                     onClick={() => navigate(`/album/${item.albumId}`)}
                                     style={{
@@ -499,6 +522,9 @@ export default function SearchResult() {
                                         borderRadius: 16,
                                         transition: "transform 0.2s, box-shadow 0.2s",
                                         cursor: "pointer",
+                                        minWidth: 120,
+                                        maxWidth: 240,
+                                        height: 220,
                                     }}
                                     onMouseEnter={(e) => {
                                         e.currentTarget.style.transform = "translateY(-4px) scale(1.03)";
@@ -517,7 +543,7 @@ export default function SearchResult() {
                                             overflow: "hidden",
                                             background: "#23283e",
                                             boxShadow: "0 4px 24px #3ed8ff22",
-                                            height: 220,
+                                            height: "100%",
                                             display: "flex",
                                             flexDirection: "column",
                                             justifyContent: "flex-end",
@@ -529,6 +555,7 @@ export default function SearchResult() {
                                             style={{
                                                 width: "100%",
                                                 height: "100%",
+                                                minHeight: 160,
                                                 objectFit: "cover",
                                                 position: "absolute",
                                                 left: 0,
@@ -561,15 +588,6 @@ export default function SearchResult() {
                                             }}
                                         >
                                             {item.title}
-                                            <div
-                                                style={{
-                                                    fontWeight: 400,
-                                                    fontSize: 12,
-                                                    color: "#8ca0c6",
-                                                }}
-                                            >
-                                                {item.artistName}
-                                            </div>
                                         </div>
                                     </div>
                                 </div>

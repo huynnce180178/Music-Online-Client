@@ -63,8 +63,7 @@ export default function SubscriptionModalPlan({ show, onClose }) {
             dialogClassName="custom-dialog"
             contentClassName="custom-content"
         >
-            <style>
-                {`
+            <style>{`
 .custom-dialog {
     display: flex !important;
     align-items: center;
@@ -72,7 +71,6 @@ export default function SubscriptionModalPlan({ show, onClose }) {
     height: 100vh;
     margin: 0 auto !important;
 }
-
 .custom-content {
     position: relative;
     background-color: #0f111d !important;
@@ -80,8 +78,40 @@ export default function SubscriptionModalPlan({ show, onClose }) {
     padding: 0 !important;
     box-shadow: 0 0 0 2px #dca419aa, 0 0 20px 4px #dca41955 !important;
     margin: 0 auto !important;
+    max-width: 410px !important;
+    width: auto !important;
+    min-width: unset !important;
 }
-
+@media (max-width: 900px) {
+    .custom-content {
+        max-width: 96vw !important;
+        margin: 0 2vw !important;
+        border-radius: 16px !important;
+    }
+}
+@media (max-width: 600px) {
+    .custom-content {
+        max-width: 94vw !important;
+        margin: 0 3vw !important;
+        border-radius: 13px !important;
+        padding: 0 !important;
+    }
+    .plan-row-scroll {
+        gap: 6px;
+        max-width: 98vw;
+    }
+    .plan-card-col {
+        min-width: 91vw !important;
+        max-width: 92vw !important;
+        flex: 0 0 91vw !important;
+        padding: 0 !important;
+    }
+    .card {
+        font-size: 0.95rem !important;
+        border-radius: 13px !important;
+        padding: 0.7rem 0.6rem 0.7rem 0.6rem !important;
+    }
+}
 .modal-body {
     padding: 0 !important;
     border-radius: 20px !important;
@@ -89,7 +119,7 @@ export default function SubscriptionModalPlan({ show, onClose }) {
 .plan-row-scroll {
     display: flex;
     flex-direction: row;
-    gap: 40px;
+    gap: 28px;
     overflow-x: auto;
     overflow-y: visible;
     padding: 8px 0;
@@ -107,54 +137,34 @@ export default function SubscriptionModalPlan({ show, onClose }) {
     border-radius: 8px;
 }
 .plan-card-col {
-    min-width: 440px;
-    max-width: 460px;
-    flex: 0 0 440px;
+    min-width: 350px;
+    max-width: 370px;
+    flex: 0 0 350px;
 }
-
-@media (max-width: 1199px) {
-    .plan-row-scroll {
-        gap: 28px;
-        max-width: 98vw;
-    }
-    .plan-card-col {
-        min-width: 370px;
-        max-width: 390px;
-        flex: 0 0 370px;
-    }
+.plan-center-content {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+    width: 100%;
 }
-
-@media (max-width: 900px) {
-    .plan-row-scroll {
-        gap: 18px;
-        max-width: 96vw;
-    }
-    .plan-card-col {
-        min-width: 320px;
-        max-width: 340px;
-        flex: 0 0 320px;
-    }
+.plan-center-content h4,
+.plan-center-content h5,
+.plan-center-content h6,
+.plan-center-content p,
+.plan-center-content ul,
+.plan-center-content li {
+    text-align: center !important;
+    width: 100%;
 }
-
-@media (max-width: 600px) {
-    .plan-row-scroll {
-        gap: 14px;
-        max-width: 94vw;
-    }
-    .plan-card-col {
-        min-width: 93vw;
-        max-width: 95vw;
-        flex: 0 0 93vw;
-    }
-    .card {
-        font-size: 0.95rem;
-    }
-    .card-title {
-        font-size: 1.2rem;
-    }
+.plan-center-content ul {
+    padding-left: 0 !important;
 }
-`}
-            </style>
+.plan-center-content li {
+    justify-content: center !important;
+}
+`}</style>
 
             <button
                 type="button"
@@ -175,7 +185,7 @@ export default function SubscriptionModalPlan({ show, onClose }) {
                 <AiOutlineClose />
             </button>
 
-            <div className="container-fluid py-5" style={{ backgroundColor: '#181c2b', borderRadius: '20px' }}>
+            <div className="container-fluid py-2" style={{ backgroundColor: '#181c2b', borderRadius: '20px', textAlign: 'center' }}>
                 <div className="mx-auto" style={{ maxWidth: '1000px' }}>
                     <div
                         className="plan-row-scroll"
@@ -191,9 +201,9 @@ export default function SubscriptionModalPlan({ show, onClose }) {
                                     key={plan.id}
                                     className="plan-card-col"
                                     style={{
-                                        minWidth: '480px',
-                                        maxWidth: '440px',
-                                        flex: '0 0 440px',
+                                        minWidth: '350px',
+                                        maxWidth: '370px',
+                                        flex: '0 0 350px',
                                     }}
                                 >
                                     <div
@@ -204,7 +214,7 @@ export default function SubscriptionModalPlan({ show, onClose }) {
                                             borderRadius: 24,
                                         }}
                                     >
-                                        <div className="card-body d-flex flex-column">
+                                        <div className="card-body plan-center-content">
                                             <h4 className="card-title fw-bold">{plan.planName}</h4>
                                             <p>{plan.description.split(',')[0]}</p>
                                             <h5 className="mt-2 mb-2 fw-bold">
@@ -213,7 +223,7 @@ export default function SubscriptionModalPlan({ show, onClose }) {
 
                                             <button
                                                 onClick={() => handleSelectPlan(plan.id)}
-                                                className="w-100 py-2 rounded-pill mb-3 border-0 fw-bold"
+                                                className="w-50 py-2 rounded-pill mb-3 border-0 fw-bold"
                                                 style={{
                                                     backgroundColor: styles.btnBg,
                                                     color: styles.btnColor,

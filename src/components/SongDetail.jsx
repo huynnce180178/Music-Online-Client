@@ -321,6 +321,7 @@ export default function SongDetail({ songId, onClose }) {
     gap: 48px;
     min-height: calc(100vh - 48px);
     overflow: hidden;
+    flex-direction: row;
 }
 .song-detail-left {
     flex: 1;
@@ -579,7 +580,6 @@ export default function SongDetail({ songId, onClose }) {
         font-size: 22px !important;
     }
 }
-
 /* ==== Responsive mobile (max-width: 600px) ==== */
 @media (max-width: 600px) {
     .song-title {
@@ -608,7 +608,7 @@ export default function SongDetail({ songId, onClose }) {
     .lyrics-scroll {
         font-size: 15px !important;
         min-height: 110px !important;
-        max-height: 220px !important;
+        max-height: 350px !important;
         border-radius: 8px !important;
         padding: 0 10px 10px 10px !important;
         text-align: center !important;
@@ -635,18 +635,50 @@ export default function SongDetail({ songId, onClose }) {
         padding: 7px 18px !important;
         border-radius: 6px !important;
     }
+        .lyrics-scroll {
+        word-break: break-word !important;
+        overflow-wrap: break-word !important;
+        box-sizing: border-box !important;
+        max-width: 100% !important;
+    }
+
+    .comment-tab-container {
+        width: 100% !important;
+        padding: 0 2vw !important;
+        max-height: 350px !important;
+        box-sizing: border-box !important;
+    }
+
+    .comment-item {
+        max-width: 100% !important;
+        word-break: break-word !important;
+        overflow-wrap: break-word !important;
+    }
+
+    .comment-item .email,
+    .comment-item .content {
+        font-size: 13px !important;
+        word-break: break-word !important;
+        overflow-wrap: break-word !important;
+    }
+}
+
+/* ==== Tabs hiển thị đúng cho desktop/tablet/mobile ==== */
+@media (min-width: 1101px) {
+    .mobile-tabs { display: none !important; }
+    .desktop-tabs { display: block !important; }
+    .song-detail-content { flex-direction: row !important; }
+}
+@media (max-width: 1100px) {
+    .desktop-tabs { display: none !important; }
+    .mobile-tabs { display: block !important; }
+    .song-detail-content { flex-direction: column !important; }
 }
 
 /* Animation */
 @keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(20px);}
+    to { opacity: 1; transform: translateY(0);}
 }
 `}</style>
 
@@ -744,6 +776,7 @@ export default function SongDetail({ songId, onClose }) {
                         </div>
 
                         <div className="player-controls">
+                            {/* ... Các nút điều khiển ... */}
                             <button
                                 className="player-btn"
                                 onClick={safePrevSong}
@@ -845,38 +878,79 @@ export default function SongDetail({ songId, onClose }) {
                             </div>
                         </div>
 
-                        {/* --- ĐƯA Tabs LÊN NGAY DƯỚI progress --- */}
-                        <Tabs
-                            defaultActiveKey="lyrics"
-                            centered
-                            className="tabs-lyrics-comments"
-                            items={[
-                                {
-                                    key: "lyrics",
-                                    label: <span style={{ color: "#29aaff", fontWeight: 700 }}>{t('song_detail.lyrics')}</span>,
-                                    children: <div className="lyrics-scroll">{lyrics}</div>
-                                },
-                                {
-                                    key: "comments",
-                                    label: <span style={{ color: "#29aaff", fontWeight: 700 }}>{t('song_detail.comments')}</span>,
-                                    children: (
-                                        <div className="lyrics-scroll">
-                                            <CommentTab songId={songId} currentUser={currentUser} />
-                                        </div>
-                                    )
-                                }
-                            ]}
-                            tabBarStyle={{
-                                background: "transparent",
-                                color: "#29aaff",
-                                fontWeight: 700,
-                                fontSize: 18,
-                                borderBottom: "1.5px solid #333",
-                                marginBottom: 18,
-                                textShadow: "0 2px 8px rgba(41, 170, 255, 0.3)"
-                            }}
-                            style={{ width: "100%", marginTop: 8 }}
-                        />
+                        {/* Tabs chỉ hiện trên mobile/tablet */}
+                        <div className="mobile-tabs">
+                            <Tabs
+                                defaultActiveKey="lyrics"
+                                centered
+                                className="tabs-lyrics-comments"
+                                items={[
+                                    {
+                                        key: "lyrics",
+                                        label: <span style={{ color: "#29aaff", fontWeight: 700 }}>{t('song_detail.lyrics')}</span>,
+                                        children: <div className="lyrics-scroll">{lyrics}</div>
+                                    },
+                                    {
+                                        key: "comments",
+                                        label: <span style={{ color: "#29aaff", fontWeight: 700 }}>{t('song_detail.comments')}</span>,
+                                        children: (
+                                            <div className="lyrics-scroll">
+                                                <div className="comment-tab-container"> {/* ✅ Thêm lớp bọc */}
+                                                    <CommentTab songId={songId} currentUser={currentUser} />
+                                                </div>
+                                            </div>
+                                        )
+                                    }
+                                ]}
+                                tabBarStyle={{
+                                    background: "transparent",
+                                    color: "#29aaff",
+                                    fontWeight: 700,
+                                    fontSize: 18,
+                                    borderBottom: "1.5px solid #333",
+                                    marginBottom: 18,
+                                    textShadow: "0 2px 8px rgba(41, 170, 255, 0.3)"
+                                }}
+                                style={{ width: "100%", marginTop: 8 }}
+                            />
+                        </div>
+                    </div>
+
+                    {/* Cột phải chỉ hiện Tabs trên desktop */}
+                    <div className="song-detail-right">
+                        <div className="desktop-tabs">
+                            <Tabs
+                                defaultActiveKey="lyrics"
+                                centered
+                                className="tabs-lyrics-comments"
+                                items={[
+                                    {
+                                        key: "lyrics",
+                                        label: <span style={{ color: "#29aaff", fontWeight: 700 }}>{t('song_detail.lyrics')}</span>,
+                                        children: <div className="lyrics-scroll">{lyrics}</div>
+                                    },
+                                    {
+                                        key: "comments",
+                                        label: <span style={{ color: "#29aaff", fontWeight: 700 }}>{t('song_detail.comments')}</span>,
+                                        children: (
+                                            <div className="lyrics-scroll">
+                                                <CommentTab songId={songId} currentUser={currentUser} />
+                                            </div>
+                                        )
+                                    }
+                                ]}
+                                tabBarStyle={{
+                                    background: "transparent",
+                                    color: "#29aaff",
+                                    fontWeight: 700,
+                                    fontSize: 18,
+                                    borderBottom: "1.5px solid #333",
+                                    marginBottom: 18,
+                                    textShadow: "0 2px 8px rgba(41, 170, 255, 0.3)"
+                                }}
+                                style={{ width: "100%", marginTop: 8 }}
+                            />
+                        </div>
                     </div>
                 </div>
             </div>

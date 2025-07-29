@@ -10,7 +10,6 @@ export default function ArtistProfile() {
     const { t } = useTranslation();
     const artistId = Number(useParams().artistId);
 
-    // Thêm state lưu info artist
     const [artistInfo, setArtistInfo] = useState(null);
     const [albumsByArtist, setAlbumsByArtist] = useState([]);
     const [songsByArtist, setSongsByArtist] = useState([]);
@@ -19,11 +18,10 @@ export default function ArtistProfile() {
     const [loading, setLoading] = useState(true);
     const playerCtx = useContext(PlayerContext) || {};
     const [openedAlbumId, setOpenedAlbumId] = useState(null);
-    const [albumSongs, setAlbumSongs] = useState({}); // albumId -> array songs
-    const [loadingAlbum, setLoadingAlbum] = useState(null); // albumId đang loading
+    const [albumSongs, setAlbumSongs] = useState({});
+    const [loadingAlbum, setLoadingAlbum] = useState(null);
     const { playSong } = playerCtx;
 
-    // Lấy thông tin profile artist
     useEffect(() => {
         if (!artistId) return;
         const fetchArtistInfo = async () => {
@@ -44,7 +42,6 @@ export default function ArtistProfile() {
         fetchArtistInfo();
     }, [artistId]);
 
-    // Lấy danh sách bài hát, album
     useEffect(() => {
         setLoading(true);
         const fetchSongsByArtist = async () => {
@@ -88,14 +85,13 @@ export default function ArtistProfile() {
 
     const handleToggleAlbum = async (albumId) => {
         if (openedAlbumId === albumId) {
-            setOpenedAlbumId(null); // Đang mở, bấm lần nữa sẽ đóng lại
+            setOpenedAlbumId(null);
             return;
         }
         setOpenedAlbumId(albumId);
         if (!albumSongs[albumId]) {
             setLoadingAlbum(albumId);
             try {
-                // Gọi API guest hoặc user đều được, tùy rule của bạn
                 const res = await axios.get(`${BASE_API_URL}/api/v1/guest/ablum/${albumId}/songs`);
                 setAlbumSongs(prev => ({
                     ...prev,
@@ -112,7 +108,6 @@ export default function ArtistProfile() {
         }
     };
 
-    // Kiểm tra follow
     useEffect(() => {
         if (!artistId) return;
         const checkFollowing = async () => {
@@ -134,7 +129,6 @@ export default function ArtistProfile() {
         checkFollowing();
     }, [artistId]);
 
-    // Hàm phát bài hát
     const handleSelectSong = (songId) => {
         const allSongIds = songsByArtist.map(s => s.songId || s.id);
         if (typeof playSong === "function") {
@@ -175,19 +169,7 @@ export default function ArtistProfile() {
         }
     };
 
-    // Ưu tiên avatar/tên từ artistInfo, fallback về song/album hoặc default
-    const artistAvatar =
-        artistInfo?.profileImage ||
-        songsByArtist[0]?.profilePicUrl ||
-        albumsByArtist[0]?.coverImageUrl ||
-        "/img/default-cover.png";
-    const artistName =
-        artistInfo?.firstName && artistInfo?.lastName
-            ? `${artistInfo.firstName} ${artistInfo.lastName}`
-            : songsByArtist[0]?.artistName ||
-            albumsByArtist[0]?.artistName ||
-            "Artist";
-
+    // Layout responsive header
     return (
         <div
             style={{
@@ -200,58 +182,35 @@ export default function ArtistProfile() {
             }}
         >
             {/* Header Artist */}
-            <div style={{ display: "flex", alignItems: "center", gap: 24, marginBottom: 30 }}>
-                <Avatar
-                    size={220}
-                    src={artistInfo?.profileImage || "/img/default-cover.png"}
-                    alt={artistInfo ? `${artistInfo.firstName} ${artistInfo.lastName}` : "Artist"}
-                    style={{ background: "#fff" }}
-                />
-                <div style={{ marginLeft: 20 }}>
-                    <h2 style={{
-                        margin: 0,
-                        fontWeight: 700,
-                        fontSize: 40,
-                        lineHeight: 2,
-                        fontFamily: "'Quicksand','Montserrat',sans-serif"
-                    }}>
+            <div className="artist-profile-header">
+                <div className="artist-profile-header-main">
+                    <Avatar
+                        size={120}
+                        src={artistInfo?.profileImage || "/img/default-cover.png"}
+                        alt={artistInfo ? `${artistInfo.firstName} ${artistInfo.lastName}` : "Artist"}
+                        className="artist-profile-avatar"
+                    />
+                    <span className="artist-profile-name">
                         {artistInfo ? `${artistInfo.firstName} ${artistInfo.lastName}` : "Artist"}
-                    </h2>
-                    {/* Miêu tả nghệ sĩ */}
-                    {artistInfo?.bio && (
-                        <div style={{
-                            margin: "8px 0 0 0",
-                            color: "#b9d1ea",
-                            fontSize: 17,
-                            maxWidth: 540,
-                            fontFamily: "'Quicksand','Montserrat',sans-serif",
-                            fontWeight: 500
-                        }}>
-                            {artistInfo.bio}
-                        </div>
-                    )}
-                    <button
-                        onClick={handleFollow}
-                        style={{
-                            background: isFollowing
-                                ? "linear-gradient(90deg, #5170ff 0%, #b472ff 100%)"
-                                : "linear-gradient(90deg, #1db954 0%, #21c8f6 100%)",
-                            color: "#fff",
-                            border: "none",
-                            borderRadius: 8,
-                            padding: "5px 28px",
-                            marginTop: 20,
-                            cursor: "pointer",
-                            fontWeight: 600,
-                            fontSize: 18,
-                            boxShadow: "0 2px 10px 0 rgba(40,200,120,0.11)",
-                            letterSpacing: 0.5,
-                            transition: "background 0.15s"
-                        }}
-                    >
-                        {isFollowing ? "Followed" : "+ Follow"}
-                    </button>
+                    </span>
                 </div>
+                {/* Bio */}
+                {artistInfo?.bio && (
+                    <div className="artist-profile-bio">
+                        {artistInfo.bio}
+                    </div>
+                )}
+                <button
+                    onClick={handleFollow}
+                    className="artist-profile-follow-btn"
+                    style={{
+                        background: isFollowing
+                            ? "linear-gradient(90deg, #5170ff 0%, #b472ff 100%)"
+                            : "linear-gradient(90deg, #1db954 0%, #21c8f6 100%)",
+                    }}
+                >
+                    {isFollowing ? "Followed" : "+ Follow"}
+                </button>
             </div>
 
             {/* Tabs */}
@@ -500,7 +459,6 @@ export default function ArtistProfile() {
                                                         {isOpen ? "▲" : "▼"}
                                                     </div>
                                                 </div>
-
                                                 {/* DANH SÁCH BÀI HÁT */}
                                                 {isOpen && (
                                                     <div style={{
@@ -598,6 +556,93 @@ export default function ArtistProfile() {
                     </>
                 )}
             </div>
+            <style>{`
+                /* === ARTIST PROFILE RESPONSIVE HEADER === */
+                .artist-profile-header {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 18px;
+                    align-items: flex-start;
+                    margin-bottom: 30px;
+                }
+                .artist-profile-header-main {
+                    display: flex;
+                    align-items: center;
+                    gap: 18px;
+                }
+                .artist-profile-avatar {
+                    box-shadow: 0 2px 10px 0 rgba(40,200,120,0.13);
+                    background: #fff;
+                }
+                .artist-profile-name {
+                    font-weight: 700;
+                    font-size: 38px;
+                    line-height: 1.12;
+                    font-family: 'Quicksand','Montserrat',sans-serif;
+                    color: #fff;
+                    display: block;
+                    word-break: break-word;
+                }
+                .artist-profile-bio {
+                    color: #b9d1ea;
+                    font-size: 17px;
+                    font-family: 'Quicksand','Montserrat',sans-serif;
+                    font-weight: 500;
+                    margin-top: 4px;
+                    margin-bottom: 4px;
+                    max-width: 420px;
+                    white-space: pre-line;
+                }
+                .artist-profile-follow-btn {
+                    color: #fff;
+                    border: none;
+                    border-radius: 8px;
+                    padding: 5px 28px;
+                    margin-top: 2px;
+                    cursor: pointer;
+                    font-weight: 600;
+                    font-size: 18px;
+                    box-shadow: 0 2px 10px 0 rgba(40,200,120,0.11);
+                    letter-spacing: 0.5px;
+                    transition: background 0.15s;
+                }
+                /* MOBILE */
+                @media (max-width: 600px) {
+                    .artist-profile-header {
+                        gap: 10px;
+                        margin-bottom: 24px;
+                        padding: 0 6vw;
+                        align-items: stretch;
+                    }
+                    .artist-profile-header-main {
+                        flex-direction: row;
+                        align-items: center;
+                        gap: 10px;
+                    }
+                    .artist-profile-avatar {
+                        width: 70px !important;
+                        height: 70px !important;
+                        min-width: 70px !important;
+                        min-height: 70px !important;
+                        max-width: 70px !important;
+                        max-height: 70px !important;
+                    }
+                    .artist-profile-name {
+                        font-size: 20px !important;
+                        line-height: 1.18;
+                    }
+                    .artist-profile-bio {
+                        font-size: 14px;
+                        max-width: 100vw;
+                        margin: 0 0 6px 0;
+                    }
+                    .artist-profile-follow-btn {
+                        font-size: 14px;
+                        padding: 5px 16px;
+                        margin-top: 0;
+                    }
+                }
+            `}</style>
         </div>
     );
 }
