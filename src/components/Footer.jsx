@@ -13,6 +13,7 @@ import {
 } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import { useTranslation } from 'react-i18next';
+import { AlignJustify } from "lucide-react";
 
 export default function Footer() {
     const { t } = useTranslation();
@@ -116,7 +117,7 @@ export default function Footer() {
             borderRadius: 16,
             border: "none",
             fontWeight: 500,
-            width: breakpoint === "mobile" ? "100%" : 180,
+            width: breakpoint === "mobile" ? "70%" : 180,
             display: "flex",
             alignItems: "center",
             gap: 8,
@@ -124,6 +125,7 @@ export default function Footer() {
             fontSize: breakpoint === "mobile" ? 15 : 17,
             justifyContent: "center",
             transition: "background 0.2s, color 0.2s",
+            margin: breakpoint === "mobile" ? "0 auto 8px auto" : "0 0 8px 0", // ✅ thêm dòng này để căn giữa ở mobile
         },
         input: {
             marginBottom: 10,
@@ -133,14 +135,14 @@ export default function Footer() {
             border: "none",
             height: 42,
             fontSize: breakpoint === "mobile" ? 14 : 16,
-            width: "100%",
+            width: breakpoint === "mobile" ? "80%" : "100%",
         },
         signupBtn: {
             borderRadius: 20,
             background: "linear-gradient(90deg, #3ed8ff 60%, #1a2235 100%)",
             border: "none",
             fontWeight: 600,
-            width: breakpoint === "mobile" ? "100%" : 160,
+            width: breakpoint === "mobile" ? "80%" : 160,
             height: 42,
             fontSize: breakpoint === "mobile" ? 16 : 19,
             marginTop: 8,

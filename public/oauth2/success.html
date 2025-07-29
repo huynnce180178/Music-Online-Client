@@ -3,62 +3,27 @@
     id="loading"
     style="text-align: center; margin-top: 40px; font-size: 20px"
   >
-    Processing login, please wait...
   </div>
   <script>
-    // Import BASE_API_URL
-    const BASE_API_URL = "https://music-online-backend-fjgha0e2bvevfah8.southeastasia-01.azurewebsites.net";
-
     window.onload = function () {
-      const urlParams = new URLSearchParams(window.location.search);
-      const provider = urlParams.get("provider") || "google";
-      if (urlParams.has("oauth2")) {
-        fetch(`${BASE_API_URL}/${provider}/oauth2-success`, {
-          method: "GET",
-          credentials: "include",
-        })
-          .then((res) => {
-            if (res.status === 404) {
-              document.getElementById("loading").innerText =
-                "Profile completion required, redirecting...";
-              window.location.replace(`/${provider}/complete-profile.html`);
-              return Promise.reject("redirected");
-            }
-            return res.json();
-          })
-          .then((data) => {
-            if (data && data.data && data.data.accessToken) {
-              localStorage.setItem("accessToken", data.data.accessToken);
-              localStorage.setItem(
-                "userName",
-                data.data.userName || data.data.name || ""
-              );
-              localStorage.setItem(
-                "roles",
-                JSON.stringify(data.data.roles || [])
-              );
-              localStorage.setItem("userId", data.data.userId || "");
-              localStorage.setItem("email", data.data.email || "");
-              localStorage.setItem(
-                "profileImage",
-                data.data.profileImage || ""
-              );
-              if (data.data.facebookId)
-                localStorage.setItem("facebookId", data.data.facebookId);
-              if (data.data.needCompleteProfile)
-                localStorage.setItem("needCompleteProfile", "true");
-            }
-            document.getElementById("loading").innerText =
-              "Login successful, redirecting to homepage...";
-            setTimeout(() => (window.location.href = "/"), 900);
-          })
-          .catch((err) => {
-            if (err === "redirected") return;
-            document.getElementById("loading").innerText =
-              "An error occurred, redirecting to homepage...";
-            setTimeout(() => (window.location.href = "/"), 1200);
-          });
+      if (window.location.hash === '#_=_') {
+        window.history.replaceState(null, null, window.location.pathname + window.location.search);
       }
+      
+      const currentUrl = new URL(window.location.href);
+      const callbackUrl = new URL('/oauth/callback', window.location.origin);
+      
+      currentUrl.searchParams.forEach((value, key) => {
+        callbackUrl.searchParams.set(key, value);
+      });
+      
+      if (!callbackUrl.searchParams.has('provider')) {
+        callbackUrl.searchParams.set('provider', 'google');
+      }
+      
+      callbackUrl.searchParams.set('oauth2', 'true');
+      
+      window.location.href = callbackUrl.toString();
     };
   </script>
 </body>

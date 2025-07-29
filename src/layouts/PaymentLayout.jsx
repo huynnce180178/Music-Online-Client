@@ -1,8 +1,88 @@
 import { FaCreditCard, FaMusic } from "react-icons/fa";
 import { useTranslation } from 'react-i18next';
+import { useEffect } from 'react';
 
 export default function PaymentLayout({ children }) {
     const { t } = useTranslation();
+
+    useEffect(() => {
+        const style = document.createElement("style");
+        style.textContent = `
+        /* Mobile: Hide image, fix dropdown item overflow */
+        @media (max-width: 600px) {
+            .payment-layout-wrapper {
+                flex-direction: column !important;
+            }
+
+            .payment-layout-wrapper .payment-image {
+                display: none !important;
+            }
+
+            .payment-layout-wrapper .payment-content {
+                min-width: 100% !important;
+                padding: 24px 20px !important;
+            }
+
+            .payment-content select {
+                width: 100%;
+                font-size: 14px;
+                padding: 8px 10px;
+                border-radius: 6px;
+                border: none;
+                background-color: #fff;
+                color: #000;
+                box-sizing: border-box;
+                appearance: none;
+                outline: none;
+                line-height: 1.2;
+            }
+
+            .payment-content select option {
+                font-size: 14px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                width: 100%;
+            }
+        }
+
+        @media (min-width: 601px) and (max-width: 1024px) {
+            .payment-layout-wrapper {
+                flex-direction: column !important;
+                min-height: 100vh !important;
+                padding: 32px 0 !important;
+                align-items: center !important; /* Căn giữa ảnh theo chiều ngang */
+            }
+
+            .payment-layout-wrapper .payment-image {
+                order: -1;
+                width: 60%;
+                display: flex !important;
+                justify-content: center;
+                align-items: center;
+                margin-bottom: -100px; /* Giảm khoảng cách với modal */
+            }
+
+            .payment-layout-wrapper .payment-image img {
+                max-width: 28%;
+                height: auto;
+                object-fit: contain;
+            }
+
+            .payment-layout-wrapper .payment-content {
+                width: 90% !important;
+                max-width: 100% !important;
+                padding: 40px 32px !important;
+                margin: 0 auto !important;
+            }
+        }
+    `;
+        document.head.appendChild(style);
+        return () => {
+            document.head.removeChild(style);
+        };
+    }, []);
+
     return (
         <div
             style={{
@@ -15,6 +95,7 @@ export default function PaymentLayout({ children }) {
             }}
         >
             <div
+                className="payment-layout-wrapper"
                 style={{
                     width: "100%",
                     maxWidth: "100%",
@@ -26,9 +107,9 @@ export default function PaymentLayout({ children }) {
                     overflow: "hidden",
                 }}
             >
-
-                {/* Left - Image neatly fit */}
+                {/* Left - Image */}
                 <div
+                    className="payment-image"
                     style={{
                         flex: "1 1 50%",
                         minWidth: 400,
@@ -48,8 +129,9 @@ export default function PaymentLayout({ children }) {
                     />
                 </div>
 
-                {/* Right - Payment form */}
+                {/* Right - Content */}
                 <div
+                    className="payment-content"
                     style={{
                         flex: "1 1 50%",
                         minWidth: "400px",
@@ -71,7 +153,7 @@ export default function PaymentLayout({ children }) {
                         </p>
                     </div>
 
-                    {/* Main content (injected from parent) */}
+                    {/* Injected children */}
                     <div>{children}</div>
 
                     {/* Footer */}

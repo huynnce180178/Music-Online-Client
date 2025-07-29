@@ -25,6 +25,8 @@ import SearchResult from "../components/SearchResult";
 import GenresList from "../components/GenresList";
 import ActivateAccount from "../components/ActiveAccount";
 import ResetPassword from "../components/ResetPassword";
+import OAuthCallback from "../components/OAuthCallback";
+import OAuthTest from "../components/OAuthTest";
 
 // Pages
 import HomePage from "../pages/HomePage";
@@ -238,6 +240,12 @@ function AppRoutes(props) {
         />
         <Route path="/payment/success" element={<PaymentSuccess />} />
         <Route path="/payment/fail" element={<PaymentFail />} />
+
+        {/* OAuth Callback */}
+        <Route path="/oauth/callback" element={<OAuthCallback />} />
+        
+        {/* OAuth Test (for development only) */}
+        <Route path="/oauth/test" element={<OAuthTest />} />
 
         {/* Main user routes */}
         <Route
