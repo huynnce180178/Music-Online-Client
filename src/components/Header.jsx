@@ -71,7 +71,7 @@ function NotificationDropdown() {
         
         const interval = setInterval(() => {
             fetchNotifications();
-        }, 10000);
+        }, 60000);
         
         const handleFocus = () => {
             fetchNotifications();
