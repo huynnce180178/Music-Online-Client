@@ -270,7 +270,6 @@ export default function ArtistProfile() {
                                         const songName = s.title || s.songName;
                                         const artistName = s.artistName;
                                         const profilePicUrl = s.profilePicUrl || "/img/default-cover.png";
-                                        const views = s.views || 0;
                                         const duration = s.duration || "";
 
                                         return (
@@ -281,9 +280,9 @@ export default function ArtistProfile() {
                                                     display: "flex",
                                                     alignItems: "center",
                                                     background: "linear-gradient(90deg, #182841 60%, #151C2F 100%)",
-                                                    borderRadius: 14,
+                                                    borderRadius: 10,
                                                     boxShadow: "0 2px 16px 0 rgba(20,30,40,0.14)",
-                                                    padding: "20px 28px",
+                                                    padding: "5px 15px",
                                                     marginBottom: 15,
                                                     position: "relative",
                                                     cursor: "pointer",
@@ -296,8 +295,8 @@ export default function ArtistProfile() {
                                                     src={profilePicUrl}
                                                     alt={songName}
                                                     style={{
-                                                        width: 68,
-                                                        height: 68,
+                                                        width: 60,
+                                                        height: 60,
                                                         objectFit: "cover",
                                                         borderRadius: 12,
                                                         background: "#333",
@@ -315,8 +314,8 @@ export default function ArtistProfile() {
                                                     <div
                                                         style={{
                                                             color: "#fff",
-                                                            fontWeight: 700,
-                                                            fontSize: 19,
+                                                            fontWeight: 600,
+                                                            fontSize: 17,
                                                             fontFamily: "'Quicksand','Montserrat',sans-serif",
                                                             lineHeight: 1,
                                                             marginBottom: 3,
@@ -349,11 +348,8 @@ export default function ArtistProfile() {
                                                         gap: 18,
                                                         alignItems: "center"
                                                     }}>
-                                                        <span style={{ color: "#a1ebfa", fontSize: 15 }}>
-                                                            {t('artist_profile.views')}: {views?.toLocaleString() || 0}
-                                                        </span>
                                                         {duration && (
-                                                            <span style={{ color: "#87a2be", fontSize: 15 }}>
+                                                            <span style={{ color: "#87a2be", fontSize: 14 }}>
                                                                 {t('artist_profile.duration')}: {duration}
                                                             </span>
                                                         )}
@@ -383,8 +379,8 @@ export default function ArtistProfile() {
                                         const albumId = a.albumId || a.id;
                                         const albumName = a.titleAlbum || a.albumName || a.title || "Unknown Album";
                                         const coverImageUrl = a.coverImageUrl || "/img/default-cover.png";
-                                        const releaseDate = a.releaseDateStr || a.releaseDate || "?";
-                                        const type = a.type || "Album";
+                                        // const releaseDate = a.releaseDateStr || a.releaseDate || "?";
+                                        // const type = a.type || "Album";
                                         const isOpen = openedAlbumId === albumId;
 
                                         return (
@@ -399,7 +395,7 @@ export default function ArtistProfile() {
                                                         boxShadow: isOpen ? "0 8px 40px 0 #3ed8ff25" : "0 3px 24px 0 #2227",
                                                         border: isOpen ? "2.5px solid #3ed8ff" : "2.5px solid transparent",
                                                         cursor: "pointer",
-                                                        padding: "20px 28px",
+                                                        padding: "5px 15px",
                                                         gap: 24,
                                                         position: "relative",
                                                         transition: "all 0.17s cubic-bezier(.4,2.2,.5,1)"
@@ -428,8 +424,8 @@ export default function ArtistProfile() {
                                                     }}>
                                                         <div style={{
                                                             color: "#fff",
-                                                            fontWeight: 700,
-                                                            fontSize: 22,
+                                                            fontWeight: 600,
+                                                            fontSize: 20,
                                                             fontFamily: "'Quicksand','Montserrat',sans-serif",
                                                             lineHeight: 1.3,
                                                             marginBottom: 6,
@@ -445,8 +441,8 @@ export default function ArtistProfile() {
                                                             letterSpacing: 0.05,
                                                             marginTop: 2
                                                         }}>
-                                                            {t('artist_profile.released')}: <span style={{ color: "#3ed8ff" }}>{releaseDate}</span>
-                                                            <span style={{ marginLeft: 24, color: "#b6d7f6" }}>{t('artist_profile.type')}: <span style={{ color: "#8ff" }}>{type}</span></span>
+                                                            {/* {t('artist_profile.released')}: <span style={{ color: "#3ed8ff" }}>{releaseDate}</span> */}
+                                                            {/* <span style={{ marginLeft: 24, color: "#b6d7f6" }}>{t('artist_profile.type')}: <span style={{ color: "#8ff" }}>{type}</span></span> */}
                                                         </div>
                                                     </div>
                                                     <div style={{
@@ -465,7 +461,7 @@ export default function ArtistProfile() {
                                                         background: "linear-gradient(90deg, #182841 70%, #151C2F 100%)",
                                                         borderRadius: "0 0 18px 18px",
                                                         marginTop: -2,
-                                                        padding: "6px 0 16px 42px",
+                                                        padding: "6px 0 16px 30px",
                                                         boxShadow: "0 3px 24px #2227",
                                                     }}>
                                                         {loadingAlbum === albumId ? (

@@ -29,20 +29,17 @@ export default function TopGenres() {
     }, []);
 
     // Responsive auto-fit settings
-    let minWidth, maxWidth, genreHeight, padding;
+    let minWidth, genreHeight, padding;
     if (breakpoint === "mobile") {
         minWidth = 150;
-        maxWidth = "1fr";
         genreHeight = 130;
         padding = "0 8px";
     } else if (breakpoint === "tablet") {
         minWidth = 190;
-        maxWidth = 1;
         genreHeight = 170;
         padding = "0 32px";
     } else {
         minWidth = 210;
-        maxWidth = 1;
         genreHeight = 200;
         padding = "0 70px";
     }
@@ -109,13 +106,13 @@ export default function TopGenres() {
                 >
                     {genres.map((genre) => (
                         <div
-                            key={genre.genreId}
+                            key={genre.id || genre.genreId}
                             style={{
                                 position: "relative",
                                 borderRadius: 22,
                                 overflow: "hidden",
                                 minHeight: genreHeight,
-                                aspectRatio: "1 / 1", 
+                                aspectRatio: "1 / 1",
                                 background: "#23283e",
                                 boxShadow: "0 6px 22px #3ed8ff1c",
                                 cursor: "pointer",
@@ -124,7 +121,15 @@ export default function TopGenres() {
                                 alignItems: "flex-end",
                             }}
                             tabIndex={0}
-                            onKeyDown={e => { if (e.key === "Enter") navigate(`/genres/${genre.genreId}/songs`); }}
+                            onClick={() => {
+                                // Điều hướng dạng query param
+                                navigate(`/genres-viewmore?genreId=${genre.id || genre.genreId}`);
+                            }}
+                            onKeyDown={e => {
+                                if (e.key === "Enter") {
+                                    navigate(`/genres-viewmore?genreId=${genre.id || genre.genreId}`);
+                                }
+                            }}
                             onMouseOver={e => {
                                 e.currentTarget.style.transform = "scale(1.03)";
                                 e.currentTarget.style.boxShadow = "0 10px 28px #3ed8ff30";
@@ -144,7 +149,7 @@ export default function TopGenres() {
                                     width: "100%",
                                     height: "100%",
                                     objectFit: "cover",
-                                    filter: "brightness(1.18) contrast(1.07)", // Làm sáng và nét
+                                    filter: "brightness(1.18) contrast(1.07)",
                                     transition: "filter 0.22s",
                                     position: "absolute",
                                     left: 0, top: 0, zIndex: 0,

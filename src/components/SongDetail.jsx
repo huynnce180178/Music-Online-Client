@@ -339,14 +339,28 @@ export default function SongDetail({ songId, onClose }) {
     overflow: hidden;
 }
 .player-img {
-    width: 330px;
-    height: 330px;
-    border-radius: 20px;
-    object-fit: cover;
+    border-radius: 50% !important;              /* Bo tròn thành đĩa */
+    width: 350px !important;
+    height: 350px !important;
+    border-bottom: 5px solid #23283e !important;
+    animation: spin-disc 12s linear infinite !important;   /* Xoay chậm */
     box-shadow: 0 12px 48px rgba(0,0,0,0.6);
-    margin-bottom: 32px;
-    transition: transform 0.3s, box-shadow 0.3s;
-    margin-top: 12px;
+    position: relative;
+    background: #23283e;
+    object-fit: cover;
+}
+.player-img::after {
+    content: "";
+    position: absolute;
+    left: 50%; top: 50%;
+    transform: translate(-50%, -50%);
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: radial-gradient(#fff 60%, #3ed8ff 80%, transparent 100%);
+    border: 3px solid #3ed8ff77;
+    z-index: 2;
+    pointer-events: none;
 }
 .song-title {
     color: #fff;
@@ -526,6 +540,10 @@ export default function SongDetail({ songId, onClose }) {
 .volume-slider:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+}
+
+@keyframes spin-disc {
+    100% { transform: rotate(360deg);}
 }
 
 /* ==== Responsive tablet (max-width: 1100px) ==== */

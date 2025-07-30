@@ -3,38 +3,94 @@ import axios from "axios";
 import { PlayerContext } from "../context/PlayerContext";
 import { useTranslation } from 'react-i18next';
 import BASE_API_URL from "../services/base.api.url";
+import { useLocation, useNavigate } from "react-router-dom";
+import { FiArrowLeft } from "react-icons/fi";
 
 // Responsive: số lượng card theo breakpoint
 function getInitialCount() {
-    if (window.innerWidth < 600) return 1;
+    if (window.innerWidth < 600) return 5;
     if (window.innerWidth < 900) return 2;
     if (window.innerWidth < 1200) return 3;
     if (window.innerWidth < 1400) return 4;
     return 6;
 }
 
+function useQuery() {
+    return new URLSearchParams(useLocation().search);
+}
+
 export default function GenresList() {
     const [genres, setGenres] = useState([]);
     const [startIdxs, setStartIdxs] = useState({});
+    const [visibleCounts, setVisibleCounts] = useState({});
+    const [loading, setLoading] = useState(true);
     const playerCtx = useContext(PlayerContext) || {};
     const { playSong } = playerCtx;
     const { t } = useTranslation();
+    const query = useQuery();
+    const navigate = useNavigate();
+
+    const genreId = query.get("genreId");
 
     useEffect(() => {
-        axios.get(`${BASE_API_URL}/api/v1/guest/genre/genresViewMore?page=0&size=20&sortBy=id&sortDir=asc`)
-            .then(res => setGenres(res.data))
-            .catch(() => setGenres([]));
-    }, []);
+        const fetchData = async () => {
+            setLoading(true);
+
+            if (genreId) {
+                // Lấy danh sách tất cả genre (để lấy tên & ảnh genre)
+                try {
+                    const resGenres = await axios.get(`${BASE_API_URL}/api/v1/genres?page=0&size=1000&sortBy=id&sortDir=asc`);
+                    const allGenres = Array.isArray(resGenres.data.data) ? resGenres.data.data : [];
+                    const genre = allGenres.find(g => String(g.id) === String(genreId) || String(g.genreId) === String(genreId));
+                    if (!genre) {
+                        setGenres([]);
+                        setLoading(false);
+                        return;
+                    }
+                    const resSongs = await axios.get(`${BASE_API_URL}/api/v1/guest/genre/${genreId}/songs`);
+                    setGenres([{ ...genre, songs: resSongs.data || [] }]);
+                } catch {
+                    setGenres([]);
+                }
+                setLoading(false);
+            } else {
+                // Lấy tất cả genres và bài hát của từng genre
+                try {
+                    const resGenres = await axios.get(`${BASE_API_URL}/api/v1/genres?page=0&size=1000&sortBy=id&sortDir=asc`);
+                    const allGenres = Array.isArray(resGenres.data.data) ? resGenres.data.data : [];
+                    const genresWithSongs = await Promise.all(
+                        allGenres.map(async genre => {
+                            try {
+                                const resSongs = await axios.get(`${BASE_API_URL}/api/v1/guest/genre/${genre.id || genre.genreId}/songs`);
+                                return { ...genre, songs: resSongs.data || [] };
+                            } catch {
+                                return { ...genre, songs: [] };
+                            }
+                        })
+                    );
+                    setGenres(genresWithSongs);
+                } catch {
+                    setGenres([]);
+                }
+                setLoading(false);
+            }
+        };
+        fetchData();
+        // eslint-disable-next-line
+    }, [window.location.search]);
 
     useEffect(() => {
         function handleResize() {
             setStartIdxs({});
+            setVisibleCounts({});
         }
         window.addEventListener("resize", handleResize);
         return () => window.removeEventListener("resize", handleResize);
     }, []);
 
-    const getCount = () => getInitialCount();
+    const getCount = (genreId, genreLen) =>
+        visibleCounts[genreId] || Math.min(getInitialCount(), genreLen);
+
     const getStartIdx = genreId => startIdxs[genreId] || 0;
 
     const handlePrev = (genreId) => {
@@ -47,13 +103,22 @@ export default function GenresList() {
     const handleNext = (genreId, songLen) => {
         setStartIdxs(idxObj => ({
             ...idxObj,
-            [genreId]: Math.min((idxObj[genreId] || 0) + getInitialCount(), songLen - getCount(genreId))
+            [genreId]: Math.min((idxObj[genreId] || 0) + getInitialCount(), songLen - getCount(genreId, songLen))
+        }));
+    };
+
+    const handleViewMore = (genreId, songLen) => {
+        setVisibleCounts(counts => ({
+            ...counts,
+            [genreId]: Math.min(getCount(genreId, songLen) + getInitialCount(), songLen)
         }));
     };
 
     const handleSelectSong = (songId, allSongIds) => {
         playSong && playSong(songId, allSongIds);
     };
+
+    if (loading) return <div style={{ color: "#fff", textAlign: "center" }}>Loading...</div>;
 
     return (
         <div style={{ width: "100%", background: "#181c2b", padding: "0 0 48px 0", display: "flex", justifyContent: "center" }}>
@@ -71,21 +136,135 @@ export default function GenresList() {
                         overflow: hidden;
                         text-overflow: ellipsis;
                     }
+                    @media (max-width: 600px) {
+                        .genre-header-title {
+                            font-size: 21px !important;
+                        }
+                        .container-fluid {
+                            padding-left: 5 !important;
+                            padding-right:5 !important;
+                        }
+                        .genre-header-bar {
+                            margin-left: 0 !important;
+                            margin-right: 0 !important;
+                            padding-left: 0 !important;
+                            padding-right: 0 !important;
+                        }
+                    }
                     `}
                 </style>
                 {genres.map((genre) => {
-                    const visibleCount = getCount(genre.genreId);
-                    const startIdx = getStartIdx(genre.genreId);
-                    const songsToShow = genre.songs.slice(startIdx, startIdx + visibleCount);
+                    const genreIdVal = genre.id || genre.genreId;
+                    const visibleCount = getCount(genreIdVal, (genre.songs || []).length);
+                    const startIdx = getStartIdx(genreIdVal);
+                    const songsToShow = (genre.songs || []).slice(startIdx, startIdx + visibleCount);
                     const canPrev = startIdx > 0;
-                    const canNext = startIdx + visibleCount < genre.songs.length;
+                    const canNext = startIdx + visibleCount < (genre.songs || []).length;
 
+                    // Responsive header layout: "Back" trái - Title giữa - "View More" phải
                     return (
-                        <div key={genre.genreId} className="mb-5" style={{ position: 'relative' }}>
+                        <div id={`genre-${genreIdVal}`} key={genreIdVal} className="mb-5" style={{ position: 'relative' }}>
+                            {/* Responsive Header */}
+                            <div
+                                className="genre-header-bar"
+                                style={{
+                                    position: "relative",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "space-between",
+                                    minHeight: 48,
+                                    marginBottom: 18,
+                                    marginTop: 8,
+                                    padding: window.innerWidth < 600 ? "0 0px" : "",
+                                }}
+                            >
+                                {/* Back (chỉ hiện khi có genreId) */}
+                                {genreId && (
+                                    <button
+                                        onClick={() => navigate("/genres")}
+                                        style={{
+                                            height: 42,
+                                            width: 42,
+                                            border: "none",
+                                            background: "none",
+                                            color: "#3ed8ff",
+                                            fontSize: 26,
+                                            display: "flex",
+                                            alignItems: "center",
+                                            justifyContent: "center",
+                                            cursor: "pointer",
+                                            padding: 0,
+                                            margin: 0,
+                                            zIndex: 2,
+                                        }}
+                                        aria-label="Back"
+                                    >
+                                        <FiArrowLeft />
+                                    </button>
+                                )}
+
+                                {/* Title luôn căn giữa, thu gọn 2 bên mobile */}
+                                <span
+                                    className="genre-header-title"
+                                    style={{
+                                        flex: "1 1 auto",
+                                        textAlign: "left",
+                                        fontSize: window.innerWidth < 600 ? 21 : 28,
+                                        overflow: "hidden",
+                                        textOverflow: "ellipsis",
+                                        whiteSpace: "nowrap",
+                                        lineHeight: "42px",
+                                        margin: 0,
+                                        padding: 0,
+                                        minWidth: 0,
+                                    }}
+                                >
+                                    {t(`genres.${genre.genreName}`, genre.genreName)}
+                                </span>
+
+                                {/* View More (nằm phải, chỉ hiện khi chưa xem hết) */}
+                                {visibleCount < (genre.songs || []).length ? (
+                                    <a
+                                        href="#"
+                                        onClick={e => {
+                                            e.preventDefault();
+                                            handleViewMore(genreIdVal, (genre.songs || []).length);
+                                        }}
+                                        style={{
+                                            height: 42,
+                                            minWidth: 42,
+                                            display: "flex",
+                                            alignItems: "center",
+                                            justifyContent: "flex-end",
+                                            color: "#fff",
+                                            fontSize: window.innerWidth < 600 ? 15 : 16,
+                                            fontWeight: 400,
+                                            fontFamily: "'Quicksand', 'Montserrat', sans-serif",
+                                            cursor: "pointer",
+                                            textDecoration: "none",
+                                            zIndex: 2,
+                                            padding: 0,
+                                            margin: 0,
+                                            background: "none",
+                                            border: "none",
+                                        }}
+                                    >
+                                        {t('top_genres.view_more', 'View More')}
+                                    </a>
+                                ) : (
+                                    // Nếu không có View More, giữ 1 box trống để title vẫn chính giữa
+                                    <div style={{
+                                        width: 42,
+                                        minWidth: 42,
+                                        height: 42,
+                                        display: "flex"
+                                    }} />
+                                )}
+                            </div>
                             {/* Arrow trái */}
                             <button
                                 className="genre-arrow-btn"
-                                onClick={() => handlePrev(genre.genreId)}
+                                onClick={() => handlePrev(genreIdVal)}
                                 disabled={!canPrev}
                                 style={{
                                     position: "absolute",
@@ -102,7 +281,7 @@ export default function GenresList() {
                                     zIndex: 3,
                                     cursor: canPrev ? "pointer" : "not-allowed",
                                     opacity: canPrev ? 1 : 0.4,
-                                    display: visibleCount < genre.songs.length ? "block" : "none",
+                                    display: visibleCount < (genre.songs || []).length ? "block" : "none",
                                 }}
                                 aria-label="Previous"
                             >
@@ -111,7 +290,7 @@ export default function GenresList() {
                             {/* Arrow phải */}
                             <button
                                 className="genre-arrow-btn"
-                                onClick={() => handleNext(genre.genreId, genre.songs.length)}
+                                onClick={() => handleNext(genreIdVal, (genre.songs || []).length)}
                                 disabled={!canNext}
                                 style={{
                                     position: "absolute",
@@ -128,25 +307,19 @@ export default function GenresList() {
                                     zIndex: 3,
                                     cursor: canNext ? "pointer" : "not-allowed",
                                     opacity: canNext ? 1 : 0.4,
-                                    display: visibleCount < genre.songs.length ? "block" : "none",
+                                    display: visibleCount < (genre.songs || []).length ? "block" : "none",
                                 }}
                                 aria-label="Next"
                             >
                                 &#62;
                             </button>
-                            {/* Header */}
-                            <div className="d-flex justify-content-between align-items-end mb-3 mt-2 flex-wrap">
-                                <span className="genre-header-title">
-                                    {t(`genres.${genre.genreName}`, genre.genreName)}
-                                </span>
-                            </div>
                             {/* Song Card Grid */}
                             <div className="row g-4">
                                 {songsToShow.map((song) => (
                                     <div className="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2" key={song.id}>
                                         <div
                                             className="h-100 genre-song-card"
-                                            onClick={() => handleSelectSong(song.id, genre.songs.map(s => s.id))}
+                                            onClick={() => handleSelectSong(song.id, (genre.songs || []).map(s => s.id))}
                                             style={{
                                                 background: "transparent",
                                                 borderRadius: 18,
@@ -201,9 +374,9 @@ export default function GenresList() {
                                                 fontSize: 18,
                                                 fontFamily: "'Quicksand', 'Montserrat', sans-serif",
                                                 textShadow: "0 2px 8px #181f2a88",
-                                                padding: "18px",
+                                                padding: "10px",
                                                 wordBreak: "break-word",
-                                                minHeight: 60,
+                                                minHeight: 120,
                                                 display: "flex",
                                                 flexDirection: "column",
                                                 justifyContent: "flex-end",
@@ -216,14 +389,6 @@ export default function GenresList() {
                                                     overflow: 'hidden',
                                                     textOverflow: 'ellipsis',
                                                 }}>{song.title}</div>
-                                                <div style={{
-                                                    fontWeight: 400,
-                                                    fontSize: 14,
-                                                    color: "#8ca0c6",
-                                                    marginTop: 2,
-                                                }}>
-                                                    {genre.genreName}
-                                                </div>
                                             </div>
                                         </div>
                                     </div>

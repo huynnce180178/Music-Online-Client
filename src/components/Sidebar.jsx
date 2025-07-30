@@ -94,7 +94,7 @@ export default function Sidebar({ collapsed, setCollapsed, visible, setVisible, 
                     top: 0,
                     left: 0,
                     height: "100vh",
-                    width: isMobile ? "80vw" : collapsed ? 80 : 200,
+                    width: isMobile ? "40vw" : collapsed ? 80 : 200,
                     background: "rgba(24,31,42,0.98)",
                     zIndex: 1001,
                     transition: isMobile
