@@ -946,11 +946,13 @@ export default function PlaylistPage() {
                 }}
                 footer={null}
                 centered
-                bodyStyle={{
-                    background: "#ffffff",
-                    borderRadius: 16,
-                    padding: 32,
-                    textAlign: "center"
+                styles={{
+                    body: {
+                        background: "#ffffff",
+                        borderRadius: 16,
+                        padding: 32,
+                        textAlign: "center"
+                    }
                 }}
             >
                 <div style={{

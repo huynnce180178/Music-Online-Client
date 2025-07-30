@@ -12,72 +12,78 @@ class WebSocketService {
         this.reconnectDelay = 5000;
     }
 
-    connect(userId, onUserBlocked, onNotificationReceived) {
+    async connect(userId, onUserBlocked, onNotificationReceived) {
+        console.log('WebSocket: Attempting to connect for userId:', userId);
         this.userId = userId;
         this.onUserBlocked = onUserBlocked;
         this.onNotificationReceived = onNotificationReceived;
 
         if (!userId) {
-            console.warn('No user ID provided for WebSocket connection');
+            console.log('WebSocket: No userId provided, skipping connection');
             return;
         }
 
         if (this.stompClient && this.connected) {
+            console.log('WebSocket: Disconnecting existing connection');
             this.disconnect();
         }
-        import('sockjs-client').then((SockJS) => {
-            import('@stomp/stompjs').then((Stomp) => {
-                try {
-                    const socket = new SockJS.default(`${BASE_API_URL}/ws`);
-                    this.stompClient = Stomp.Stomp.over(socket);
+        
+        try {
+            console.log('WebSocket: Loading SockJS and Stomp modules...');
+            const [SockJS, Stomp] = await Promise.all([
+                import('sockjs-client').then(module => module.default),
+                import('@stomp/stompjs').then(module => module.Stomp)
+            ]);
+            
+            console.log('WebSocket: Creating SockJS connection to:', `${BASE_API_URL}/ws`);
+            const socket = new SockJS(`${BASE_API_URL}/ws`);
+            this.stompClient = Stomp.over(socket);
 
-                    this.stompClient.reconnect_delay = this.reconnectDelay;
-                    this.stompClient.max_reconnect_attempts = this.maxReconnectAttempts;
+            this.stompClient.reconnect_delay = this.reconnectDelay;
+            this.stompClient.max_reconnect_attempts = this.maxReconnectAttempts;
 
-                    this.stompClient.connect({}, (frame) => {
-                        this.connected = true;
-                        this.reconnectAttempts = 0;
+            console.log('WebSocket: Connecting to STOMP...');
+            this.stompClient.connect({}, (frame) => {
+                console.log('WebSocket: Connected successfully! Frame:', frame);
+                this.connected = true;
+                this.reconnectAttempts = 0;
 
-                        // Subscribe to user status notifications
-                        this.stompClient.subscribe(`/topic/user-status/${userId}`, (message) => {
-                            try {
-                                const notification = JSON.parse(message.body);
-                                if (this.onUserBlocked) {
-                                    this.onUserBlocked(notification);
-                                }
-                            } catch (error) {
-                                console.error('Error parsing user status notification:', error);
-                            }
-                        });
+                const userStatusTopic = `/topic/user-status/${userId}`;
+                console.log('WebSocket: Subscribing to user status topic:', userStatusTopic);
+                this.stompClient.subscribe(userStatusTopic, (message) => {
+                    console.log('WebSocket: Received user status notification:', message.body);
+                    try {
+                        const notification = JSON.parse(message.body);
+                        if (this.onUserBlocked) {
+                            this.onUserBlocked(notification);
+                        }
+                    } catch (error) {
+                        console.error('Error parsing user status notification:', error);
+                    }
+                });
 
-                        // Subscribe to general notifications
-                        this.stompClient.subscribe(`/topic/notifications/${userId}`, (message) => {
-                            try {
-                                const notification = JSON.parse(message.body);
-                                if (this.onNotificationReceived) {
-                                    this.onNotificationReceived(notification);
-                                }
-                            } catch (error) {
-                                console.error('Error parsing notification:', error);
-                            }
-                        });
-                    }, (error) => {
-                        console.error('WebSocket connection error:', error);
-                        this.connected = false;
-                        this.handleReconnect();
-                    });
-                } catch (error) {
-                    console.error('Failed to create WebSocket connection:', error);
-                    this.handleReconnect();
-                }
-            }).catch(error => {
-                console.error('Failed to load Stomp library:', error);
+                const notificationsTopic = `/topic/notifications/${userId}`;
+                console.log('WebSocket: Subscribing to notifications topic:', notificationsTopic);
+                this.stompClient.subscribe(notificationsTopic, (message) => {
+                    console.log('WebSocket: Received general notification:', message.body);
+                    try {
+                        const notification = JSON.parse(message.body);
+                        if (this.onNotificationReceived) {
+                            this.onNotificationReceived(notification);
+                        }
+                    } catch (error) {
+                        console.error('Error parsing notification:', error);
+                    }
+                });
+            }, (error) => {
+                console.error('WebSocket: Connection error:', error);
+                this.connected = false;
                 this.handleReconnect();
             });
-        }).catch(error => {
-            console.error('Failed to load SockJS library:', error);
+        } catch (error) {
+            console.error('WebSocket: Error during connection setup:', error);
             this.handleReconnect();
-        });
+        }
     }
 
     handleReconnect() {

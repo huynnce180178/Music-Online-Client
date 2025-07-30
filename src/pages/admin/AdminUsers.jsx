@@ -395,8 +395,10 @@ export default function AdminUsers() {
                 </span>
             }
             width={isMobile ? 320 : 400}
-            bodyStyle={{
-                padding: isMobile ? "16px 8px" : "24px 24px",
+            styles={{
+                body: {
+                    padding: isMobile ? "16px 8px" : "24px 24px",
+                }
             }}
         >
             <div style={{ marginBottom: 16 }}>

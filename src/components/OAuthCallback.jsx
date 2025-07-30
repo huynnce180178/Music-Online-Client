@@ -72,6 +72,29 @@ export default function OAuthCallback() {
                             if (data.needCompleteProfile) {
                                 storage.set("needCompleteProfile", "true");
                             }
+
+                            // Trigger storage event to notify WebSocketProvider
+                            window.dispatchEvent(new StorageEvent('storage', {
+                                key: 'userId',
+                                newValue: data.userId || "",
+                                oldValue: null
+                            }));
+                            
+                            window.dispatchEvent(new StorageEvent('storage', {
+                                key: 'accessToken',
+                                newValue: data.accessToken,
+                                oldValue: null
+                            }));
+
+                            // Also dispatch custom event for immediate notification
+                            window.dispatchEvent(new CustomEvent('userLogin', {
+                                detail: {
+                                    userId: data.userId,
+                                    accessToken: data.accessToken
+                                }
+                            }));
+                            
+                            console.log('OAuthCallback: Dispatched storage events and userLogin event');
                         }
                         
                         setProgress(100);

@@ -236,7 +236,7 @@ export default function ArtistAllAlbums() {
                 centered
                 width={isMobile ? 320 : isTablet ? 400 : 600}
                 style={{ top: isMobile ? 10 : undefined }}
-                bodyStyle={{ padding: isMobile ? 12 : isTablet ? 18 : 24 }}
+                styles={{ body: { padding: isMobile ? 12 : isTablet ? 18 : 24 } }}
             >
                 <Form
                     form={form}

@@ -113,7 +113,7 @@ export default function MoodModal({ open, onClose, onMoodSelected }) {
             closable={false}
             maskClosable={false}
             title={t('mood_modal.title')}
-            bodyStyle={{ padding: 0 }}
+            styles={{ body: { padding: 0 } }}
             style={{ maxWidth: 420, width: "95vw" }}
         >
             <div
