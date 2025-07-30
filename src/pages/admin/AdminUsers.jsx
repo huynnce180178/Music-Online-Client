@@ -378,6 +378,9 @@ export default function AdminUsers() {
                 content: {
                     background: "#101426",
                 },
+                body: {
+                    padding: isMobile ? "16px 8px" : "24px 24px",
+                },
                 close: {
                     color: "#fff",
                 }
@@ -395,11 +398,6 @@ export default function AdminUsers() {
                 </span>
             }
             width={isMobile ? 320 : 400}
-            styles={{
-                body: {
-                    padding: isMobile ? "16px 8px" : "24px 24px",
-                }
-            }}
         >
             <div style={{ marginBottom: 16 }}>
                 <Select
