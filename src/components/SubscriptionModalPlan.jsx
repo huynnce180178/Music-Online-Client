@@ -13,6 +13,8 @@ export default function SubscriptionModalPlan({ show, onClose }) {
     const { t } = useTranslation();
     const [plans, setPlans] = useState([]);
     const [currentPlanIndex, setCurrentPlanIndex] = useState(0);
+    // Sử dụng roles từ localStorage
+    const [userRoles, setUserRoles] = useState([]);
     const navigate = useNavigate();
     const { stopPlayer } = useContext(PlayerContext);
     const scrollRef = useRef();
@@ -22,6 +24,30 @@ export default function SubscriptionModalPlan({ show, onClose }) {
             .then(res => setPlans(res.data.data))
             .catch(err => console.error('Lỗi tải gói nâng cấp:', err));
     }, []);
+
+    // Lấy roles từ localStorage khi mở modal
+    useEffect(() => {
+        if (show) {
+            try {
+                const rolesStr = localStorage.getItem("roles");
+                if (rolesStr) {
+                    const roles = JSON.parse(rolesStr);
+                    setUserRoles(Array.isArray(roles) ? roles : []);
+                } else {
+                    setUserRoles([]);
+                }
+            } catch {
+                setUserRoles([]);
+            }
+        }
+    }, [show]);
+
+    // Lọc các gói không cần hiển thị nếu user đã có role
+    const filteredPlans = plans.filter(plan => {
+        if (plan.planType === 'ARTIST' && userRoles.includes('ROLE_ARTIST')) return false;
+        if (plan.planType === 'PREMIUM' && userRoles.includes('ROLE_PREMIUM')) return false;
+        return true;
+    });
 
     const handleSelectPlan = (id) => {
         if (onClose) onClose();
@@ -311,23 +337,23 @@ export default function SubscriptionModalPlan({ show, onClose }) {
                     onTouchEnd={handleTouchEnd}
                 >
                     {/* Desktop: show all, Mobile: show only current */}
-                    {plans.length > 0 && (
+                    {filteredPlans.length > 0 && (
                         window.innerWidth < 900
                             ? (
                                 <div className="sub-plan-card-col">
                                     <div
                                         className="sub-plan-card"
                                         style={{
-                                            background: getCardStyle(plans[currentPlanIndex].planType).bgColor,
+                                            background: getCardStyle(filteredPlans[currentPlanIndex].planType).bgColor,
                                         }}
                                     >
-                                        <h4 className="sub-plan-title">{plans[currentPlanIndex].planName}</h4>
-                                        <div className="sub-plan-desc">{plans[currentPlanIndex].description.split(',')[0]}</div>
+                                        <h4 className="sub-plan-title">{filteredPlans[currentPlanIndex].planName}</h4>
+                                        <div className="sub-plan-desc">{filteredPlans[currentPlanIndex].description.split(',')[0]}</div>
                                         <div className="sub-plan-price">
-                                            {t('premium.from_only', { price: Number(plans[currentPlanIndex].price).toLocaleString('vi-VN') })}
+                                            {t('premium.from_only', { price: Number(filteredPlans[currentPlanIndex].price).toLocaleString('vi-VN') })}
                                         </div>
                                         <button
-                                            onClick={() => handleSelectPlan(plans[currentPlanIndex].id)}
+                                            onClick={() => handleSelectPlan(filteredPlans[currentPlanIndex].id)}
                                             className="sub-plan-btn"
                                         >
                                             {t('premium.buy_now')}
@@ -336,7 +362,7 @@ export default function SubscriptionModalPlan({ show, onClose }) {
                                             {t('premium.special_privileges')}
                                         </h6>
                                         <ul className="sub-plan-features">
-                                            {plans[currentPlanIndex].description.split(',').map((item, idx) => (
+                                            {filteredPlans[currentPlanIndex].description.split(',').map((item, idx) => (
                                                 <li key={idx}><span>✓</span>{item.trim()}</li>
                                             ))}
                                         </ul>
@@ -344,7 +370,7 @@ export default function SubscriptionModalPlan({ show, onClose }) {
                                 </div>
                             )
                             : (
-                                plans.map((plan) => {
+                                filteredPlans.map((plan) => {
                                     const styles = getCardStyle(plan.planType);
                                     return (
                                         <div key={plan.id} className="sub-plan-card-col">
@@ -379,7 +405,7 @@ export default function SubscriptionModalPlan({ show, onClose }) {
                     )}
                 </div>
                 {/* Mobile navigation */}
-                {plans.length > 1 && window.innerWidth < 900 && (
+                {filteredPlans.length > 1 && window.innerWidth < 900 && (
                     <div className="sub-plan-nav">
                         <button
                             className="sub-plan-arrow"
@@ -390,7 +416,7 @@ export default function SubscriptionModalPlan({ show, onClose }) {
                             <AiOutlineLeft />
                         </button>
                         <div className="sub-plan-indicator">
-                            {plans.map((_, idx) => (
+                            {filteredPlans.map((_, idx) => (
                                 <div
                                     key={idx}
                                     className={`sub-plan-dot${idx === currentPlanIndex ? ' active' : ''}`}
@@ -401,7 +427,7 @@ export default function SubscriptionModalPlan({ show, onClose }) {
                         <button
                             className="sub-plan-arrow"
                             onClick={() => setCurrentPlanIndex(currentPlanIndex + 1)}
-                            disabled={currentPlanIndex === plans.length - 1}
+                            disabled={currentPlanIndex === filteredPlans.length - 1}
                             aria-label="Next"
                         >
                             <AiOutlineRight />

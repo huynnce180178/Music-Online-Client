@@ -173,7 +173,12 @@ export default function Register(props) {
                             <Form.Item
                                 name="firstName"
                                 label={t('first_name')}
-                                rules={[{ required: true, message: t('please_enter_first_name') }]}
+                                rules={[
+                                    { required: true, message: t('please_enter_first_name') },
+                                    { min: 2, message: t('first_name_min_length') },
+                                    { max: 32, message: t('first_name_max_length') },
+                                    { pattern: /^[A-Za-zÀ-ỹ\s'-]+$/, message: t('first_name_invalid') }
+                                ]}
                                 style={{ marginBottom: 5 }}
                             >
                                 <Input
@@ -186,7 +191,12 @@ export default function Register(props) {
                             <Form.Item
                                 name="lastName"
                                 label={t('last_name')}
-                                rules={[{ required: true, message: t('please_enter_last_name') }]}
+                                rules={[
+                                    { required: true, message: t('please_enter_last_name') },
+                                    { min: 2, message: t('last_name_min_length') },
+                                    { max: 32, message: t('last_name_max_length') },
+                                    { pattern: /^[A-Za-zÀ-ỹ\s'-]+$/, message: t('last_name_invalid') }
+                                ]}
                                 style={{ marginBottom: 5 }}
                             >
                                 <Input
@@ -201,7 +211,19 @@ export default function Register(props) {
                                 label={t('email')}
                                 rules={[
                                     { required: true, message: t('please_enter_email') },
-                                    { type: 'email', message: t('invalid_email') }
+                                    {
+                                        pattern: /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/,
+                                        message: t('invalid_email')
+                                    },
+                                    {
+                                        validator: (_, value) => {
+                                            if (!value) return Promise.resolve();
+                                            if (/^@/.test(value) || /^[0-9]/.test(value) || /@[0-9]+\./.test(value)) {
+                                                return Promise.reject(new Error(t('invalid_email')));
+                                            }
+                                            return Promise.resolve();
+                                        }
+                                    }
                                 ]}
                                 style={{ marginBottom: 5 }}
                             >
@@ -217,11 +239,12 @@ export default function Register(props) {
                                 label={t('password')}
                                 rules={[
                                     { required: true, message: t('please_enter_password') },
-                                    { min: 6, message: 'Password must be at least 6 characters!' },
-                                    { max: 32, message: 'Password must be at most 32 characters!' },
-                                    { pattern: /[A-Z]/, message: 'Password must contain at least one uppercase letter!' },
-                                    { pattern: /[a-z]/, message: 'Password must contain at least one lowercase letter!' },
-                                    { pattern: /[0-9]/, message: 'Password must contain at least one number!' }
+                                    { min: 8, message: t('password_min_length') },
+                                    { max: 32, message: t('password_max_length') },
+                                    { pattern: /[A-Z]/, message: t('password_uppercase') },
+                                    { pattern: /[a-z]/, message: t('password_lowercase') },
+                                    { pattern: /[0-9]/, message: t('password_number') },
+                                    { pattern: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/, message: t('password_special') }
                                 ]}
                                 style={{ marginBottom: 5 }}
                             >
@@ -234,17 +257,17 @@ export default function Register(props) {
                             </Form.Item>
                             <Form.Item
                                 name="confirm"
-                                label="Confirm Password"
+                                label={t('profile.confirm_password')}
                                 dependencies={['password']}
                                 hasFeedback
                                 rules={[
-                                    { required: true, message: 'Please confirm your password!' },
+                                    { required: true, message: t('profile.confirm_password_required') },
                                     ({ getFieldValue }) => ({
                                         validator(_, value) {
                                             if (!value || getFieldValue('password') === value) {
                                                 return Promise.resolve();
                                             }
-                                            return Promise.reject(new Error('Passwords do not match!'));
+                                            return Promise.reject(new Error(t('profile.passwords_do_not_match')));
                                         },
                                     }),
                                 ]}
@@ -252,26 +275,30 @@ export default function Register(props) {
                             >
                                 <Input.Password
                                     prefix={<LockOutlined />}
-                                    placeholder="Confirm Password"
+                                    placeholder={t('profile.confirm_password')}
                                     size="large"
                                     style={{ borderRadius: 24 }}
                                 />
                             </Form.Item>
                             <Form.Item
                                 name="bio"
-                                label="Bio"
-                                rules={[{ required: true, message: 'Please enter your bio!' }]}
+                                label={t('profile.bio')}
+                                rules={[
+                                    { required: true, message: t('profile.bio_placeholder') },
+                                    { min: 10, message: t('bio_min_length') },
+                                    { max: 200, message: t('bio_max_length') }
+                                ]}
                                 style={{ marginBottom: 5 }}
                             >
                                 <Input
-                                    placeholder="Bio"
+                                    placeholder={t('profile.bio_placeholder')}
                                     size="large"
                                     style={{ borderRadius: 24 }}
                                 />
                             </Form.Item>
                             <Form.Item
                                 name="profilePic"
-                                label="Profile Picture"
+                                label={t('profile.avatar')}
                                 valuePropName="fileList"
                                 getValueFromEvent={e => Array.isArray(e) ? e : e && e.fileList}
                                 rules={[
@@ -279,7 +306,14 @@ export default function Register(props) {
                                         required: true,
                                         message: t('please_upload_profile_picture'),
                                         validator: (_, value) => {
-                                            if (value && value.length > 0) return Promise.resolve();
+                                            if (value && value.length > 0) {
+                                                const file = value[0];
+                                                const isImage = file.type && file.type.startsWith('image/');
+                                                const isSizeOk = file.size < 2 * 1024 * 1024;
+                                                if (!isImage) return Promise.reject(new Error(t('avatar_only_image')));
+                                                if (!isSizeOk) return Promise.reject(new Error(t('avatar_max_size')));
+                                                return Promise.resolve();
+                                            }
                                             return Promise.reject(new Error(t('please_upload_profile_picture')));
                                         }
                                     }

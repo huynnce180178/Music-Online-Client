@@ -55,5 +55,15 @@
   "rejected": "Từ chối",
   "approved": "Đã duyệt",
   "deleted_by_admin": "Bị admin xóa",
-  "deleted_by_artist": "Tự xóa"
-} 
+  "deleted_by_artist": "Tự xóa",
+  "song_title_min_length": "Tên bài hát phải có ít nhất 2 ký tự",
+  "song_title_max_length": "Tên bài hát không quá 100 ký tự",
+  "genre_max_count": "Chỉ chọn tối đa 5 thể loại",
+  "unsupported_audio_format": "Định dạng file nhạc không được hỗ trợ! Chỉ chấp nhận mp3, wav, flac, m4a, ogg, aac.",
+  "audio_max_size": "File nhạc phải nhỏ hơn 20MB!",
+  "cover_only_image": "Chỉ chấp nhận ảnh!",
+  "cover_max_size": "Ảnh bìa phải nhỏ hơn 2MB!",
+  "lyrics_min_length": "Lời bài hát phải có ít nhất 10 ký tự!",
+  "lyrics_max_length": "Lời bài hát không quá 2000 ký tự!",
+  "please_upload_cover_image": "Vui lòng tải lên ảnh bìa bài hát!"
+}

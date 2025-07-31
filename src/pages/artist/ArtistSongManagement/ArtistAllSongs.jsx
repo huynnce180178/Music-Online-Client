@@ -14,7 +14,6 @@ export default function ArtistAllSongs() {
     const [loading, setLoading] = useState(false);
     const [selectedAlbum] = useState(null);
     const [modalOpen, setModalOpen] = useState(false);
-    const [editingSong, setEditingSong] = useState(null);
     const [form] = Form.useForm();
 
     const screens = useBreakpoint();
@@ -180,18 +179,9 @@ export default function ArtistAllSongs() {
         });
     };
 
-    const openModal = (song = null) => {
-        setEditingSong(song);
+    const openModal = () => {
         setModalOpen(true);
-        if (song) {
-            form.setFieldsValue({
-                title: song.title,
-                genreIds: song.genres?.map(g => g.id),
-                lyrics: song.lyrics,
-            });
-        } else {
-            form.resetFields();
-        }
+        form.resetFields();
     };
 
     const handleSubmitSong = async (values) => {
@@ -205,6 +195,7 @@ export default function ArtistAllSongs() {
             return;
         }
         formData.append("artistId", artistId);
+
         if (values.file && values.file.originFileObj) {
             formData.append("file", values.file.originFileObj);
         }
@@ -213,41 +204,30 @@ export default function ArtistAllSongs() {
         }
         if (values.genreIds) values.genreIds.forEach(id => formData.append("genreIds", id));
         if (values.lyrics) formData.append("lyrics", values.lyrics);
+
         try {
-            if (editingSong) {
-                await axios.put(
-                    `${BASE_API_URL}/api/v1/artist/song/${editingSong.id}`,
-                    formData,
-                    {
-                        headers: {
-                            ...config.headers,
-                            "Content-Type": "multipart/form-data"
-                        },
-                        onUploadProgress: () => setLoading(true),
-                    }
-                );
-                message.success(t('song_updated_successfully'));
-            } else {
-                await axios.post(
-                    `${BASE_API_URL}/api/v1/artist/song/add`,
-                    formData,
-                    {
-                        headers: {
-                            ...config.headers,
-                            "Content-Type": "multipart/form-data"
-                        },
-                        onUploadProgress: () => setLoading(true),
-                    }
-                );
+            const resp = await axios.post(
+                `${BASE_API_URL}/api/v1/artist/song/add`,
+                formData,
+                {
+                    headers: {
+                        ...config.headers,
+                        "Content-Type": "multipart/form-data"
+                    },
+                    onUploadProgress: () => setLoading(true),
+                }
+            );
+            if (resp.data.code === 201) {
                 message.success(t('song_added_successfully'));
+            } else {
+                message.error(resp.data.data || t('failed_to_add_song'));
             }
             setModalOpen(false);
             form.resetFields();
-            setEditingSong(null);
             if (selectedAlbum) fetchSongs(selectedAlbum);
             else fetchSongs();
         } catch (err) {
-            message.error(editingSong ? t('failed_to_update_song') : t('failed_to_add_song'));
+            message.error(t('failed_to_add_song'));
         }
         setLoading(false);
     };
@@ -424,12 +404,11 @@ export default function ArtistAllSongs() {
             </div>
             <Modal
                 className="modal-light"
-                title={editingSong ? t('update_song') : t('add_new_song')}
+                title={t('add_new_song')}
                 open={modalOpen}
                 onCancel={() => {
                     setModalOpen(false);
                     form.resetFields();
-                    setEditingSong(null);
                 }}
                 footer={null}
                 destroyOnHidden
@@ -448,14 +427,27 @@ export default function ArtistAllSongs() {
                     <Form.Item
                         label={t('song_title')}
                         name="title"
-                        rules={[{ required: true, message: t('please_enter_song_title') }]}
+                        rules={[
+                            { required: true, message: t('please_enter_song_title') },
+                            { min: 2, message: t('song_title_min_length') },
+                            { max: 100, message: t('song_title_max_length') }
+                        ]}
                     >
                         <Input />
                     </Form.Item>
                     <Form.Item
                         label={t('genres')}
                         name="genreIds"
-                        rules={[{ required: true, message: t('please_select_genres') }]}
+                        rules={[
+                            { required: true, message: t('please_select_genres') },
+                            {
+                                validator: (_, value) => {
+                                    if (!value || value.length === 0) return Promise.reject(new Error(t('please_select_genres')));
+                                    if (value.length > 5) return Promise.reject(new Error(t('genre_max_count')));
+                                    return Promise.resolve();
+                                }
+                            }
+                        ]}
                     >
                         <Select
                             mode="multiple"
@@ -468,41 +460,66 @@ export default function ArtistAllSongs() {
                         name="file"
                         valuePropName="file"
                         getValueFromEvent={e => e && e.fileList && e.fileList[0]}
-                        rules={editingSong ? [] : [{ required: true, message: t('please_select_music_file') }]}
+                        rules={[
+                            { required: true, message: t('please_select_music_file') },
+                            {
+                                validator: (_, value) => {
+                                    if (!value) return Promise.resolve();
+                                    const allowedTypes = [
+                                        'audio/mpeg', 'audio/wav', 'audio/x-wav', 'audio/flac', 'audio/x-flac',
+                                        'audio/mp4', 'audio/x-m4a', 'audio/ogg', 'audio/x-ogg', 'audio/aac', 'audio/x-aac'
+                                    ];
+                                    if (!allowedTypes.includes(value.type)) {
+                                        return Promise.reject(new Error(t('unsupported_audio_format')));
+                                    }
+                                    if (value.size > 20 * 1024 * 1024) {
+                                        return Promise.reject(new Error(t('audio_max_size')));
+                                    }
+                                    return Promise.resolve();
+                                }
+                            }
+                        ]}
                     >
-                        <Upload beforeUpload={() => false} maxCount={1}>
+                        <Upload beforeUpload={() => false} maxCount={1} accept=".mp3,.wav,.flac,.m4a,.ogg,.aac">
                             <Button icon={<UploadOutlined />}>{t('select_music_file')}</Button>
                         </Upload>
-                        {editingSong && editingSong.fileUrl && (
-                            <div style={{ marginTop: 8, color: "#aaa" }}>
-                                {t('current_file')}: <a href={editingSong.fileUrl} target="_blank" rel="noopener noreferrer">{t('download')}</a>
-                            </div>
-                        )}
                     </Form.Item>
                     <Form.Item
                         label={t('cover_image')}
                         name="profilePic"
                         valuePropName="file"
                         getValueFromEvent={e => e && e.fileList && e.fileList[0]}
+                        rules={[
+                            { required: true, message: t('please_upload_cover_image') },
+                            {
+                                validator: (_, value) => {
+                                    if (!value) return Promise.resolve();
+                                    const isImage = value.type && value.type.startsWith('image/');
+                                    const isSizeOk = value.size < 2 * 1024 * 1024;
+                                    if (!isImage) return Promise.reject(new Error(t('cover_only_image')));
+                                    if (!isSizeOk) return Promise.reject(new Error(t('cover_max_size')));
+                                    return Promise.resolve();
+                                }
+                            }
+                        ]}
                     >
                         <Upload beforeUpload={() => false} maxCount={1} accept="image/*">
                             <Button icon={<UploadOutlined />}>{t('select_cover_image')}</Button>
                         </Upload>
-                        {editingSong && editingSong.profilePicUrl && (
-                            <div style={{ marginTop: 8 }}>
-                                <Image src={editingSong.profilePicUrl} width={60} height={60} style={{ objectFit: "cover", borderRadius: 8 }} />
-                            </div>
-                        )}
                     </Form.Item>
                     <Form.Item
                         label={t('lyrics')}
                         name="lyrics"
+                        rules={[
+                            { min: 10, message: t('lyrics_min_length') },
+                            { max: 2000, message: t('lyrics_max_length') }
+                        ]}
                     >
                         <Input.TextArea rows={4} placeholder={t('enter_lyrics_here')} />
                     </Form.Item>
                     <Form.Item>
                         <Button type="primary" htmlType="submit" loading={loading} block>
-                            {editingSong ? t('update') : t('add')}
+                            {t('add')}
                         </Button>
                     </Form.Item>
                 </Form>

@@ -596,6 +596,25 @@ export default function ProfilePage({ isDrawer }) {
                         >
                             <Input.Password />
                         </Form.Item>
+                        <Form.Item
+                            name="confirm"
+                            label={t('profile.confirm_password')}
+                            dependencies={['newPassword']}
+                            hasFeedback
+                            rules={[
+                                { required: true, message: t('profile.confirm_password_required') },
+                                ({ getFieldValue }) => ({
+                                    validator(_, value) {
+                                        if (!value || getFieldValue('newPassword') === value) {
+                                            return Promise.resolve();
+                                        }
+                                        return Promise.reject(new Error(t('profile.passwords_do_not_match')));
+                                    },
+                                }),
+                            ]}
+                        >
+                            <Input.Password />
+                        </Form.Item>
                         <Form.Item>
                             <Button type="primary" htmlType="submit" loading={passLoading} block>
                                 {t('profile.change_password')}
@@ -705,6 +724,25 @@ export default function ProfilePage({ isDrawer }) {
                         rules={[
                             { required: true, message: t('profile.new_password_required') },
                             { min: 6, message: t('profile.password_min_length') }
+                        ]}
+                    >
+                        <Input.Password />
+                    </Form.Item>
+                    <Form.Item
+                        name="confirm"
+                        label={t('profile.confirm_password')}
+                        dependencies={['newPassword']}
+                        hasFeedback
+                        rules={[
+                            { required: true, message: t('profile.confirm_password_required') },
+                            ({ getFieldValue }) => ({
+                                validator(_, value) {
+                                    if (!value || getFieldValue('newPassword') === value) {
+                                        return Promise.resolve();
+                                    }
+                                    return Promise.reject(new Error(t('profile.passwords_do_not_match')));
+                                },
+                            }),
                         ]}
                     >
                         <Input.Password />

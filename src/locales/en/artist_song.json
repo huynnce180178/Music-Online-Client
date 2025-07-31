@@ -55,5 +55,15 @@
   "rejected": "Rejected",
   "approved": "Approved",
   "deleted_by_admin": "Deleted by Admin",
-  "deleted_by_artist": "Self Delete"
-} 
+  "deleted_by_artist": "Self Delete",
+  "song_title_min_length": "Song title must be at least 2 characters",
+  "song_title_max_length": "Song title must be at most 100 characters",
+  "genre_max_count": "Select up to 5 genres only",
+  "unsupported_audio_format": "Unsupported audio format! Only mp3, wav, flac, m4a, ogg, aac are accepted.",
+  "audio_max_size": "Music file must be less than 20MB!",
+  "cover_only_image": "Only images are accepted!",
+  "cover_max_size": "Cover image must be less than 2MB!",
+  "lyrics_min_length": "Lyrics must be at least 10 characters!",
+  "lyrics_max_length": "Lyrics must be at most 2000 characters!",
+  "please_upload_cover_image": "Please upload the song cover image!"
+}

@@ -339,15 +339,15 @@ export default function SongDetail({ songId, onClose }) {
     overflow: hidden;
 }
 .player-img {
-    border-radius: 50% !important;              /* Bo tròn thành đĩa */
+    border-radius: 50% !important;
     width: 350px !important;
     height: 350px !important;
-    border-bottom: 5px solid #23283e !important;
-    animation: spin-disc 12s linear infinite !important;   /* Xoay chậm */
     box-shadow: 0 12px 48px rgba(0,0,0,0.6);
     position: relative;
     background: #23283e;
     object-fit: cover;
+    animation: spin-disc 12s linear infinite;
+    animation-play-state: paused;
 }
 .player-img::after {
     content: "";
@@ -361,6 +361,9 @@ export default function SongDetail({ songId, onClose }) {
     border: 3px solid #3ed8ff77;
     z-index: 2;
     pointer-events: none;
+}
+.player-img.spinning {
+    animation-play-state: running;   /* Khi play thì xoay */
 }
 .song-title {
     color: #fff;
@@ -777,7 +780,7 @@ export default function SongDetail({ songId, onClose }) {
                 <div className="song-detail-content">
                     <div className="song-detail-left">
                         <img
-                            className="player-img"
+                            className={`player-img${isPlaying ? " spinning" : " paused"}`}
                             src={song?.profilePicUrl}
                             alt={song?.title}
                         />
