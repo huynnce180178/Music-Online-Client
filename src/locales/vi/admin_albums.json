@@ -16,5 +16,9 @@
   "admin_albums.reject": "Từ chối",
   "admin_albums.reject_reason_title": "Lý do từ chối album",
   "admin_albums.reject_reason_placeholder": "Lý do từ chối (ví dụ: nội dung không phù hợp)",
-  "admin_albums.confirm_reject": "Xác nhận từ chối"
+  "admin_albums.confirm_reject": "Xác nhận từ chối",
+  "admin_albums.no_albums_found": "Không tìm thấy album nào",
+  "artist_album.restore_request_sent": "Yêu cầu khôi phục đã được gửi",
+  "artist_album.restore_request_sent_description": "Yêu cầu khôi phục album này.",
+  "admin_albums.restore_to_pending": "Khôi phục về trạng thái chờ duyệt"
 } 

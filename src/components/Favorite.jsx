@@ -71,7 +71,7 @@ export default function Favorite() {
     };
 
     return (
-        <div style={{ backgroundColor: '#181C2B', padding: '2rem' }}>
+        <div style={{ backgroundColor: '#181C2B', padding: '2rem',  minHeight: '45vh' }}>
             <h5 style={{
                 color: '#3ed8ff',
                 fontWeight: 700,

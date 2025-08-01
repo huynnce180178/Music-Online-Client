@@ -8,6 +8,7 @@ import SongDetail from "./SongDetail";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Modal, Select, message, Button, Form, Input, Switch, Upload } from "antd";
+import AddToPlaylistModal from "./AddToPlaylistModal";
 import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 import BASE_API_URL from "../services/base.api.url";
@@ -42,14 +43,7 @@ function SongPlay({ sidebarWidth = 0 }) {
     const [currentTime, setCurrentTime] = useState(0);
     const [showModal, setShowModal] = useState(false);
     const [showDetail, setShowDetail] = useState(false);
-    const [addToPlaylistModal, setAddToPlaylistModal] = useState(false);
-    const [userPlaylists, setUserPlaylists] = useState([]);
-    const [selectedPlaylistId, setSelectedPlaylistId] = useState(null);
-    const [newPlaylistName, setNewPlaylistName] = useState("");
-    const [creatingPlaylist, setCreatingPlaylist] = useState(false);
-    const [createModalOpen, setCreateModalOpen] = useState(false);
-    const [createLoading, setCreateLoading] = useState(false);
-    const [createForm] = Form.useForm();
+    const [addToPlaylistModal, setAddToPlaylistModal] = useState({ open: false, songId: null });
     const adAudioRef = useRef(null);
     const [viewed, setViewed] = useState(false);
 
@@ -232,79 +226,7 @@ function SongPlay({ sidebarWidth = 0 }) {
         }
     };
 
-    useEffect(() => {
-        if (addToPlaylistModal) {
-            fetchUserPlaylists();
-        }
-    }, [addToPlaylistModal]);
 
-    const fetchUserPlaylists = async () => {
-        const token = localStorage.getItem("accessToken");
-        try {
-            const res = await axios.get(`${BASE_API_URL}/api/v1/user/playlist`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            setUserPlaylists(res.data.data || []);
-        } catch {
-            message.error(t("weekly_top_10.get_playlist_failed") || "Unable to load playlist!");
-        }
-    };
-
-    const handleCreatePlaylist = async () => {
-        if (!newPlaylistName.trim()) {
-            message.warning("Nhập tên playlist!");
-            return;
-        }
-        setCreatingPlaylist(true);
-        try {
-            const token = localStorage.getItem("accessToken");
-            await axios.post(`${BASE_API_URL}/api/v1/user/playlist`, { name: newPlaylistName }, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            message.success("Tạo playlist thành công!");
-            setNewPlaylistName("");
-            await fetchUserPlaylists();
-        } catch {
-            message.error("Tạo playlist thất bại!");
-        }
-        setCreatingPlaylist(false);
-    };
-
-    const handleCreatePlaylistModal = () => {
-        createForm.resetFields();
-        setCreateModalOpen(true);
-    };
-
-    const handleCreatePlaylistSubmit = async () => {
-        try {
-            const values = await createForm.validateFields();
-            setCreateLoading(true);
-            const token = localStorage.getItem("accessToken");
-            const formData = new FormData();
-            formData.append("name", values.name);
-            formData.append("description", values.description || "");
-            formData.append("isPublic", values.isPublic ? "true" : "false");
-            if (!values.image || !values.image[0]) {
-                message.error("Please select a photo!");
-                setCreateLoading(false);
-                return;
-            }
-            formData.append("imageUrl", values.image[0].originFileObj);
-            await axios.post(`${BASE_API_URL}/api/v1/user/playlist/add`, formData, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "multipart/form-data"
-                }
-            });
-            message.success("Create playlist successfully!");
-            setCreateModalOpen(false);
-            await fetchUserPlaylists();
-        } catch (err) {
-            message.error("Playlist creation failed!");
-        } finally {
-            setCreateLoading(false);
-        }
-    };
 
     useEffect(() => {
         // Get songCount from localStorage on mount
@@ -449,9 +371,7 @@ function SongPlay({ sidebarWidth = 0 }) {
                                     toast.info(t("weekly_top_10.login_to_add_playlist") || "Please login to add songs to your playlist!", { autoClose: 2000 });
                                     return;
                                 }
-                                fetchUserPlaylists();
-                                setAddToPlaylistModal(true);
-                                setSelectedPlaylistId(null);
+                                setAddToPlaylistModal({ open: true, songId: song?.id });
                             }}
                         >
                             <i className="bi bi-plus-square"></i>
@@ -493,108 +413,14 @@ function SongPlay({ sidebarWidth = 0 }) {
                 </div>
             )}
 
-            {/* Add to Playlist Modal */}
-            <Modal
-                title={t("song_detail.add_to_playlist")}
-                open={addToPlaylistModal}
-                onOk={async () => {
-                    if (!selectedPlaylistId) {
-                        message.warning(t("weekly_top_10.select_playlist_warning"));
-                        return;
-                    }
-                    try {
-                        const token = localStorage.getItem("accessToken");
-                        await axios.post(`${BASE_API_URL}/api/v1/user/playlist/add-song?playlistId=${selectedPlaylistId}&songId=${song.id}`, {}, {
-                            headers: { Authorization: `Bearer ${token}` }
-                        });
-                        message.success(t("weekly_top_10.added_to_playlist"));
-                        setAddToPlaylistModal(false);
-                    } catch {
-                        message.error(t("weekly_top_10.add_to_playlist_failed"));
-                    }
+            <AddToPlaylistModal
+                open={addToPlaylistModal.open}
+                onClose={() => setAddToPlaylistModal({ open: false, songId: null })}
+                songId={addToPlaylistModal.songId}
+                onSuccess={() => {
+                    // Optional: Add any success callback if needed
                 }}
-                onCancel={() => setAddToPlaylistModal(false)}
-                okText={t("song_detail.add")}
-                cancelText={t("weekly_top_10.cancel")}
-            >
-                <Select
-                    style={{ width: "100%" }}
-                    placeholder={t("song_detail.select_playlist")}
-                    value={selectedPlaylistId}
-                    onChange={setSelectedPlaylistId}
-                >
-                    {userPlaylists.map(pl => (
-                        <Select.Option key={pl.id} value={pl.id}>
-                            {pl.name}
-                        </Select.Option>
-                    ))}
-                </Select>
-                <div style={{ marginTop: 16, display: "flex", gap: 8 }}>
-                    <Button
-                        type="primary"
-                        onClick={handleCreatePlaylistModal}
-                        style={{ borderRadius: 4, fontWeight: 600 }}
-                    >
-                        {t("playlist.create_new_playlist")}
-                    </Button>
-                </div>
-            </Modal>
-
-            {/* Modal tạo playlist mới */}
-            <Modal
-                title={t("playlist.create_new_playlist")}
-                open={createModalOpen}
-                onOk={handleCreatePlaylistSubmit}
-                onCancel={() => setCreateModalOpen(false)}
-                okText={t("song_detail.add")}
-                cancelText={t("playlist.cancel")}
-                confirmLoading={createLoading}
-                destroyOnHidden
-            >
-                <Form form={createForm} layout="vertical">
-                    <Form.Item
-                        name="name"
-                        label={t("playlist.name")}
-                        rules={[{ required: true, message: t("playlist.enter_name") }]}
-                    >
-                        <Input />
-                    </Form.Item>
-                    <Form.Item
-                        name="description"
-                        label={t("playlist.description")}
-                    >
-                        <Input.TextArea rows={3} />
-                    </Form.Item>
-                    <Form.Item
-                        name="isPublic"
-                        label={t("playlist.public")}
-                        valuePropName="checked"
-                    >
-                        <Switch />
-                    </Form.Item>
-                    <Form.Item
-                        name="image"
-                        label={t("playlist.image")}
-                        valuePropName="fileList"
-                        getValueFromEvent={e => Array.isArray(e) ? e : e && e.fileList}
-                        rules={[
-                            {
-                                required: true,
-                                message: t("playlist.select_image"),
-                            },
-                        ]}
-                    >
-                        <Upload
-                            beforeUpload={() => false}
-                            maxCount={1}
-                            accept="image/*"
-                            listType="picture"
-                        >
-                            <Button>{t("playlist.select_image")}</Button>
-                        </Upload>
-                    </Form.Item>
-                </Form>
-            </Modal>
+            />
 
             {/* Ad audio player: only render if SongDetail is NOT open */}
             {adPlaying && adAudio && !showDetail ? (

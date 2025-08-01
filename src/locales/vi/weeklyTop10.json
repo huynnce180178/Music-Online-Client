@@ -4,7 +4,7 @@
   "weekly_top_10.download": "Tải về",
   "weekly_top_10.add_to_playlist": "Thêm vào danh sách phát",
   "weekly_top_10.login_to_download": "Vui lòng đăng nhập để tải xuống",
-  "weekly_top_10.download_success": "Tải xuống thành công",
+  "weekly_top_10.download_success": "Tải xuống hoàn tất thành công!",
   "weekly_top_10.download_failed": "Tải xuống thất bại",
   "weekly_top_10.login_to_add_playlist": "Vui lòng đăng nhập để thêm vào danh sách phát",
   "weekly_top_10.get_playlist_failed": "Không thể lấy danh sách phát",
@@ -13,5 +13,12 @@
   "weekly_top_10.add_to_playlist_failed": "Thêm vào danh sách phát thất bại",
   "weekly_top_10.add": "Thêm",
   "weekly_top_10.cancel": "Hủy",
-  "weekly_top_10.select_playlist": "Chọn danh sách phát"
+  "weekly_top_10.select_playlist": "Chọn danh sách phát",
+  "weekly_top_10.choose_save_location": "Chọn vị trí lưu file",
+  "weekly_top_10.download_with_location": "Tải về",
+  "weekly_top_10.download_song": "Tải về bài hát",
+  "weekly_top_10.download_confirm_message": "Sẵn sàng tải về bài hát này? Bạn sẽ được yêu cầu chọn nơi lưu file.",
+  "weekly_top_10.downloading": "Đang tải xuống...",
+  "weekly_top_10.complete": "Hoàn thành",
+  "weekly_top_10.download_cancelled": "Đã hủy tải xuống"
 }

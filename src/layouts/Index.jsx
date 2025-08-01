@@ -26,7 +26,6 @@ import GenresList from "../components/GenresList";
 import ActivateAccount from "../components/ActiveAccount";
 import ResetPassword from "../components/ResetPassword";
 import OAuthCallback from "../components/OAuthCallback";
-import OAuthTest from "../components/OAuthTest";
 import MoodModal from "../components/MoodModal";
 
 // Pages
@@ -245,9 +244,6 @@ function AppRoutes(props) {
 
         {/* OAuth Callback */}
         <Route path="/oauth/callback" element={<OAuthCallback />} />
-
-        {/* OAuth Test (for development only) */}
-        <Route path="/oauth/test" element={<OAuthTest />} />
 
         {/* Main user routes */}
         <Route

@@ -1,10 +1,13 @@
 import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
-import { Avatar, message } from 'antd';
+import { Avatar, message, Modal, Select, Dropdown } from 'antd';
+import { DownloadOutlined, PlusSquareOutlined, EllipsisOutlined } from '@ant-design/icons';
 import { useParams } from 'react-router-dom';
 import { PlayerContext } from '../context/PlayerContext';
 import { useTranslation } from 'react-i18next';
 import BASE_API_URL from "../services/base.api.url";
+import DownloadModal from './DownloadModal';
+import AddToPlaylistModal from './AddToPlaylistModal';
 
 export default function ArtistProfile() {
     const { t } = useTranslation();
@@ -20,6 +23,9 @@ export default function ArtistProfile() {
     const [openedAlbumId, setOpenedAlbumId] = useState(null);
     const [albumSongs, setAlbumSongs] = useState({});
     const [loadingAlbum, setLoadingAlbum] = useState(null);
+    const [downloadModal, setDownloadModal] = useState({ open: false, songId: null, downloadInfo: null });
+    const [addToPlaylistModal, setAddToPlaylistModal] = useState({ open: false, songId: null });
+    const [showUpgradeModal, setShowUpgradeModal] = useState(false);
     const { playSong } = playerCtx;
 
     useEffect(() => {
@@ -169,6 +175,53 @@ export default function ArtistProfile() {
         }
     };
 
+    const handleDownloadSong = async (songId) => {
+        const token = localStorage.getItem("accessToken");
+        if (!token) {
+            message.info({
+                content: (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <span className="message-icon" style={{ fontSize: '18px' }}>ℹ️</span>
+                        <span>Please login to download songs</span>
+                    </div>
+                ),
+                duration: 3
+            });
+            return;
+        }
+        const roles = JSON.parse(localStorage.getItem("roles")) || [];
+        const canDownload = roles.includes("ROLE_PREMIUM") || roles.includes("ROLE_ARTIST");
+        if (!canDownload) {
+            setShowUpgradeModal(true);
+            return;
+        }
+        
+        try {
+            const infoResponse = await axios.get(`${BASE_API_URL}/api/v1/user/downloads/${songId}/info`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            
+            const downloadInfo = infoResponse.data.data;
+            setDownloadModal({ open: true, songId, downloadInfo });
+            
+        } catch (error) {
+            console.error('Download error:', error);
+            message.error({
+                content: (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <span className="message-icon" style={{ fontSize: '18px' }}>❌</span>
+                        <span>Download failed</span>
+                    </div>
+                ),
+                duration: 4
+            });
+        }
+    };
+
+    const handleAddToPlaylist = async (songId) => {
+        setAddToPlaylistModal({ open: true, songId });
+    };
+
     // Layout responsive header
     return (
         <div
@@ -272,6 +325,27 @@ export default function ArtistProfile() {
                                         const profilePicUrl = s.profilePicUrl || "/img/default-cover.png";
                                         const duration = s.duration || "";
 
+                                        const menuItems = [
+                                            {
+                                                key: 'download',
+                                                icon: <DownloadOutlined />,
+                                                label: t('weekly_top_10.download_with_location'),
+                                                onClick: (e) => {
+                                                    e.domEvent.stopPropagation();
+                                                    handleDownloadSong(songId);
+                                                },
+                                            },
+                                            {
+                                                key: 'addToPlaylist',
+                                                icon: <PlusSquareOutlined />,
+                                                label: t('weekly_top_10.add_to_playlist'),
+                                                onClick: (e) => {
+                                                    e.domEvent.stopPropagation();
+                                                    handleAddToPlaylist(songId);
+                                                },
+                                            },
+                                        ];
+
                                         return (
                                             <div
                                                 key={songId}
@@ -355,6 +429,33 @@ export default function ArtistProfile() {
                                                         )}
                                                     </div>
                                                 </div>
+                                                <Dropdown
+                                                    menu={{ items: menuItems }}
+                                                    trigger={['click']}
+                                                    placement="bottomRight"
+                                                    overlayStyle={{ zIndex: 1000 }}
+                                                >
+                                                    <EllipsisOutlined
+                                                        style={{
+                                                            fontSize: 18,
+                                                            color: '#87a2be',
+                                                            cursor: 'pointer',
+                                                            padding: 8,
+                                                            borderRadius: 6,
+                                                            transition: 'all 0.2s',
+                                                            marginLeft: 'auto'
+                                                        }}
+                                                        onClick={(e) => e.stopPropagation()}
+                                                        onMouseEnter={(e) => {
+                                                            e.currentTarget.style.color = '#3ed8ff';
+                                                            e.currentTarget.style.background = 'rgba(62, 216, 255, 0.1)';
+                                                        }}
+                                                        onMouseLeave={(e) => {
+                                                            e.currentTarget.style.color = '#87a2be';
+                                                            e.currentTarget.style.background = 'transparent';
+                                                        }}
+                                                    />
+                                                </Dropdown>
                                             </div>
                                         );
                                     })}
@@ -468,38 +569,64 @@ export default function ArtistProfile() {
                                                             <div style={{ color: "#3ed8ff", fontSize: 16, margin: 18 }}>{t('artist_profile.loading_songs')}</div>
                                                         ) : (
                                                             (albumSongs[albumId]?.length > 0 ? (
-                                                                albumSongs[albumId].map((song, idx) => (
-                                                                    <div
-                                                                        key={song.id || song.songId}
-                                                                        className="song-in-album-row"
-                                                                        style={{
-                                                                            display: "flex",
-                                                                            alignItems: "center",
-                                                                            gap: 16,
-                                                                            padding: "12px 20px 12px 0",
-                                                                            borderRadius: 12,
-                                                                            background: "#23253b",
-                                                                            margin: "10px 0",
-                                                                            boxShadow: "0 2px 14px #2234",
-                                                                            cursor: "pointer",
-                                                                            transition: "background 0.17s, box-shadow 0.18s"
-                                                                        }}
-                                                                        onClick={e => {
-                                                                            e.stopPropagation();
-                                                                            if (typeof playSong === "function") {
-                                                                                const allIds = albumSongs[albumId].map(s => s.id || s.songId);
-                                                                                playSong(song.id || song.songId, allIds);
-                                                                            }
-                                                                        }}
-                                                                        onMouseOver={e => {
-                                                                            e.currentTarget.style.background = "#263559";
-                                                                            e.currentTarget.style.boxShadow = "0 4px 24px #2ce8ff25";
-                                                                        }}
-                                                                        onMouseOut={e => {
-                                                                            e.currentTarget.style.background = "#23253b";
-                                                                            e.currentTarget.style.boxShadow = "0 2px 14px #2234";
-                                                                        }}
-                                                                    >
+                                                                                                                                 albumSongs[albumId].map((song, idx) => {
+                                                                     const songId = song.id || song.songId;
+                                                                     const songName = song.title || song.songName;
+                                                                     const artistName = song.artistName;
+                                                                     
+                                                                     const menuItems = [
+                                                                         {
+                                                                             key: 'download',
+                                                                             icon: <DownloadOutlined />,
+                                                                             label: t('weekly_top_10.download_with_location'),
+                                                                             onClick: (e) => {
+                                                                                 e.domEvent.stopPropagation();
+                                                                                 handleDownloadSong(songId);
+                                                                             },
+                                                                         },
+                                                                         {
+                                                                             key: 'addToPlaylist',
+                                                                             icon: <PlusSquareOutlined />,
+                                                                             label: t('weekly_top_10.add_to_playlist'),
+                                                                             onClick: (e) => {
+                                                                                 e.domEvent.stopPropagation();
+                                                                                 handleAddToPlaylist(songId);
+                                                                             },
+                                                                         },
+                                                                     ];
+
+                                                                     return (
+                                                                         <div
+                                                                             key={songId}
+                                                                             className="song-in-album-row"
+                                                                             style={{
+                                                                                 display: "flex",
+                                                                                 alignItems: "center",
+                                                                                 gap: 16,
+                                                                                 padding: "12px 20px 12px 0",
+                                                                                 borderRadius: 12,
+                                                                                 background: "#23253b",
+                                                                                 margin: "10px 0",
+                                                                                 boxShadow: "0 2px 14px #2234",
+                                                                                 cursor: "pointer",
+                                                                                 transition: "background 0.17s, box-shadow 0.18s"
+                                                                             }}
+                                                                             onClick={e => {
+                                                                                 e.stopPropagation();
+                                                                                 if (typeof playSong === "function") {
+                                                                                     const allIds = albumSongs[albumId].map(s => s.id || s.songId);
+                                                                                     playSong(songId, allIds);
+                                                                                 }
+                                                                             }}
+                                                                             onMouseOver={e => {
+                                                                                 e.currentTarget.style.background = "#263559";
+                                                                                 e.currentTarget.style.boxShadow = "0 4px 24px #2ce8ff25";
+                                                                             }}
+                                                                             onMouseOut={e => {
+                                                                                 e.currentTarget.style.background = "#23253b";
+                                                                                 e.currentTarget.style.boxShadow = "0 2px 14px #2234";
+                                                                             }}
+                                                                         >
                                                                         <img
                                                                             src={song.profilePicUrl || "/img/default-cover.png"}
                                                                             alt={song.title || song.songName}
@@ -512,22 +639,50 @@ export default function ArtistProfile() {
                                                                                 background: "#2a2e44"
                                                                             }}
                                                                         />
-                                                                        <div style={{ flex: 1, minWidth: 0 }}>
-                                                                            <div style={{
-                                                                                color: "#fff",
-                                                                                fontWeight: 600,
-                                                                                fontSize: 16,
-                                                                                fontFamily: "'Quicksand','Montserrat',sans-serif",
-                                                                                overflow: "hidden", whiteSpace: "nowrap", textOverflow: "ellipsis"
-                                                                            }}>
-                                                                                {song.title || song.songName}
-                                                                            </div>
-                                                                            <div style={{ color: "#a1ebfa", fontSize: 14 }}>
-                                                                                {song.artistName}
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                ))
+                                                                                                                                                 <div style={{ flex: 1, minWidth: 0 }}>
+                                                                             <div style={{
+                                                                                 color: "#fff",
+                                                                                 fontWeight: 600,
+                                                                                 fontSize: 16,
+                                                                                 fontFamily: "'Quicksand','Montserrat',sans-serif",
+                                                                                 overflow: "hidden", whiteSpace: "nowrap", textOverflow: "ellipsis"
+                                                                             }}>
+                                                                                 {songName}
+                                                                             </div>
+                                                                             <div style={{ color: "#a1ebfa", fontSize: 14 }}>
+                                                                                 {artistName}
+                                                                             </div>
+                                                                         </div>
+                                                                         <Dropdown
+                                                                             menu={{ items: menuItems }}
+                                                                             trigger={['click']}
+                                                                             placement="bottomRight"
+                                                                             overlayStyle={{ zIndex: 1000 }}
+                                                                         >
+                                                                             <EllipsisOutlined
+                                                                                 style={{
+                                                                                     fontSize: 16,
+                                                                                     color: '#87a2be',
+                                                                                     cursor: 'pointer',
+                                                                                     padding: 6,
+                                                                                     borderRadius: 4,
+                                                                                     transition: 'all 0.2s',
+                                                                                     marginLeft: 'auto'
+                                                                                 }}
+                                                                                 onClick={(e) => e.stopPropagation()}
+                                                                                 onMouseEnter={(e) => {
+                                                                                     e.currentTarget.style.color = '#3ed8ff';
+                                                                                     e.currentTarget.style.background = 'rgba(62, 216, 255, 0.1)';
+                                                                                 }}
+                                                                                 onMouseLeave={(e) => {
+                                                                                     e.currentTarget.style.color = '#87a2be';
+                                                                                     e.currentTarget.style.background = 'transparent';
+                                                                                 }}
+                                                                             />
+                                                                                                                                                  </Dropdown>
+                                                                     </div>
+                                                                 );
+                                                                 })
                                                             ) : (
                                                                 <div style={{ color: "#bbb", margin: 16 }}>{t('artist_profile.no_songs_in_album')}</div>
                                                             ))
@@ -639,6 +794,21 @@ export default function ArtistProfile() {
                     }
                 }
             `}</style>
+
+            {/* Download Modal */}
+            <DownloadModal
+                open={downloadModal.open}
+                onClose={() => setDownloadModal({ open: false, songId: null, downloadInfo: null })}
+                songId={downloadModal.songId}
+                downloadInfo={downloadModal.downloadInfo}
+            />
+
+            {/* Add to Playlist Modal */}
+            <AddToPlaylistModal
+                open={addToPlaylistModal.open}
+                onClose={() => setAddToPlaylistModal({ open: false, songId: null })}
+                songId={addToPlaylistModal.songId}
+            />
         </div>
     );
 }

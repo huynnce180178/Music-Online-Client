@@ -4,6 +4,7 @@ import axios from "axios";
 import PropTypes from "prop-types";
 import { PlayerContext } from "../context/PlayerContext";
 import CommentTab from "./CommentTab";
+import AddToPlaylistModal from "./AddToPlaylistModal";
 import { useNavigate } from "react-router-dom"; // Thêm import này
 import { useTranslation } from 'react-i18next';
 import BASE_API_URL from "../services/base.api.url";
@@ -17,21 +18,7 @@ export default function SongDetail({ songId, onClose }) {
     const [loading, setLoading] = useState(true);
     const [currentTime, setCurrentTime] = useState(0);
     const [viewed, setViewed] = useState(false);
-    const [addToPlaylistModal, setAddToPlaylistModal] = useState(false);
-    const [userPlaylists, setUserPlaylists] = useState([]);
-    const [selectedPlaylistId, setSelectedPlaylistId] = useState(null);
-
-    const fetchUserPlaylists = async () => {
-        const token = localStorage.getItem("accessToken");
-        try {
-            const res = await axios.get(`${BASE_API_URL}/api/v1/user/playlist`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            setUserPlaylists(res.data.data || []);
-        } catch {
-            message.error(t("weekly_top_10.get_playlist_failed") || "Unable to load playlist!");
-        }
-    };
+    const [addToPlaylistModal, setAddToPlaylistModal] = useState({ open: false, songId: null });
 
 
     const {
@@ -261,45 +248,13 @@ export default function SongDetail({ songId, onClose }) {
     const durationSec = song?.duration ? song.duration.split(":").reduce((acc, t) => 60 * acc + +t, 0) : 0;
     const currentUser = localStorage.getItem("userName");
 
-    <Modal
-        title={t("song_detail.add_to_playlist")}
-        open={addToPlaylistModal}
-        onOk={async () => {
-            if (!selectedPlaylistId) {
-                message.warning(t("weekly_top_10.select_playlist_warning") || "Please select playlist");
-                return;
-            }
-            try {
-                const token = localStorage.getItem("accessToken");
-                await axios.post(`${BASE_API_URL}/api/v1/user/playlist/add-song?playlistId=${selectedPlaylistId}&songId=${song.id}`, {}, {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
-                message.success(t("weekly_top_10.added_to_playlist") || "Added to playlist");
-                setAddToPlaylistModal(false);
-            } catch {
-                message.error(t("weekly_top_10.add_to_playlist_failed") || "Add to playlist failed");
-            }
-        }}
-        onCancel={() => setAddToPlaylistModal(false)}
-        okText={t("song_detail.add")}
-        cancelText={t("weekly_top_10.cancel")}
-    >
-        <Select
-            style={{ width: "100%" }}
-            placeholder={t("song_detail.select_playlist")}
-            value={selectedPlaylistId}
-            onChange={setSelectedPlaylistId}
-        >
-            {userPlaylists.map(pl => (
-                <Select.Option key={pl.id} value={pl.id}>
-                    {pl.name}
-                </Select.Option>
-            ))}
-        </Select>
-    </Modal>
-
     return (
         <>
+            <AddToPlaylistModal
+                open={addToPlaylistModal.open}
+                onClose={() => setAddToPlaylistModal({ open: false, songId: null })}
+                songId={addToPlaylistModal.songId}
+            />
             <style>{`
 /* ==== Base Styles ==== */
 .song-detail-container {
@@ -882,9 +837,7 @@ export default function SongDetail({ songId, onClose }) {
                                         message.info(t("weekly_top_10.login_to_add_playlist") || "Please login to add songs to your playlist!");
                                         return;
                                     }
-                                    fetchUserPlaylists();
-                                    setAddToPlaylistModal(true);
-                                    setSelectedPlaylistId(null);
+                                    setAddToPlaylistModal({ open: true, songId: songId });
                                 }}
                                 disabled={adPlaying}
                                 title={t('song_detail.add_to_playlist') || "Add to Playlist"}

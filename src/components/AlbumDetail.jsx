@@ -2,19 +2,45 @@
 import { useEffect, useState, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { PlayerContext } from "../context/PlayerContext";
-import { PlayCircleFilled, EllipsisOutlined } from '@ant-design/icons';
+import { PlayCircleFilled, EllipsisOutlined, DownloadOutlined, PlusSquareOutlined } from '@ant-design/icons';
+import { Dropdown, Modal, Select, message } from "antd";
+import SubscriptionModalPlan from "./SubscriptionModalPlan";
+import AddToPlaylistModal from "./AddToPlaylistModal";
 import PropTypes from "prop-types";
 import { useTranslation } from 'react-i18next';
+import axios from "axios";
 import BASE_API_URL from "../services/base.api.url";
+import DownloadModal from "./DownloadModal";
 
-function SongRow({ song, index, onSelect }) {
+function SongRow({ song, index, onSelect, t, onDownload, onAddToPlaylist }) {
     const borderGradient = "linear-gradient(90deg, #252B4D 0%, #161A2D 100%)";
+    const menuItems = [
+        {
+            key: 'download',
+            icon: <DownloadOutlined />,
+            label: t('weekly_top_10.download'),
+            onClick: (e) => {
+                e.domEvent.stopPropagation();
+                onDownload(song.songId);
+            },
+        },
+        {
+            key: 'addToPlaylist',
+            icon: <PlusSquareOutlined />,
+            label: t('weekly_top_10.add_to_playlist'),
+            onClick: (e) => {
+                e.domEvent.stopPropagation();
+                onAddToPlaylist(song.songId);
+            },
+        },
+    ];
+
     return (
         <div
             className="song-row-modern d-flex align-items-center mb-3 px-4 py-2"
             style={{
                 borderRadius: 18,
-                background: "#252B4D", // dùng màu top3 cho tất cả
+                background: "#252B4D",
                 border: `2px solid transparent`,
                 boxShadow: "0 4px 24px 0 rgba(37,43,77,0.18)",
                 backgroundImage: borderGradient,
@@ -22,7 +48,7 @@ function SongRow({ song, index, onSelect }) {
                 position: "relative",
                 overflow: "hidden",
                 cursor: "pointer",
-                minHeight: 56, // giảm chiều cao
+                minHeight: 56,
                 transition: "background 0.2s, box-shadow 0.2s, border 0.2s",
             }}
             onClick={() => onSelect(song.songId)}
@@ -97,25 +123,27 @@ function SongRow({ song, index, onSelect }) {
                     {song.artistName}
                 </div>
                 <div style={{ fontSize: 12, color: "#DEDEDE", marginTop: 2 }}>
-                    <span style={{ color: "#FFFFFF" }}>{song.views?.toLocaleString() || 0} plays</span>
+                    <span style={{ color: "#FFFFFF" }}>{song.views?.toLocaleString() || 0} {t('weekly_top_10.plays')}</span>
                 </div>
             </div>
-            {/* Đã bỏ Duration */}
-            {/* Menu */}
-            <EllipsisOutlined
-                style={{
-                    fontSize: 24,
-                    color: "#DEDEDE",
-                    marginLeft: 18,
-                    transition: "color 0.2s, transform 0.18s",
-                }}
-                className="song-menu-modern"
-            />
+            {/* Dropdown Menu */}
+            <Dropdown menu={{ items: menuItems }} trigger={['click']} placement="bottomRight">
+                <EllipsisOutlined
+                    style={{
+                        fontSize: 24,
+                        color: "#DEDEDE",
+                        marginLeft: 18,
+                        transition: "color 0.2s, transform 0.18s",
+                        cursor: "pointer",
+                    }}
+                    className="song-menu-modern"
+                    onClick={e => e.stopPropagation()}
+                />
+            </Dropdown>
         </div>
     );
 }
 
-// Thêm prop-types cho SongRow
 SongRow.propTypes = {
     song: PropTypes.shape({
         songId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
@@ -126,15 +154,21 @@ SongRow.propTypes = {
     }).isRequired,
     index: PropTypes.number.isRequired,
     onSelect: PropTypes.func.isRequired,
+    t: PropTypes.func.isRequired,
+    onDownload: PropTypes.func.isRequired,
+    onAddToPlaylist: PropTypes.func.isRequired,
 };
-
 
 export default function AlbumDetail() {
     const { t } = useTranslation();
     const { albumId } = useParams();
-    const navigate = useNavigate();
     const [songs, setSongs] = useState([]);
-    const { playSong } = useContext(PlayerContext);
+    const [addToPlaylistModal, setAddToPlaylistModal] = useState({ open: false, songId: null });
+    const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+    const [downloadModal, setDownloadModal] = useState({ open: false, songId: null, downloadInfo: null });
+
+    const playerCtx = useContext(PlayerContext) || {};
+    const { playSong } = playerCtx;
 
     useEffect(() => {
         fetch(`${BASE_API_URL}/api/v1/guest/ablum/${albumId}/songs`)
@@ -155,13 +189,43 @@ export default function AlbumDetail() {
         playSong(songId, allSongIds);
     };
 
+    // Download function
+    const handleDownloadSong = async (songId) => {
+        const token = localStorage.getItem("accessToken");
+        if (!token) {
+            message.info(t('weekly_top_10.login_to_download'));
+            return;
+        }
+        const roles = JSON.parse(localStorage.getItem("roles")) || [];
+        const canDownload = roles.includes("ROLE_PREMIUM") || roles.includes("ROLE_ARTIST");
+        if (!canDownload) {
+            setShowUpgradeModal(true);
+            return;
+        }
+        
+        try {
+            const infoResponse = await axios.get(`${BASE_API_URL}/api/v1/user/downloads/${songId}/info`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            const downloadInfo = infoResponse.data.data;
+            setDownloadModal({ open: true, songId, downloadInfo });
+        } catch (error) {
+            console.error('Download error:', error);
+            message.error(t('weekly_top_10.download_failed'));
+        }
+    };
+
+    // Thêm vào playlist
+    const handleAddToPlaylist = async (songId) => {
+        setAddToPlaylistModal({ open: true, songId });
+    };
+
     return (
         <div
             className="w-100"
             style={{
                 background: "#181c2b",
                 padding: "0 0 48px 0",
-                // minHeight: "100vh"
             }}
         >
             <div
@@ -211,10 +275,31 @@ export default function AlbumDetail() {
                             }}
                             index={idx}
                             onSelect={handleSelectSong}
+                            t={t}
+                            onDownload={handleDownloadSong}
+                            onAddToPlaylist={handleAddToPlaylist}
                         />
                     ))
                 )}
             </div>
+
+            {/* Add to Playlist Modal */}
+            <AddToPlaylistModal
+                open={addToPlaylistModal.open}
+                onClose={() => setAddToPlaylistModal({ open: false, songId: null })}
+                songId={addToPlaylistModal.songId}
+            />
+
+            {/* Modal nâng cấp premium */}
+            <SubscriptionModalPlan show={showUpgradeModal} onClose={() => setShowUpgradeModal(false)} />
+
+            {/* Download Modal */}
+            <DownloadModal
+                open={downloadModal.open}
+                onClose={() => setDownloadModal({ open: false, songId: null, downloadInfo: null })}
+                songId={downloadModal.songId}
+                downloadInfo={downloadModal.downloadInfo}
+            />
 
             <style>{`
                 .song-row-modern:hover {
@@ -233,6 +318,38 @@ export default function AlbumDetail() {
                 .song-row-modern:hover .song-menu-modern {
                     color: #21A8C5 !important;
                     transform: scale(1.15);
+                }
+                .ant-dropdown-menu {
+                    background: #23283e !important;
+                    border-radius: 18px !important;
+                    padding: 10px 0 !important;
+                    min-width: 170px !important;
+                    box-shadow: 0 6px 28px 0 #3ed8ff33 !important;
+                }
+                .ant-dropdown-menu-item {
+                    color: #fff !important;
+                    font-weight: 500;
+                    font-size: 15px;
+                    padding: 10px 20px !important;
+                    border-radius: 12px !important;
+                    transition: background 0.16s, color 0.16s;
+                    margin: 2px 8px;
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                }
+                .ant-dropdown-menu-item:hover, .ant-dropdown-menu-item-active {
+                    background: linear-gradient(90deg, #3ed8ff11, #1fa2ff18) !important;
+                    color: #3ed8ff !important;
+                }
+                .ant-dropdown-menu-item:hover .anticon,
+                .ant-dropdown-menu-item-active .anticon {
+                    color: #3ed8ff !important;
+                }
+                .ant-dropdown-menu-item .anticon {
+                    font-size: 18px;
+                    color: #fff;
+                    transition: color 0.18s;
                 }
             `}</style>
         </div>

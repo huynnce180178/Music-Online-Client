@@ -16,5 +16,9 @@
   "admin_albums.reject": "Reject",
   "admin_albums.reject_reason_title": "Reason for Rejection",
   "admin_albums.reject_reason_placeholder": "Reason for rejection (e.g., inappropriate content)",
-  "admin_albums.confirm_reject": "Confirm Reject"
+  "admin_albums.confirm_reject": "Confirm Reject",
+  "admin_albums.no_albums_found": "No albums found",
+  "artist_album.restore_request_sent": "Restore request sent",
+  "artist_album.restore_request_sent_description": "Your request to restore this albuml.",
+  "admin_albums.restore_to_pending": "Restore to Pending"
 } 

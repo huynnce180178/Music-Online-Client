@@ -4,6 +4,7 @@ import axios from "axios";
 import { message } from "antd";
 import { toast } from "react-toastify";
 import BASE_API_URL from "../services/base.api.url";
+import DownloadModal from "../components/DownloadModal";
 
 export const PlayerContext = createContext();
 
@@ -118,6 +119,8 @@ export const PlayerProvider = ({ children }) => {
         }
     };
 
+    const [downloadModal, setDownloadModal] = useState({ open: false, songId: null, downloadInfo: null });
+
     const handleDownload = async () => {
         if (!currentSongId) return;
         const token = localStorage.getItem("accessToken");
@@ -127,12 +130,15 @@ export const PlayerProvider = ({ children }) => {
             message.warning("Upgrade to premium to download");
             return;
         }
+        
         try {
-            await axios.post(`${BASE_API_URL}/api/v1/user/downloads/${currentSongId}`, { songId: currentSongId }, {
+            const infoResponse = await axios.get(`${BASE_API_URL}/api/v1/user/downloads/${currentSongId}/info`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            message.success("Download successful");
-        } catch {
+            const downloadInfo = infoResponse.data.data;
+            setDownloadModal({ open: true, songId: currentSongId, downloadInfo });
+        } catch (error) {
+            console.error('Download error:', error);
             message.error("Download failed");
         }
     };
@@ -221,6 +227,12 @@ export const PlayerProvider = ({ children }) => {
             }}
         >
             {children}
+            <DownloadModal
+                open={downloadModal.open}
+                onClose={() => setDownloadModal({ open: false, songId: null, downloadInfo: null })}
+                songId={downloadModal.songId}
+                downloadInfo={downloadModal.downloadInfo}
+            />
         </PlayerContext.Provider>
     );
 };

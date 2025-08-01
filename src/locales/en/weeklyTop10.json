@@ -4,7 +4,7 @@
   "weekly_top_10.download": "Download",
   "weekly_top_10.add_to_playlist": "Add to Playlist",
   "weekly_top_10.login_to_download": "Please login to download",
-  "weekly_top_10.download_success": "Download successful",
+  "weekly_top_10.download_success": "Download completed successfully!",
   "weekly_top_10.download_failed": "Download failed",
   "weekly_top_10.login_to_add_playlist": "Please login to add to playlist",
   "weekly_top_10.get_playlist_failed": "Failed to get playlists",
@@ -13,5 +13,12 @@
   "weekly_top_10.add_to_playlist_failed": "Failed to add to playlist",
   "weekly_top_10.add": "Add",
   "weekly_top_10.cancel": "Cancel",
-  "weekly_top_10.select_playlist": "Select playlist"
+  "weekly_top_10.select_playlist": "Select playlist",
+  "weekly_top_10.choose_save_location": "Choose save location",
+  "weekly_top_10.download_with_location": "Download",
+  "weekly_top_10.download_song": "Download Song",
+  "weekly_top_10.download_confirm_message": "Ready to download this song? You'll be prompted to choose where to save the file.",
+  "weekly_top_10.downloading": "Downloading...",
+  "weekly_top_10.complete": "complete",
+  "weekly_top_10.download_cancelled": "Download cancelled"
 }

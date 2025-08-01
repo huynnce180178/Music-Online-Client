@@ -1,9 +1,11 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { PlayerContext } from "../context/PlayerContext";
-import { Dropdown, message, Modal, Select } from 'antd';
+import { Dropdown, message, Modal, Select, Form, Input, Switch, Upload, Button } from 'antd';
 import { PlayCircleFilled, EllipsisOutlined, DownloadOutlined, PlusSquareOutlined } from '@ant-design/icons';
 import SubscriptionModalPlan from "./SubscriptionModalPlan";
+import DownloadModal from "./DownloadModal";
+import AddToPlaylistModal from "./AddToPlaylistModal";
 import PropTypes from "prop-types";
 import { useTranslation } from 'react-i18next';
 import BASE_API_URL from "../services/base.api.url";
@@ -14,7 +16,7 @@ function SongRow({ song, index, onSelect, onDownload, onAddToPlaylist, t }) {
         {
             key: 'download',
             icon: <DownloadOutlined />,
-            label: t('weekly_top_10.download'),
+            label: t('weekly_top_10.download_with_location'),
             onClick: (e) => {
                 e.domEvent.stopPropagation();
                 onDownload(song.songId);
@@ -49,7 +51,6 @@ function SongRow({ song, index, onSelect, onDownload, onAddToPlaylist, t }) {
             }}
             onClick={() => onSelect(song.songId)}
         >
-            {/* Rank */}
             <div
                 className="fw-bold text-center me-4"
                 style={{
@@ -63,7 +64,6 @@ function SongRow({ song, index, onSelect, onDownload, onAddToPlaylist, t }) {
             >
                 {String(index + 1).padStart(2, "0")}
             </div>
-            {/* Cover */}
             <div style={{ position: "relative" }}>
                 <img
                     src={song.profile_pic_url || "/img/default-cover.png"}
@@ -93,7 +93,6 @@ function SongRow({ song, index, onSelect, onDownload, onAddToPlaylist, t }) {
                     }}
                 />
             </div>
-            {/* Info */}
             <div className="flex-grow-1 ms-4" style={{ minWidth: 0 }}>
                 <div
                     className="fw-bold text-truncate"
@@ -122,7 +121,6 @@ function SongRow({ song, index, onSelect, onDownload, onAddToPlaylist, t }) {
                     <span style={{ color: "#FFFFFF" }}>{song.views?.toLocaleString() || 0} {t('weekly_top_10.plays')}</span>
                 </div>
             </div>
-            {/* Dropdown Menu */}
             <Dropdown menu={{ items: menuItems }} trigger={['click']} placement="bottomRight">
                 <EllipsisOutlined
                     style={{
@@ -151,13 +149,13 @@ SongRow.propTypes = {
 
 export default function WeeklyTop10() {
     const [songs, setSongs] = useState([]);
-    const [playlistModal, setPlaylistModal] = useState({ open: false, songId: null });
-    const [userPlaylists, setUserPlaylists] = useState([]);
-    const [selectedPlaylistId, setSelectedPlaylistId] = useState(null);
+
     const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+    const [downloadModal, setDownloadModal] = useState({ open: false, songId: null, downloadInfo: null });
+    const [addToPlaylistModal, setAddToPlaylistModal] = useState({ open: false, songId: null });
 
     const playerCtx = useContext(PlayerContext) || {};
-    const { playSong } = playerCtx;
+    const { handleSelectSong: contextHandleSelectSong } = playerCtx;
     const { t } = useTranslation();
 
     useEffect(() => {
@@ -166,17 +164,23 @@ export default function WeeklyTop10() {
             .catch(() => setSongs([]));
     }, []);
 
-    // Chọn bài hát để phát
     const handleSelectSong = (songId) => {
         const allSongIds = songs.map(a => a.songId);
-        playSong(songId, allSongIds);
+        contextHandleSelectSong(songId, allSongIds);
     };
 
-    // Download (check giống PlayerContext)
     const handleDownloadSong = async (songId) => {
         const token = localStorage.getItem("accessToken");
         if (!token) {
-            message.info(t('weekly_top_10.login_to_download'));
+            message.info({
+                content: (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <span className="message-icon" style={{ fontSize: '18px' }}>ℹ️</span>
+                        <span>{t('weekly_top_10.login_to_download')}</span>
+                    </div>
+                ),
+                duration: 3
+            });
             return;
         }
         const roles = JSON.parse(localStorage.getItem("roles")) || [];
@@ -185,53 +189,34 @@ export default function WeeklyTop10() {
             setShowUpgradeModal(true);
             return;
         }
+        
         try {
-            await axios.post(`${BASE_API_URL}/api/v1/user/downloads/${songId}`, { songId }, {
+            const infoResponse = await axios.get(`${BASE_API_URL}/api/v1/user/downloads/${songId}/info`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            message.success(t('weekly_top_10.download_success'));
-        } catch {
-            message.error(t('weekly_top_10.download_failed'));
+            
+            const downloadInfo = infoResponse.data.data;
+            setDownloadModal({ open: true, songId, downloadInfo });
+            
+        } catch (error) {
+            console.error('Download error:', error);
+            message.error({
+                content: (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <span className="message-icon" style={{ fontSize: '18px' }}>❌</span>
+                        <span>{t('weekly_top_10.download_failed')}</span>
+                    </div>
+                ),
+                duration: 4
+            });
         }
     };
 
-    // Thêm vào playlist (không phân quyền, chỉ cần login)
     const handleAddToPlaylist = async (songId) => {
-        const token = localStorage.getItem("accessToken");
-        if (!token) {
-            message.info(t('weekly_top_10.login_to_add_playlist'));
-            return;
-        }
-        try {
-            const res = await axios.get(`${BASE_API_URL}/api/v1/user/playlist`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            setUserPlaylists(res.data.data || []);
-            setSelectedPlaylistId(null);
-            setPlaylistModal({ open: true, songId });
-        } catch {
-            message.error(t('weekly_top_10.get_playlist_failed'));
-        }
+        setAddToPlaylistModal({ open: true, songId });
     };
 
-    const handleCloseModal = () => setPlaylistModal({ open: false, songId: null });
 
-    const handleAddSongToPlaylist = async () => {
-        if (!selectedPlaylistId) {
-            message.warning(t('weekly_top_10.select_playlist_warning'));
-            return;
-        }
-        const token = localStorage.getItem("accessToken");
-        try {
-            await axios.post(`${BASE_API_URL}/api/v1/user/playlist/add-song?playlistId=${selectedPlaylistId}&songId=${playlistModal.songId}`, {}, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            message.success(t('weekly_top_10.added_to_playlist'));
-            setPlaylistModal({ open: false, songId: null });
-        } catch {
-            message.error(t('weekly_top_10.add_to_playlist_failed'));
-        }
-    };
 
     return (
         <div
@@ -285,83 +270,29 @@ export default function WeeklyTop10() {
                 </div>
             </div>
 
-            {/* Modal thêm vào playlist */}
-            <Modal
-                title={t('weekly_top_10.add_to_playlist')}
-                open={playlistModal.open}
-                onOk={handleAddSongToPlaylist}
-                onCancel={handleCloseModal}
-                okText={t('weekly_top_10.add')}
-                cancelText={t('weekly_top_10.cancel')}
-            >
-                <Select
-                    style={{ width: "100%" }}
-                    placeholder={t('weekly_top_10.select_playlist')}
-                    value={selectedPlaylistId}
-                    onChange={setSelectedPlaylistId}
-                >
-                    {userPlaylists.map(pl => (
-                        <Select.Option key={pl.id} value={pl.id}>
-                            {pl.name}
-                        </Select.Option>
-                    ))}
-                </Select>
-            </Modal>
+            <AddToPlaylistModal
+                open={addToPlaylistModal.open}
+                onClose={() => setAddToPlaylistModal({ open: false, songId: null })}
+                songId={addToPlaylistModal.songId}
+            />
 
-            {/* Modal nâng cấp premium */}
             <SubscriptionModalPlan show={showUpgradeModal} onClose={() => setShowUpgradeModal(false)} />
 
-            <style>{`
-                .song-row-modern:hover {
-                    background: #163d56 !important;
-                    box-shadow: 0 4px 24px 0 rgba(33,168,197,0.18);
-                    transform: translateY(-2px) scale(1.01);
-                }
-                .song-row-modern:hover .play-btn-modern {
-                    opacity: 1 !important;
-                    pointer-events: auto;
-                    transform: translate(-50%,-50%) scale(1.1);
-                }
-                .song-row-modern:hover img {
-                    filter: brightness(0.95) blur(0.5px);
-                }
-                .song-row-modern:hover .song-menu-modern {
-                    color: #21A8C5 !important;
-                    transform: scale(1.15);
-                }
-                .ant-dropdown-menu {
-                    background: #23283e !important;
-                    border-radius: 18px !important;
-                    padding: 10px 0 !important;
-                    min-width: 170px !important;
-                    box-shadow: 0 6px 28px 0 #3ed8ff33 !important;
-                }
-                .ant-dropdown-menu-item {
-                    color: #fff !important;
-                    font-weight: 500;
-                    font-size: 15px;
-                    padding: 10px 20px !important;
-                    border-radius: 12px !important;
-                    transition: background 0.16s, color 0.16s;
-                    margin: 2px 8px;
-                    display: flex;
-                    align-items: center;
-                    gap: 10px;
-                }
-                .ant-dropdown-menu-item:hover, .ant-dropdown-menu-item-active {
-                    background: linear-gradient(90deg, #3ed8ff11, #1fa2ff18) !important;
-                    color: #3ed8ff !important;
-                }
-                .ant-dropdown-menu-item:hover .anticon,
-                .ant-dropdown-menu-item-active .anticon {
-                    color: #3ed8ff !important;
-                }
-                .ant-dropdown-menu-item .anticon {
-                    font-size: 18px;
-                    color: #fff;
-                    transition: color 0.18s;
-                }
-            `}</style>
+            <DownloadModal
+                open={downloadModal.open}
+                onClose={() => setDownloadModal({ open: false, songId: null, downloadInfo: null })}
+                songId={downloadModal.songId}
+                downloadInfo={downloadModal.downloadInfo}
+            />
         </div>
     );
 }
+
+SongRow.propTypes = {
+    song: PropTypes.object.isRequired,
+    index: PropTypes.number.isRequired,
+    onSelect: PropTypes.func.isRequired,
+    onDownload: PropTypes.func.isRequired,
+    onAddToPlaylist: PropTypes.func.isRequired,
+    t: PropTypes.func.isRequired,
+};

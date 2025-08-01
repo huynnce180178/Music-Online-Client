@@ -6,6 +6,7 @@ import {
     UserOutlined, EditOutlined, DeleteOutlined, FlagOutlined,
     LikeOutlined, CommentOutlined, SendOutlined, CloseOutlined
 } from "@ant-design/icons";
+import ReactDOM from "react-dom";
 import { useTranslation } from 'react-i18next';
 import BASE_API_URL from "../services/base.api.url";
 
@@ -33,7 +34,8 @@ function RenderComment({
     setReplyTo,
     currentUser,
     reloadComments,
-    onReport
+    onReport,
+    parentUsername
 }) {
     const [isEditing, setIsEditing] = useState(false);
     const [editContent, setEditContent] = useState(comment.content);
@@ -41,6 +43,7 @@ function RenderComment({
     const [reactions, setReactions] = useState(comment.reactionCounts || []);
     const [showReactions, setShowReactions] = useState(false);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+    const [reactionPosition, setReactionPosition] = useState(null);
 
     const isMine = currentUser && comment.username === currentUser;
 
@@ -60,6 +63,15 @@ function RenderComment({
         } catch {
             message.error("Failed to update comment!");
         }
+    };
+
+    const handleShowReactions = (e) => {
+        const rect = e.target.getBoundingClientRect();
+        setReactionPosition({
+            top: rect.bottom + window.scrollY + 4,   // đẩy xuống một chút cho đẹp
+            left: rect.left + window.scrollX - 12    // chỉnh lại để popup nằm giữa nút Like
+        });
+        setShowReactions(true);
     };
 
     // Delete comment
@@ -96,6 +108,15 @@ function RenderComment({
         setReacting(false);
     };
 
+    const hasReplyLine = level > 0;
+
+    // Dùng indent chỉ cho cấp 1, từ cấp 2+ không tăng nữa
+    const getMarginLeft = (level) => {
+        if (level === 1) return 18;  // chỉ cấp 1
+        if (level >= 2) return 18;   // cấp 2+ giữ nguyên
+        return 0;                    // cấp 0
+    };
+
     // Use reactionCounts from backend response
     const userReaction = comment.currentUserReaction;
 
@@ -119,20 +140,53 @@ function RenderComment({
         "rgba(62,216,255,0.08)"
     ];
 
+    <style>
+        {`
+.fb-reply-item {
+    position: relative;
+}
+
+.fb-reply-item::before {
+    content: "";
+    position: absolute;
+    left: -10px; /* căn vào avatar/cạnh trái của reply */
+    top: 20px;   /* bắt đầu từ giữa avatar */
+    bottom: 10px;
+    width: 2.5px;
+    background: #d2e5fa;
+    border-radius: 2px;
+    z-index: 0;
+}
+
+`}
+    </style>
+
     return (
         <div
             style={{
-                marginLeft: level ? 20 + (level - 1) * 12 : 0,
+                position: "relative",
+                marginLeft: level === 1 ? 18 : 0, // chỉ indent cho reply cấp 1, cấp 2+ không tăng thêm
                 marginBottom: 14,
-                background: bgColors[level % bgColors.length],
+                background: "#fff",
                 borderRadius: 12,
-                border: `1px solid ${borderColors[level % borderColors.length]}`,
+                border: "1px solid #eaf6fb",
                 padding: "14px 16px",
                 boxShadow: level === 0 ? "0 2px 8px #3ed8ff11" : "none",
-                transition: "background 0.2s"
+                zIndex: 1
             }}
+            className={level > 0 ? "fb-reply-item" : ""}
         >
-            <div style={{ display: "flex", alignItems: "left", gap: 10, marginBottom: 2 }}>
+            {/* Header: Avatar + tên user (full width, không bị cắt) */}
+            <div
+                style={{
+                    display: "flex",
+                    alignItems: "center",
+                    marginBottom: 2,
+                    width: "100%",
+                    position: "relative",
+                    zIndex: 1
+                }}
+            >
                 <Avatar
                     style={{
                         background: "#eaf6fb",
@@ -146,25 +200,33 @@ function RenderComment({
                 >
                     {comment.username?.charAt(0).toUpperCase()}
                 </Avatar>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                    <span style={{
-                        color: "#23283e",
-                        fontWeight: 600,
-                        fontSize: 15,
-                        marginRight: 8,
-                        maxWidth: 160,
-                        display: "inline-block",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        whiteSpace: "nowrap"
-                    }} title={comment.username}>
-                        {comment.username}
-                    </span>
-                    <span style={{ color: "#8ca0c6", fontSize: 12 }}>
-                        {comment.createdAt}
-                    </span>
+
+                <div style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    alignItems: "center",
+                    flexWrap: "wrap",
+                    fontWeight: 600,
+                    fontSize: 15,
+                    marginLeft: 10,
+                    marginRight: 12,
+                    color: "#23283e"
+                }}>
+                    <span style={{ fontWeight: 600 }}>{comment.username}</span>
+                    {parentUsername && (
+                        <span style={{
+                            color: "#29aaff",
+                            fontWeight: 500,
+                            fontSize: 14,
+                            marginLeft: 7
+                        }}>
+                            replying <b>{parentUsername}</b>
+                        </span>
+                    )}
                 </div>
-                <div style={{ display: "flex", gap: 2 }}>
+
+                {/* Actions (edit/delete/report) */}
+                <div style={{ display: "flex", gap: 2, marginLeft: "auto" }}>
                     {isMine ? (
                         <>
                             <Tooltip title={isEditing ? "Cancel" : "Edit"}>
@@ -211,6 +273,7 @@ function RenderComment({
                     )}
                 </div>
             </div>
+            {/* Nội dung cmt */}
             {isEditing ? (
                 <div style={{ marginBottom: 8 }}>
                     <Input.TextArea
@@ -242,17 +305,16 @@ function RenderComment({
                     fontSize: 15,
                     lineHeight: 1.7,
                     marginBottom: 8,
-                    wordBreak: "break-word"
+                    wordBreak: "break-word",
+                    textAlign: "left",
+                    marginLeft: '40px',
                 }}>
                     {comment.content}
                 </div>
             )}
-            <div style={{
-                display: "flex",
-                alignItems: "flex-start", // căn các nút lên phía trên
-                justifyContent: "flex-start", // căn trái
-                gap: 10
-            }}>
+
+            {/* Row: reply + cảm xúc + thời gian */}
+            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                 <Tooltip title="Reply">
                     <Button
                         size="small"
@@ -262,11 +324,7 @@ function RenderComment({
                         onClick={() => setReplyTo(comment)}
                     />
                 </Tooltip>
-                <div style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 4
-                }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
                     {reactionSummary.length > 0 && (
                         <div style={{
                             display: "flex",
@@ -278,7 +336,7 @@ function RenderComment({
                             fontWeight: 600,
                             fontSize: 15,
                             minHeight: 28,
-                            width: "fit-content" // chỉ chiếm chiều ngang cần thiết
+                            width: "fit-content"
                         }}>
                             {reactionSummary.map(r => (
                                 <span key={r.type} style={{ display: "flex", alignItems: "center", marginRight: 6 }}>
@@ -299,52 +357,66 @@ function RenderComment({
                                 fontWeight: 600,
                                 padding: "0 10px"
                             }}
-                            onClick={() => setShowReactions(v => !v)}
+                            onClick={handleShowReactions}
                         >
                             <LikeOutlined />
                         </Button>
-                        {showReactions && (
-                            <div
-                                style={{
-                                    position: "absolute",
-                                    top: 36,
-                                    left: 0,
-                                    background: "#fff",
-                                    border: "1px solid #eaf6fb",
-                                    borderRadius: 12,
-                                    boxShadow: "0 2px 8px #3ed8ff22",
-                                    padding: "8px 10px",
-                                    zIndex: 10,
-                                    display: "flex",
-                                    gap: 6
-                                }}
-                                onMouseLeave={() => setShowReactions(false)}
-                            >
-                                {Object.keys(REACTION_ICONS).map(type => (
-                                    <Button
-                                        key={type}
-                                        size="small"
-                                        type="text"
-                                        icon={REACTION_ICONS[type]}
-                                        loading={reacting}
-                                        onClick={() => {
-                                            handleReaction(type);
-                                            setShowReactions(false);
-                                        }}
-                                        style={{
-                                            color: userReaction === type ? "#ffb300" : "#23283e",
-                                            fontSize: 18,
-                                            background: "none",
-                                            border: "none"
-                                        }}
-                                    />
-                                ))}
-                            </div>
-                        )}
+                        {/* Dùng Portal để popup nổi lên trên, không bị che */}
+                        {showReactions && reactionPosition &&
+                            ReactDOM.createPortal(
+                                <div
+                                    style={{
+                                        position: "absolute",
+                                        top: reactionPosition.top,
+                                        left: reactionPosition.left,
+                                        background: "#fff",
+                                        border: "1px solid #eaf6fb",
+                                        borderRadius: 12,
+                                        boxShadow: "0 2px 8px #3ed8ff22",
+                                        padding: "8px 10px",
+                                        zIndex: 99999,
+                                        display: "flex",
+                                        gap: 6
+                                    }}
+                                    onMouseLeave={() => setShowReactions(false)}
+                                >
+                                    {Object.keys(REACTION_ICONS).map(type => (
+                                        <Button
+                                            key={type}
+                                            size="small"
+                                            type="text"
+                                            icon={REACTION_ICONS[type]}
+                                            loading={reacting}
+                                            onClick={() => {
+                                                handleReaction(type);
+                                                setShowReactions(false);
+                                            }}
+                                            style={{
+                                                color: userReaction === type ? "#ffb300" : "#23283e",
+                                                fontSize: 18,
+                                                background: "none",
+                                                border: "none"
+                                            }}
+                                        />
+                                    ))}
+                                </div>,
+                                document.body
+                            )
+                        }
                     </div>
                 </div>
+                {/* THỜI GIAN: đưa xuống cạnh nút cảm xúc */}
+                <span style={{
+                    color: "#8ca0c6",
+                    fontSize: 12,
+                    marginLeft: 14,
+                    whiteSpace: "nowrap"
+                }}>
+                    {comment.createdAt}
+                </span>
             </div>
-            {/* Render replies recursively if present */}
+
+            {/* Replies */}
             {Array.isArray(comment.replies) && comment.replies.length > 0 && (
                 <div style={{ marginTop: 8 }}>
                     {comment.replies.map(child => (
@@ -356,6 +428,7 @@ function RenderComment({
                             currentUser={currentUser}
                             reloadComments={reloadComments}
                             onReport={onReport}
+                            parentUsername={comment.username}
                         />
                     ))}
                 </div>
@@ -371,6 +444,7 @@ RenderComment.propTypes = {
     currentUser: PropTypes.string,
     reloadComments: PropTypes.func.isRequired,
     onReport: PropTypes.func.isRequired,
+    parentUsername: PropTypes.string,
 };
 
 export default function CommentTab({ songId, currentUser }) {
@@ -473,7 +547,6 @@ export default function CommentTab({ songId, currentUser }) {
             display: "flex",
             flexDirection: "column",
             background: "linear-gradient(135deg, #f7fafc 0%, #eaf6fb 100%)",
-            borderRadius: 18,
             boxShadow: "0 4px 24px #3ed8ff11",
             scrollbarWidth: "none",
             msOverflowStyle: "none",
