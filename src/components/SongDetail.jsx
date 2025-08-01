@@ -44,6 +44,19 @@ export default function SongDetail({ songId, onClose }) {
     } = useContext(PlayerContext);
 
     const navigate = useNavigate(); // Thêm hook này
+    const [pulsePhase, setPulsePhase] = useState(0);
+
+    // Animate waveform nếu đang play
+    useEffect(() => {
+        if (!isPlaying) return;
+        let raf;
+        const animate = () => {
+            setPulsePhase(p => p + 0.13); // Tăng tốc độ ở đây
+            raf = requestAnimationFrame(animate);
+        };
+        animate();
+        return () => raf && cancelAnimationFrame(raf);
+    }, [isPlaying]);
 
     // Luôn đồng bộ liked khi songId thay đổi (mỗi khi mở chi tiết bài mới)
     useEffect(() => {
@@ -499,6 +512,23 @@ export default function SongDetail({ songId, onClose }) {
     opacity: 0.5;
     cursor: not-allowed;
 }
+.player-img-wrapper {
+  position: relative;
+  width: 370px;
+  height: 370px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.waveform-svg {
+  position: absolute;
+  left: 0; top: 0;
+  width: 370px; height: 370px;
+  pointer-events: none;
+  z-index: 1;
+}
 
 @keyframes spin-disc {
     100% { transform: rotate(360deg);}
@@ -668,6 +698,13 @@ export default function SongDetail({ songId, onClose }) {
         word-break: break-word !important;
         overflow-wrap: break-word !important;
     }
+        .player-img-wrapper {
+    width: 110px;
+    height: 110px;
+  }
+  .waveform-svg {
+    width: 110px; height: 110px;
+  }
 }
 
 /* ==== Tabs hiển thị đúng cho desktop/tablet/mobile ==== */
@@ -734,11 +771,59 @@ export default function SongDetail({ songId, onClose }) {
 
                 <div className="song-detail-content">
                     <div className="song-detail-left">
-                        <img
-                            className={`player-img${isPlaying ? " spinning" : " paused"}`}
-                            src={song?.profilePicUrl}
-                            alt={song?.title}
-                        />
+                        <div className="player-img-wrapper">
+                            <svg className="waveform-svg" viewBox="0 0 400 400" width="370" height="370">
+                                <circle
+                                    cx="200"
+                                    cy="200"
+                                    r="175"
+                                    fill="none"
+                                    stroke="#23283e"
+                                    strokeWidth="6"
+                                />
+                                {
+                                    Array.from({ length: 48 }).map((_, i) => {
+                                        const angle = (i / 48) * 2 * Math.PI;
+                                        const radius = 175;
+                                        const pulse =
+                                            18 +
+                                            (isPlaying
+                                                ? Math.abs(Math.sin(pulsePhase + i * 0.26)) * 24
+                                                : 0);
+                                        const x1 = 200 + Math.cos(angle) * radius;
+                                        const y1 = 200 + Math.sin(angle) * radius;
+                                        const x2 = 200 + Math.cos(angle) * (radius + pulse);
+                                        const y2 = 200 + Math.sin(angle) * (radius + pulse);
+                                        return (
+                                            <line
+                                                key={i}
+                                                x1={x1}
+                                                y1={y1}
+                                                x2={x2}
+                                                y2={y2}
+                                                stroke="#3ed8ff"
+                                                strokeWidth="3"
+                                                strokeLinecap="round"
+                                                style={{
+                                                    transition: "all 0.18s cubic-bezier(.55,.01,.55,1.01)"
+                                                }}
+                                            />
+                                        );
+                                    })
+                                }
+                            </svg>
+                            <img
+                                className={`player-img${isPlaying ? " spinning" : " paused"}`}
+                                src={song?.profilePicUrl}
+                                alt={song?.title}
+                                draggable={false}
+                                style={{
+                                    zIndex: 2,
+                                    position: "relative",
+                                    background: "#181818"
+                                }}
+                            />
+                        </div>
                         <h1 className="song-title">{song?.title}</h1>
 
                         {artist && (

@@ -29,6 +29,7 @@ export default function ArtistAdvertisement() {
     const [renewLoading, setRenewLoading] = useState(false);
 
     const [addModal, setAddModal] = useState(false);
+    const [adType, setAdType] = useState();
     const [addLoading, setAddLoading] = useState(false);
 
     const [renewForm] = Form.useForm();
@@ -354,7 +355,10 @@ export default function ArtistAdvertisement() {
             <Modal
                 title={t('artist_ad.submit_new_advertisement')}
                 open={addModal}
-                onCancel={() => setAddModal(false)}
+                onCancel={() => {
+                    setAddModal(false);
+                    setAdType(undefined);
+                }}
                 onOk={handleAdd}
                 okText={t('artist_ad.add')}
                 cancelText={t('artist_ad.cancel')}
@@ -374,6 +378,7 @@ export default function ArtistAdvertisement() {
                                 { label: t('artist_ad.audio'), value: "AUDIO" },
                                 { label: t('artist_ad.banner'), value: "BANNER" },
                             ]}
+                            onChange={v => setAdType(v)}
                         />
                     </Form.Item>
                     <Form.Item
@@ -382,13 +387,25 @@ export default function ArtistAdvertisement() {
                         valuePropName="file"
                         rules={[{ required: true, message: t('artist_ad.please_upload_media_file') }]}
                     >
-                        <Upload beforeUpload={() => false} maxCount={1}>
+                        <Upload
+                            beforeUpload={() => false}
+                            maxCount={1}
+                            accept={
+                                adType === "AUDIO"
+                                    ? ".mp3"
+                                    : adType === "BANNER"
+                                        ? ".jpg,.jpeg,.png,.gif,.webp"
+                                        : undefined
+                            }
+                        >
                             <Button icon={<UploadOutlined />}>{t('artist_ad.select_file')}</Button>
                         </Upload>
                     </Form.Item>
-                    <Form.Item name="redirectUrl" label={t('artist_ad.redirect_url')}>
-                        <Input placeholder={t('artist_ad.optional')} />
-                    </Form.Item>
+                    {adType === "BANNER" && (
+                        <Form.Item name="redirectUrl" label={t('artist_ad.redirect_url')}>
+                            <Input placeholder={t('artist_ad.optional')} />
+                        </Form.Item>
+                    )}
                 </Form>
             </Modal>
 

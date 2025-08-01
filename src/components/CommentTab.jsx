@@ -517,64 +517,44 @@ export default function CommentTab({ songId }) {
     };
 
     return (
-        <div style={{
-            margin: "0 8px",
-            color: "#23283e",
-            height: "100%",
-            overflowY: "auto",
-            display: "flex",
-            flexDirection: "column",
-            background: "linear-gradient(135deg, #f7fafc 0%, #eaf6fb 100%)",
-            boxShadow: "0 4px 24px #3ed8ff11",
-            scrollbarWidth: "none",
-            msOverflowStyle: "none",
-        }}>
+        <div
+            style={{
+                color: "#23283e",
+                height: "100%",
+                display: "flex",
+                flexDirection: "column",
+                background: "linear-gradient(135deg, #f7fafc 0%, #eaf6fb 100%)",
+                boxShadow: "0 4px 24px #3ed8ff11",
+                scrollbarWidth: "none",
+                msOverflowStyle: "none",
+                minHeight: 0
+            }}
+        >
             <style>{`
-                .comment-tab-scroll::-webkit-scrollbar {
-                    display: none !important;
-                }
-            `}</style>
-            <div style={{
-                marginBottom: 18,
-                background: "#fff",
-                borderRadius: 14,
-                padding: "18px 22px",
-                boxShadow: "0 2px 12px #3ed8ff11"
-            }}>
-                {replyTo && (
-                    <div style={{ marginBottom: 8, color: "#29aaff" }}>
-                        Replying to <b>{replyTo.username}</b>
-                        <Button
-                            size="small"
-                            type="link"
-                            onClick={() => setReplyTo(null)}
-                            style={{ marginLeft: 8, color: "#23283e" }}
-                            icon={<CloseOutlined />}
-                        >
-                            Cancel
-                        </Button>
-                    </div>
-                )}
-                <Input.TextArea
-                    value={newComment}
-                    onChange={e => setNewComment(e.target.value)}
-                    placeholder={replyTo ? t('comment_tab.reply_placeholder') : t('comment_tab.comment_placeholder')}
-                    autoSize={{ minRows: 2, maxRows: 4 }}
-                    maxLength={800}
-                    style={{ marginBottom: 8, borderRadius: 8, fontSize: 15 }}
-                    disabled={submitting}
-                />
-                <Button
-                    type="primary"
-                    icon={<SendOutlined />}
-                    onClick={() => handleSubmitComment(replyTo ? replyTo.id : null)}
-                    loading={submitting}
-                    disabled={!newComment.trim()}
-                    style={{ background: "#3ed8ff", border: "none", fontWeight: 600 }}
-                >
-                    {replyTo ? t('comment_tab.send_reply') : t('comment_tab.send_comment')}
-                </Button>
-            </div>
+            .comment-tab-scroll::-webkit-scrollbar { display: none !important; }
+            .comment-send-btn-inside {
+                position: absolute;
+                bottom: 12px;
+                right: 18px;
+                background: transparent;
+                border: none;
+                padding: 0;
+                box-shadow: none;
+                z-index: 3;
+                cursor: pointer;
+                outline: none;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                height: 28px;
+                width: 32px;
+            }
+            .comment-send-btn-inside:disabled {
+                cursor: not-allowed;
+                opacity: 0.5;
+            }
+        `}</style>
+            {/* Phần comment list cuộn riêng */}
             <div
                 className="comment-tab-scroll"
                 style={{
@@ -583,6 +563,7 @@ export default function CommentTab({ songId }) {
                     padding: "0",
                     scrollbarWidth: "none",
                     msOverflowStyle: "none",
+                    minHeight: 0,
                 }}
             >
                 {comments.length === 0 ? (
@@ -600,6 +581,64 @@ export default function CommentTab({ songId }) {
                     ))
                 )}
             </div>
+            {/* Phần input cố định phía dưới */}
+            <div
+                style={{
+                    background: "#fff",
+                    borderRadius: 10,
+                    padding: "10px 20px 10px 20px",
+                    boxShadow: "0 -2px 12px #3ed8ff11",
+                    position: "sticky",
+                    bottom: 0,
+                    zIndex: 2,
+                    borderTop: "1px solid #eaf6fb"
+                }}
+            >
+                {replyTo && (
+                    <div style={{ marginBottom: 5, color: "#29aaff", fontSize: '18px' }}>
+                        Replying to <b>{replyTo.username}</b>
+                        <Button
+                            size="small"
+                            type="link"
+                            onClick={() => setReplyTo(null)}
+                            style={{ marginLeft: 5, color: "#23283e" }}
+                            icon={<CloseOutlined />}
+                        />
+                    </div>
+                )}
+                <div style={{ position: "relative" }}>
+                    <Input.TextArea
+                        value={newComment}
+                        onChange={e => setNewComment(e.target.value)}
+                        placeholder={replyTo ? t('comment_tab.reply_placeholder') : t('comment_tab.comment_placeholder')}
+                        autoSize={{ minRows: 2, maxRows: 3 }}
+                        maxLength={800}
+                        style={{
+                            borderRadius: 8,
+                            fontSize: 15,
+                            paddingRight: 42, // Chừa không gian cho icon send
+                            marginBottom: 0,
+                            resize: "none",
+                        }}
+                        disabled={submitting}
+                        onPressEnter={e => {
+                            if (!e.shiftKey && newComment.trim()) {
+                                e.preventDefault();
+                                handleSubmitComment(replyTo ? replyTo.id : null);
+                            }
+                        }}
+                    />
+                    <button
+                        className="comment-send-btn-inside"
+                        onClick={() => handleSubmitComment(replyTo ? replyTo.id : null)}
+                        disabled={!newComment.trim() || submitting}
+                        tabIndex={-1}
+                    >
+                        <SendOutlined style={{ fontSize: 20, color: newComment.trim() ? "#3ed8ff" : "#bbb" }} />
+                    </button>
+                </div>
+            </div>
+            {/* Modal báo cáo giữ nguyên */}
             <Modal
                 title="Report Comment"
                 open={!!reportingComment}

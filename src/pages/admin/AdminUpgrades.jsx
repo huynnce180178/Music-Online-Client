@@ -92,7 +92,7 @@ export default function AdminUpgrades() {
             });
             setPlans(res.data.data || []);
         } catch (err) {
-            message.error("Failed to fetch plans!");
+            message.error(t('admin_upgrades.failed_fetch'));
         } finally {
             setLoading(false);
         }
@@ -116,10 +116,10 @@ export default function AdminUpgrades() {
             await axios.delete(`${BASE_API_URL}/api/v1/admin/subscriptionPlan/delete/${id}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            message.success("Deleted!");
+            message.success(t('admin_upgrades.deleted_success'));
             fetchPlans();
         } catch (err) {
-            message.error("Delete failed!");
+            message.error(t('admin_upgrades.deleted_failed'));
         }
         setLoading(false);
     };
@@ -127,14 +127,17 @@ export default function AdminUpgrades() {
     const handleModalOk = async () => {
         setLoading(true);
         try {
-            // Chuyển đổi giá trị số cho đúng kiểu dữ liệu
             const values = await form.validateFields();
+            if (!values.price || Number(values.price) < 0.01) {
+                message.error(t('admin_upgrades.validate_price_positive'));
+                setLoading(false);
+                return;
+            }
             const payload = {
                 ...values,
                 price: Number(values.price),
                 durationDay: Number(values.durationDay)
             };
-            // Đảm bảo gửi đúng kiểu dữ liệu JSON
             if (editingPlan) {
                 await axios.post(
                     `${BASE_API_URL}/api/v1/admin/subscriptionPlan/update/${editingPlan.id}`,
@@ -146,7 +149,7 @@ export default function AdminUpgrades() {
                         }
                     }
                 );
-                message.success("Updated!");
+                message.success(t('admin_upgrades.updated_success'));
             } else {
                 await axios.post(
                     `${BASE_API_URL}/api/v1/admin/subscriptionPlan/add`,
@@ -158,16 +161,18 @@ export default function AdminUpgrades() {
                         }
                     }
                 );
-                message.success("Added!");
+                message.success(t('admin_upgrades.added_success'));
             }
             setModalOpen(false);
             fetchPlans();
         } catch (err) {
-            // Hiển thị lỗi chi tiết nếu có
+            // Ưu tiên lỗi từ backend, nếu có key i18n thì dùng, nếu không thì dùng lỗi chung
             if (err?.response?.data?.message) {
-                message.error(err.response.data.message);
+                // Nếu backend trả về key i18n, dùng t(key), nếu không thì hiện trực tiếp
+                const backendMsg = err.response.data.message;
+                message.error(t(backendMsg) !== backendMsg ? t(backendMsg) : backendMsg);
             } else {
-                message.error("Save failed!");
+                message.error(t('admin_upgrades.save_failed'));
             }
         }
         setLoading(false);
@@ -292,34 +297,53 @@ export default function AdminUpgrades() {
                     <Form.Item
                         name="planName"
                         label={t('admin_upgrades.plan_name')}
-                        rules={[{ required: true }]}
+                        rules={[
+                            { required: true, message: t('admin_upgrades.validate_plan_name_required') },
+                            { min: 3, message: t('admin_upgrades.validate_plan_name_min') }
+                        ]}
                     >
                         <Input />
                     </Form.Item>
                     <Form.Item
                         name="planType"
                         label={t('admin_upgrades.plan_type')}
-                        rules={[{ required: true }]}
+                        rules={[{ required: true, message: t('admin_upgrades.validate_plan_type_required') }]}
                     >
                         <Select options={PLAN_TYPE_OPTIONS} />
                     </Form.Item>
                     <Form.Item
                         name="price"
                         label={t('admin_upgrades.price')}
-                        rules={[{ required: true, type: "number", min: 0 }]}
+                        validateTrigger={['onChange', 'onBlur']}
+                        rules={[
+                            { required: true, message: t('admin_upgrades.validate_price_required') },
+                            {
+                                validator: (_, value) =>
+                                    value && Number(value) >= 0.01
+                                        ? Promise.resolve()
+                                        : Promise.reject(new Error(t('admin_upgrades.validate_price_positive')))
+                            }
+                        ]}
                     >
-                        <InputNumber min={0} style={{ width: "100%" }} />
+                        <InputNumber min={0.01} step={0.01} style={{ width: "100%" }} />
                     </Form.Item>
                     <Form.Item
                         name="durationDay"
                         label={t('admin_upgrades.duration_days')}
-                        rules={[{ required: true, type: "number", min: 1 }]}
+                        rules={[
+                            { required: true, message: t('admin_upgrades.validate_duration_required') },
+                            { type: "number", min: 1, message: t('admin_upgrades.validate_duration_positive') }
+                        ]}
                     >
                         <InputNumber min={1} style={{ width: "100%" }} />
                     </Form.Item>
                     <Form.Item
                         name="description"
                         label={t('admin_upgrades.description')}
+                        rules={[
+                            { required: true, message: t('admin_upgrades.validate_description_required') },
+                            { min: 10, message: t('admin_upgrades.validate_description_min') }
+                        ]}
                     >
                         <Input.TextArea rows={3} />
                     </Form.Item>

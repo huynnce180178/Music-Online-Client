@@ -25,6 +25,7 @@ export default function AdminAdvertisement() {
     const [pagination, setPagination] = useState({ current: 1, pageSize: 10 });
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [createLoading, setCreateLoading] = useState(false);
+    const [adType, setAdType] = useState();
     const [createForm, setCreateForm] = useState({
         adType: '',
         startDate: '',
@@ -168,17 +169,6 @@ export default function AdminAdvertisement() {
             key: "createdByName",
         },
         {
-            title: t('admin_ads.status'),
-            align: "center",
-            dataIndex: "status",
-            key: "status",
-            render: (status) => (
-                <Tag style={{ backgroundColor: statusColors[status] || "#d9d9d9", color: "#181d36", borderRadius: 8 }}>
-                    {t('admin_ads.status_' + status.toLowerCase(), status)}
-                </Tag>
-            ),
-        },
-        {
             title: type === "AUDIO" ? t('admin_ads.preview') : t('admin_ads.banner'),
             key: "media",
             align: "center",
@@ -207,6 +197,17 @@ export default function AdminAdvertisement() {
             align: "center",
             dataIndex: "endDateStr",
             key: "endDateStr",
+        },
+        {
+            title: t('admin_ads.status'),
+            align: "center",
+            dataIndex: "status",
+            key: "status",
+            render: (status) => (
+                <Tag style={{ backgroundColor: statusColors[status] || "#d9d9d9", color: "#181d36", borderRadius: 8 }}>
+                    {t('admin_ads.status_' + status.toLowerCase(), status)}
+                </Tag>
+            ),
         },
     ];
 
@@ -320,6 +321,7 @@ export default function AdminAdvertisement() {
                 onCancel={() => {
                     setShowCreateModal(false);
                     if (adminAddForm) adminAddForm.resetFields();
+                    setAdType(undefined);
                 }}
                 onOk={handleAdminAdd}
                 okText={t('admin_ad.create_advertisement') || 'Tạo quảng cáo'}
@@ -339,39 +341,8 @@ export default function AdminAdvertisement() {
                                 { label: t('artist_ad.audio'), value: "AUDIO" },
                                 { label: t('artist_ad.banner'), value: "BANNER" },
                             ]}
+                            onChange={v => setAdType(v)}
                         />
-                    </Form.Item>
-                    <Form.Item
-                        name="startDate"
-                        label={t('admin_ad.start_date')}
-                        rules={[{ required: true, message: t('admin_ad.please_select_start_date') }]}
-                    >
-                        <DatePicker style={{ width: "100%" }} disabledDate={d => d < dayjs().startOf("day")} />
-                    </Form.Item>
-                    <Form.Item
-                        name="endDate"
-                        label={t('admin_ad.end_date')}
-                        dependencies={["startDate"]}
-                        rules={[
-                            { required: true, message: t('admin_ad.please_select_end_date') },
-                            ({ getFieldValue }) => ({
-                                validator(_, value) {
-                                    const start = getFieldValue("startDate");
-                                    if (!value || !start) return Promise.resolve();
-                                    let dayjsValue = value;
-                                    let dayjsStart = start;
-                                    if (!dayjs.isDayjs(dayjsValue)) dayjsValue = dayjs(dayjsValue);
-                                    if (!dayjs.isDayjs(dayjsStart)) dayjsStart = dayjs(dayjsStart);
-                                    if (!dayjsValue.isValid() || !dayjsStart.isValid()) return Promise.resolve();
-                                    if (typeof dayjsValue.isSameOrBefore !== 'function') return Promise.resolve();
-                                    if (dayjsValue.isSameOrBefore(dayjsStart, "day"))
-                                        return Promise.reject(new Error(t('admin_ad.end_date_after_start')));
-                                    return Promise.resolve();
-                                },
-                            }),
-                        ]}
-                    >
-                        <DatePicker style={{ width: "100%" }} disabledDate={d => d < dayjs().startOf("day")} />
                     </Form.Item>
                     <Form.Item
                         name="mediaFile"
@@ -379,13 +350,25 @@ export default function AdminAdvertisement() {
                         valuePropName="file"
                         rules={[{ required: true, message: t('admin_ad.please_upload_media_file') }]}
                     >
-                        <Upload beforeUpload={() => false} maxCount={1}>
+                        <Upload
+                            beforeUpload={() => false}
+                            maxCount={1}
+                            accept={
+                                adType === "AUDIO"
+                                    ? ".mp3"
+                                    : adType === "BANNER"
+                                        ? ".jpg,.jpeg,.png,.gif,.webp"
+                                        : undefined
+                            }
+                        >
                             <Button icon={<UploadOutlined />}>{t('admin_ad.select_file') || t('artist_ad.select_file')}</Button>
                         </Upload>
                     </Form.Item>
-                    <Form.Item name="redirectUrl" label={t('admin_ad.redirect_url')}>
-                        <Input placeholder={t('admin_ad.optional')} />
-                    </Form.Item>
+                    {adType === "BANNER" && (
+                        <Form.Item name="redirectUrl" label={t('admin_ad.redirect_url')}>
+                            <Input placeholder={t('admin_ad.optional')} />
+                        </Form.Item>
+                    )}
                 </Form>
             </Modal>
         </div>

@@ -66,11 +66,14 @@ function SongPlay({ sidebarWidth = 0 }) {
                 const url = generatePlayUrl();
                 const token = localStorage.getItem("accessToken");
 
-                const res = await axios.get(url, {
-                    headers: {
+                const config = {};
+                if (token) {
+                    config.headers = {
                         Authorization: `Bearer ${token}`
-                    }
-                });
+                    };
+                }
+
+                const res = await axios.get(url, config);
 
                 setSong(res.data.data);
                 setCurrentTime(0);

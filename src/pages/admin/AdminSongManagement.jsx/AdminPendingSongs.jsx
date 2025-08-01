@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Table, Button, message, Tag, Space, Grid, Image, Modal, Input } from "antd";
-import { CheckOutlined, DeleteOutlined } from "@ant-design/icons";
+import { CheckOutlined, DeleteOutlined, PlayCircleOutlined } from "@ant-design/icons";
 import axios from "axios";
 import { useTranslation } from 'react-i18next';
 import BASE_API_URL from "../../../services/base.api.url";
@@ -17,6 +17,7 @@ export default function AdminPendingSongs() {
         pageSize: 10,
         total: 0,
     });
+    const [previewSong, setPreviewSong] = useState(null);
 
     const { useBreakpoint } = Grid;
     const screens = useBreakpoint();
@@ -188,6 +189,12 @@ export default function AdminPendingSongs() {
             render: (_, record) => (
                 <Space>
                     <Button
+                        icon={<PlayCircleOutlined />}
+                        size={isTablet ? "small" : "middle"}
+                        onClick={() => setPreviewSong(record)}
+                        aria-label={t('admin_songs.preview')}
+                    />
+                    <Button
                         type="primary"
                         icon={<CheckOutlined />}
                         size={isTablet ? "small" : "middle"}
@@ -224,6 +231,23 @@ export default function AdminPendingSongs() {
                 scroll={isTablet ? { x: 600 } : undefined}
                 style={{ borderRadius: 12 }}
             />
+            {/* Modal nghe thử nhạc */}
+            <Modal
+                title={previewSong ? previewSong.title : ""}
+                open={!!previewSong}
+                onCancel={() => setPreviewSong(null)}
+                footer={null}
+            >
+                {previewSong && (
+                    <audio
+                        src={previewSong.fileUrl}
+                        controls
+                        style={{ width: "100%" }}
+                        autoPlay
+                    />
+                )}
+            </Modal>
+            {/* Modal từ chối */}
             <Modal
                 title={t('admin_songs.reject_reason_title')}
                 open={!!rejectId}

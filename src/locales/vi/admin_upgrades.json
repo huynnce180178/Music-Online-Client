@@ -18,5 +18,25 @@
   "admin_upgrades.plan_type": "Loại gói",
   "admin_upgrades.plan_type_premium": "Premium",
   "admin_upgrades.plan_type_artist": "Nghệ sĩ",
-  "admin_upgrades.save": "Lưu"
-} 
+  "admin_upgrades.save": "Lưu",
+  "admin_upgrades.validate_plan_name_required": "Vui lòng nhập tên gói.",
+  "admin_upgrades.validate_plan_name_min": "Tên gói phải có ít nhất 3 ký tự.",
+  "admin_upgrades.validate_plan_type_required": "Vui lòng chọn loại gói.",
+  "admin_upgrades.validate_price_required": "Vui lòng nhập giá.",
+  "admin_upgrades.validate_price_positive": "Giá phải lớn hơn 0.",
+  "admin_upgrades.validate_duration_required": "Vui lòng nhập thời hạn.",
+  "admin_upgrades.validate_duration_positive": "Thời hạn phải lớn hơn 0.",
+  "admin_upgrades.validate_description_required": "Vui lòng nhập mô tả.",
+  "admin_upgrades.validate_description_min": "Mô tả phải có ít nhất 10 ký tự.",
+  "admin_upgrades.failed_fetch": "Không thể lấy danh sách gói!",
+  "admin_upgrades.deleted_success": "Đã xóa!",
+  "admin_upgrades.deleted_failed": "Xóa thất bại!",
+  "admin_upgrades.updated_success": "Đã cập nhật!",
+  "admin_upgrades.added_success": "Đã thêm!",
+  "admin_upgrades.save_failed": "Lưu thất bại!",
+  "error.plan_name_exists": "Tên gói đã tồn tại.",
+  "error.invalid_plan_type": "Loại gói không hợp lệ.",
+  "error.invalid_price": "Giá không hợp lệ.",
+  "error.invalid_duration": "Thời hạn không hợp lệ.",
+  "error.invalid_description": "Mô tả không hợp lệ."
+}

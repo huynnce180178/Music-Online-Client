@@ -18,5 +18,25 @@
   "admin_upgrades.plan_type": "Plan Type",
   "admin_upgrades.plan_type_premium": "Premium",
   "admin_upgrades.plan_type_artist": "Artist",
-  "admin_upgrades.save": "Save"
-} 
+  "admin_upgrades.save": "Save",
+  "admin_upgrades.validate_plan_name_required": "Please enter the plan name.",
+  "admin_upgrades.validate_plan_name_min": "Plan name must be at least 3 characters.",
+  "admin_upgrades.validate_plan_type_required": "Please select the plan type.",
+  "admin_upgrades.validate_price_required": "Please enter the price.",
+  "admin_upgrades.validate_price_positive": "Price must be greater than 0.",
+  "admin_upgrades.validate_duration_required": "Please enter the duration.",
+  "admin_upgrades.validate_duration_positive": "Duration must be greater than 0.",
+  "admin_upgrades.validate_description_required": "Please enter the description.",
+  "admin_upgrades.validate_description_min": "Description must be at least 10 characters.",
+  "admin_upgrades.failed_fetch": "Failed to fetch plans!",
+  "admin_upgrades.deleted_success": "Deleted!",
+  "admin_upgrades.deleted_failed": "Delete failed!",
+  "admin_upgrades.updated_success": "Updated!",
+  "admin_upgrades.added_success": "Added!",
+  "admin_upgrades.save_failed": "Save failed!",
+  "error.plan_name_exists": "Plan name already exists.",
+  "error.invalid_plan_type": "Invalid plan type.",
+  "error.invalid_price": "Invalid price.",
+  "error.invalid_duration": "Invalid duration.",
+  "error.invalid_description": "Invalid description."
+}
