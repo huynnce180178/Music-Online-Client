@@ -31,10 +31,11 @@ import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import axios from "axios";
 import ProfileDrawer from "../components/ProfileDrawer";
-// Import các trang con quản lý bài hát
+import { useTokenExpirationCheck } from "../utils";
 import { useTranslation } from "react-i18next";
 import { GlobalOutlined } from "@ant-design/icons";
 import BASE_API_URL from "../services/base.api.url";
+import TokenExpirationModal from "../components/TokenExpirationModal";
 
 const { Sider, Header, Content } = Layout;
 const { Title } = Typography;
@@ -80,18 +81,18 @@ function NotificationDropdown() {
         setLoading(false);
     };
 
-    useEffect(() => { 
-        fetchNotifications(); 
-        
+    useEffect(() => {
+        fetchNotifications();
+
         const interval = setInterval(() => {
             fetchNotifications();
         }, 60000);
-        
+
         const handleFocus = () => {
             fetchNotifications();
         };
         window.addEventListener('focus', handleFocus);
-        
+
         return () => {
             clearInterval(interval);
             window.removeEventListener('focus', handleFocus);
@@ -282,6 +283,8 @@ export default function ArtistLayout({ children }) {
     const isMobile = !screens.md;
     const isTablet = screens.md && !screens.lg;
 
+    useTokenExpirationCheck();
+
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [collapsed, setCollapsed] = useState(false);
     const [showProfile, setShowProfile] = useState(false);
@@ -467,282 +470,285 @@ export default function ArtistLayout({ children }) {
     );
 
     return (
-        <Layout style={{
-            minHeight: "100vh",
-            background: "#181c2b",
-            overflow: "hidden",
-        }}>
-            {!isMobile && (
-                <Sider
-                    collapsible
-                    collapsed={collapsed}
-                    onCollapse={setCollapsed}
-                    width={isTablet ? 160 : 220}
-                    collapsedWidth={isTablet ? 60 : 80}
-                    style={{
-                        background: "#181c2b",
-                        boxShadow: "4px 0 24px 0 #3ed8ff22",
-                        borderRadius: "0 32px 32px 0",
-                        position: "fixed",
-                        left: 0,
-                        top: 0,
-                        bottom: 0,
-                        height: "100vh",
-                        zIndex: 100,
-                        padding: 0,
-                        overflowY: "auto",
-                        overflowX: "hidden",
-                        transition: "width 0.3s",
-                    }}
-                >
-                    {sidebarContent}
-                </Sider>
-            )}
-
-            <Drawer
-                placement="left"
-                closable={false}
-                onClose={() => setDrawerOpen(false)}
-                open={drawerOpen}
-                styles={{
-                    body: {
-                        padding: 0,
-                        background: "#181c2b",
-                        overflowY: "auto",
-                        overflowX: "hidden"
-                    }
-                }}
-                width={isMobile ? 180 : 220}
-            >
-                {sidebarContent}
-            </Drawer>
-
-            <Layout
-                style={{
-                    marginLeft: !isMobile ? (collapsed ? (isTablet ? 60 : 80) : (isTablet ? 160 : 220)) : 0,
-                    background: "#181c2b",
-                    minHeight: "100vh",
-                    transition: "margin-left 0.3s",
-                    padding: 0,
-                }}
-            >
-                <Header
-                    style={{
-                        background: "rgba(24,29,54,0.95)",
-                        borderBottom: "1px solid #23284a",
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        padding: isMobile ? "0 12px" : isTablet ? "0 18px" : "0 32px",
-                        height: isMobile ? 52 : 64,
-                        position: "sticky",
-                        top: 0,
-                        zIndex: 10,
-                    }}
-                >
-                    <div style={{ display: "flex", alignItems: "center", gap: isMobile ? 8 : 16 }}>
-                        {isMobile && (
-                            <Button
-                                type="text"
-                                icon={<FiMenu size={isMobile ? 18 : 22} />}
-                                style={{ color: "#3ed8ff" }}
-                                onClick={() => setDrawerOpen(true)}
-                            />
-                        )}
-                        <Button
-                            type="text"
-                            icon={<FiArrowLeft size={isMobile ? 16 : 20} />}
-                            onClick={() => navigate("/")}
-                            style={{
-                                color: "#3ed8ff",
-                                fontWeight: 600,
-                                fontSize: isMobile ? 13 : 16,
-                                display: "flex",
-                                alignItems: "center",
-                                gap: 8,
-                                background: "rgba(62,216,255,0.1)",
-                                borderRadius: 20,
-                                padding: isMobile ? "0 8px" : "0 16px",
-                                height: isMobile ? 32 : 40,
-                            }}
-                        >
-                        </Button>
-                    </div>
-                    <div style={{ display: "flex", alignItems: "center", gap: isMobile ? 6 : 12 }}>
-                        {/* NÚT ĐỔI NGÔN NGỮ */}
-                        <Dropdown
-                            menu={{
-                                items: [
-                                    { key: 'vi', label: t('header.vi'), onClick: () => { i18n.changeLanguage('vi'); localStorage.setItem('i18nextLng', 'vi'); } },
-                                    { key: 'en', label: t('header.en'), onClick: () => { i18n.changeLanguage('en'); localStorage.setItem('i18nextLng', 'en'); } },
-                                ],
-                            }}
-                            placement="bottomRight"
-                        >
-                            <Button
-                                icon={<GlobalOutlined />}
-                                style={{
-                                    borderRadius: 20,
-                                    background: '#232b3e',
-                                    color: '#fff',
-                                    border: 'none',
-                                    minWidth: isMobile ? 32 : 44,
-                                    fontWeight: 500,
-                                    fontSize: isMobile ? 13 : 15,
-                                    padding: isMobile ? "0 6px" : "0 12px",
-                                }}
-                                aria-label={t('languages')}
-                            >
-                                {i18n.language === 'vi' ? t('header.vi') : t('header.en')}
-                            </Button>
-                        </Dropdown>
-                        {/* THÔNG BÁO ARTIST */}
-                        <NotificationDropdown />
-                        {/* USER DROPDOWN */}
-                        <Dropdown menu={userMenu} placement="bottomRight" trigger={["click"]}>
-                            <Button
-                                type="text"
-                                style={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                    gap: isMobile ? 6 : 10,
-                                    color: "#fff",
-                                    fontWeight: 600,
-                                    fontSize: isMobile ? 13 : 16,
-                                    background: "none",
-                                    padding: isMobile ? "0 4px" : undefined,
-                                }}
-                            >
-                                <Avatar
-                                    size={isMobile ? 28 : 36}
-                                    style={{
-                                        background: "#3ed8ff",
-                                        color: "#181d36",
-                                        fontWeight: 700,
-                                        fontSize: isMobile ? 15 : 20,
-                                    }}
-                                    icon={<FiUser />}
-                                />
-                                <span style={{ display: isMobile ? "none" : "inline" }}>
-                                    {localStorage.getItem("userName") || "Artist"}
-                                </span>
-                            </Button>
-                        </Dropdown>
-                    </div>
-                </Header>
-
-                <Content
-                    style={{
-                        padding: isMobile ? 10 : isTablet ? 18 : 30,
-                        background: "#101426",
-                        minHeight: `calc(100vh - ${isMobile ? 52 : 64}px - 48px)`,
-                        boxShadow: "0 4px 24px 0 rgba(62,216,255,0.08)",
-                        borderRadius: isMobile ? 0 : 18,
-                        transition: "padding 0.3s",
-                    }}
-                >
-                    {children || <Outlet />}
-                </Content>
-                {/* Modal chọn role hiện đại, đồng bộ với admin và header */}
-                <Modal
-                    open={showRoleModal}
-                    onCancel={() => setShowRoleModal(false)}
-                    footer={null}
-                    centered
-                    title={
-                        <span style={{
-                            fontWeight: 800,
-                            fontSize: isMobile ? 18 : 22,
-                            color: "#3ed8ff",
-                            letterSpacing: 0.5,
-                            textAlign: "center",
-                            display: "block"
-                        }}>
-                            {t('role.select_your_role')}
-                        </span>
-                    }
-                    styles={{ body: { padding: isMobile ? "18px 8px" : "32px 24px" } }}
-                >
-                    <div
+        <>
+            <Layout style={{
+                minHeight: "100vh",
+                background: "#181c2b",
+                overflow: "hidden",
+            }}>
+                {!isMobile && (
+                    <Sider
+                        collapsible
+                        collapsed={collapsed}
+                        onCollapse={setCollapsed}
+                        width={isTablet ? 160 : 220}
+                        collapsedWidth={isTablet ? 60 : 80}
                         style={{
-                            display: "flex",
-                            flexWrap: "wrap",
-                            gap: isMobile ? 12 : 24,
-                            justifyContent: "center",
-                            alignItems: "center",
-                            minHeight: isMobile ? 60 : 120,
+                            background: "#181c2b",
+                            boxShadow: "4px 0 24px 0 #3ed8ff22",
+                            borderRadius: "0 32px 32px 0",
+                            position: "fixed",
+                            left: 0,
+                            top: 0,
+                            bottom: 0,
+                            height: "100vh",
+                            zIndex: 100,
+                            padding: 0,
+                            overflowY: "auto",
+                            overflowX: "hidden",
+                            transition: "width 0.3s",
                         }}
                     >
-                        {roles.map(role => {
-                            let icon, color, label;
-                            switch (role) {
-                                case "ROLE_ADMIN":
-                                    icon = <FiUser size={isMobile ? 22 : 32} color="#ff416c" />;
-                                    color = "linear-gradient(135deg, #ff416c 60%, #ff4b2b 100%)";
-                                    label = t('role.admin');
-                                    break;
-                                case "ROLE_ARTIST":
-                                    icon = <FiMusic size={isMobile ? 22 : 32} color="#3ed8ff" />;
-                                    color = "linear-gradient(135deg, #3ed8ff 60%, #1fa2ff 100%)";
-                                    label = t('role.artist');
-                                    break;
-                                case "ROLE_USER":
-                                    icon = <FiUser size={isMobile ? 22 : 32} color="#21A8C5" />;
-                                    color = "linear-gradient(135deg, #21A8C5 60%, #39C6E5 100%)";
-                                    label = t('role.user');
-                                    break;
-                                case "ROLE_PREMIUM":
-                                    icon = <CheckCircleOutlined style={{ fontSize: isMobile ? 22 : 32, color: "#FFD700" }} />;
-                                    color = "linear-gradient(135deg, #FFD700 60%, #CD9B1D 100%)";
-                                    label = t('role.premium');
-                                    break;
-                                default:
-                                    icon = <FiUser size={isMobile ? 22 : 32} color="#8ca0c6" />;
-                                    color = "linear-gradient(135deg, #8ca0c6 60%, #232b3e 100%)";
-                                    label = role.replace("ROLE_", "");
-                            }
-                            return (
-                                <div
-                                    key={role}
+                        {sidebarContent}
+                    </Sider>
+                )}
+
+                <Drawer
+                    placement="left"
+                    closable={false}
+                    onClose={() => setDrawerOpen(false)}
+                    open={drawerOpen}
+                    styles={{
+                        body: {
+                            padding: 0,
+                            background: "#181c2b",
+                            overflowY: "auto",
+                            overflowX: "hidden"
+                        }
+                    }}
+                    width={isMobile ? 180 : 220}
+                >
+                    {sidebarContent}
+                </Drawer>
+
+                <Layout
+                    style={{
+                        marginLeft: !isMobile ? (collapsed ? (isTablet ? 60 : 80) : (isTablet ? 160 : 220)) : 0,
+                        background: "#181c2b",
+                        minHeight: "100vh",
+                        transition: "margin-left 0.3s",
+                        padding: 0,
+                    }}
+                >
+                    <Header
+                        style={{
+                            background: "rgba(24,29,54,0.95)",
+                            borderBottom: "1px solid #23284a",
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            padding: isMobile ? "0 12px" : isTablet ? "0 18px" : "0 32px",
+                            height: isMobile ? 52 : 64,
+                            position: "sticky",
+                            top: 0,
+                            zIndex: 10,
+                        }}
+                    >
+                        <div style={{ display: "flex", alignItems: "center", gap: isMobile ? 8 : 16 }}>
+                            {isMobile && (
+                                <Button
+                                    type="text"
+                                    icon={<FiMenu size={isMobile ? 18 : 22} />}
+                                    style={{ color: "#3ed8ff" }}
+                                    onClick={() => setDrawerOpen(true)}
+                                />
+                            )}
+                            <Button
+                                type="text"
+                                icon={<FiArrowLeft size={isMobile ? 16 : 20} />}
+                                onClick={() => navigate("/")}
+                                style={{
+                                    color: "#3ed8ff",
+                                    fontWeight: 600,
+                                    fontSize: isMobile ? 13 : 16,
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: 8,
+                                    background: "rgba(62,216,255,0.1)",
+                                    borderRadius: 20,
+                                    padding: isMobile ? "0 8px" : "0 16px",
+                                    height: isMobile ? 32 : 40,
+                                }}
+                            >
+                            </Button>
+                        </div>
+                        <div style={{ display: "flex", alignItems: "center", gap: isMobile ? 6 : 12 }}>
+                            {/* NÚT ĐỔI NGÔN NGỮ */}
+                            <Dropdown
+                                menu={{
+                                    items: [
+                                        { key: 'vi', label: t('header.vi'), onClick: () => { i18n.changeLanguage('vi'); localStorage.setItem('i18nextLng', 'vi'); } },
+                                        { key: 'en', label: t('header.en'), onClick: () => { i18n.changeLanguage('en'); localStorage.setItem('i18nextLng', 'en'); } },
+                                    ],
+                                }}
+                                placement="bottomRight"
+                            >
+                                <Button
+                                    icon={<GlobalOutlined />}
                                     style={{
-                                        minWidth: isMobile ? 90 : 140,
-                                        maxWidth: isMobile ? 120 : 180,
-                                        background: color,
-                                        borderRadius: 18,
-                                        boxShadow: "0 4px 24px #3ed8ff22",
-                                        padding: isMobile ? "12px 8px" : "24px 18px",
-                                        display: "flex",
-                                        flexDirection: "column",
-                                        alignItems: "center",
-                                        cursor: "pointer",
-                                        transition: "transform 0.18s, box-shadow 0.18s, background 0.18s",
-                                        fontWeight: 700,
-                                        fontSize: isMobile ? 14 : 18,
-                                        color: "#fff",
-                                        position: "relative",
+                                        borderRadius: 20,
+                                        background: '#232b3e',
+                                        color: '#fff',
+                                        border: 'none',
+                                        minWidth: isMobile ? 32 : 44,
+                                        fontWeight: 500,
+                                        fontSize: isMobile ? 13 : 15,
+                                        padding: isMobile ? "0 6px" : "0 12px",
                                     }}
-                                    onClick={() => handleSwitchRole(role)}
-                                    onMouseOver={e => e.currentTarget.style.transform = "scale(1.06)"}
-                                    onMouseOut={e => e.currentTarget.style.transform = "scale(1)"}
+                                    aria-label={t('languages')}
                                 >
-                                    {icon}
-                                    <span style={{
-                                        marginTop: isMobile ? 8 : 14,
-                                        fontWeight: 800,
-                                        fontSize: isMobile ? 14 : 18,
-                                        letterSpacing: 0.5,
-                                        textShadow: "0 2px 8px #181f2a88"
-                                    }}>
-                                        {label}
+                                    {i18n.language === 'vi' ? t('header.vi') : t('header.en')}
+                                </Button>
+                            </Dropdown>
+                            {/* THÔNG BÁO ARTIST */}
+                            <NotificationDropdown />
+                            {/* USER DROPDOWN */}
+                            <Dropdown menu={userMenu} placement="bottomRight" trigger={["click"]}>
+                                <Button
+                                    type="text"
+                                    style={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: isMobile ? 6 : 10,
+                                        color: "#fff",
+                                        fontWeight: 600,
+                                        fontSize: isMobile ? 13 : 16,
+                                        background: "none",
+                                        padding: isMobile ? "0 4px" : undefined,
+                                    }}
+                                >
+                                    <Avatar
+                                        size={isMobile ? 28 : 36}
+                                        style={{
+                                            background: "#3ed8ff",
+                                            color: "#181d36",
+                                            fontWeight: 700,
+                                            fontSize: isMobile ? 15 : 20,
+                                        }}
+                                        icon={<FiUser />}
+                                    />
+                                    <span style={{ display: isMobile ? "none" : "inline" }}>
+                                        {localStorage.getItem("userName") || "Artist"}
                                     </span>
-                                </div>
-                            );
-                        })}
-                    </div>
-                </Modal>
-                <ProfileDrawer open={showProfile} onClose={() => setShowProfile(false)} />
+                                </Button>
+                            </Dropdown>
+                        </div>
+                    </Header>
+
+                    <Content
+                        style={{
+                            padding: isMobile ? 10 : isTablet ? 18 : 30,
+                            background: "#101426",
+                            minHeight: `calc(100vh - ${isMobile ? 52 : 64}px - 48px)`,
+                            boxShadow: "0 4px 24px 0 rgba(62,216,255,0.08)",
+                            borderRadius: isMobile ? 0 : 18,
+                            transition: "padding 0.3s",
+                        }}
+                    >
+                        {children || <Outlet />}
+                    </Content>
+                    {/* Modal chọn role hiện đại, đồng bộ với admin và header */}
+                    <Modal
+                        open={showRoleModal}
+                        onCancel={() => setShowRoleModal(false)}
+                        footer={null}
+                        centered
+                        title={
+                            <span style={{
+                                fontWeight: 800,
+                                fontSize: isMobile ? 18 : 22,
+                                color: "#3ed8ff",
+                                letterSpacing: 0.5,
+                                textAlign: "center",
+                                display: "block"
+                            }}>
+                                {t('role.select_your_role')}
+                            </span>
+                        }
+                        styles={{ body: { padding: isMobile ? "18px 8px" : "32px 24px" } }}
+                    >
+                        <div
+                            style={{
+                                display: "flex",
+                                flexWrap: "wrap",
+                                gap: isMobile ? 12 : 24,
+                                justifyContent: "center",
+                                alignItems: "center",
+                                minHeight: isMobile ? 60 : 120,
+                            }}
+                        >
+                            {roles.map(role => {
+                                let icon, color, label;
+                                switch (role) {
+                                    case "ROLE_ADMIN":
+                                        icon = <FiUser size={isMobile ? 22 : 32} color="#ff416c" />;
+                                        color = "linear-gradient(135deg, #ff416c 60%, #ff4b2b 100%)";
+                                        label = t('role.admin');
+                                        break;
+                                    case "ROLE_ARTIST":
+                                        icon = <FiMusic size={isMobile ? 22 : 32} color="#3ed8ff" />;
+                                        color = "linear-gradient(135deg, #3ed8ff 60%, #1fa2ff 100%)";
+                                        label = t('role.artist');
+                                        break;
+                                    case "ROLE_USER":
+                                        icon = <FiUser size={isMobile ? 22 : 32} color="#21A8C5" />;
+                                        color = "linear-gradient(135deg, #21A8C5 60%, #39C6E5 100%)";
+                                        label = t('role.user');
+                                        break;
+                                    case "ROLE_PREMIUM":
+                                        icon = <CheckCircleOutlined style={{ fontSize: isMobile ? 22 : 32, color: "#FFD700" }} />;
+                                        color = "linear-gradient(135deg, #FFD700 60%, #CD9B1D 100%)";
+                                        label = t('role.premium');
+                                        break;
+                                    default:
+                                        icon = <FiUser size={isMobile ? 22 : 32} color="#8ca0c6" />;
+                                        color = "linear-gradient(135deg, #8ca0c6 60%, #232b3e 100%)";
+                                        label = role.replace("ROLE_", "");
+                                }
+                                return (
+                                    <div
+                                        key={role}
+                                        style={{
+                                            minWidth: isMobile ? 90 : 140,
+                                            maxWidth: isMobile ? 120 : 180,
+                                            background: color,
+                                            borderRadius: 18,
+                                            boxShadow: "0 4px 24px #3ed8ff22",
+                                            padding: isMobile ? "12px 8px" : "24px 18px",
+                                            display: "flex",
+                                            flexDirection: "column",
+                                            alignItems: "center",
+                                            cursor: "pointer",
+                                            transition: "transform 0.18s, box-shadow 0.18s, background 0.18s",
+                                            fontWeight: 700,
+                                            fontSize: isMobile ? 14 : 18,
+                                            color: "#fff",
+                                            position: "relative",
+                                        }}
+                                        onClick={() => handleSwitchRole(role)}
+                                        onMouseOver={e => e.currentTarget.style.transform = "scale(1.06)"}
+                                        onMouseOut={e => e.currentTarget.style.transform = "scale(1)"}
+                                    >
+                                        {icon}
+                                        <span style={{
+                                            marginTop: isMobile ? 8 : 14,
+                                            fontWeight: 800,
+                                            fontSize: isMobile ? 14 : 18,
+                                            letterSpacing: 0.5,
+                                            textShadow: "0 2px 8px #181f2a88"
+                                        }}>
+                                            {label}
+                                        </span>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </Modal>
+                    <ProfileDrawer open={showProfile} onClose={() => setShowProfile(false)} />
+                </Layout>
             </Layout>
-        </Layout>
+            <TokenExpirationModal />
+        </>
     );
 }
 

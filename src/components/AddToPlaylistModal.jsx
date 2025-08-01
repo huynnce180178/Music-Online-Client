@@ -18,35 +18,70 @@ const AddToPlaylistModal = ({
     const [isClosing, setIsClosing] = useState(false);
     const [playlistsLoading, setPlaylistsLoading] = useState(false);
     const [playlistsFetched, setPlaylistsFetched] = useState(false);
+    const [newlyCreatedPlaylistId, setNewlyCreatedPlaylistId] = useState(null);
     const [createForm] = Form.useForm();
 
     useEffect(() => {
         if (open && songId) {
+            console.log('Modal opened with songId:', songId);
             setIsClosing(false);
             setSelectedPlaylistId(null);
+            setNewlyCreatedPlaylistId(null);
 
             const timer = setTimeout(() => {
-                fetchUserPlaylists();
+                console.log('Checking if need to fetch playlists...');
+                console.log('playlistsFetched:', playlistsFetched);
+                console.log('userPlaylists.length:', userPlaylists.length);
+                
+                if (!playlistsFetched || userPlaylists.length === 0) {
+                    console.log('Need to fetch playlists');
+                    fetchUserPlaylists();
+                } else {
+                    console.log('Playlists already available, no need to fetch');
+                    setPlaylistsLoading(false);
+                }
             }, 100);
 
             return () => clearTimeout(timer);
+        } else {
+            setPlaylistsLoading(false);
         }
     }, [open, songId]);
 
     const fetchUserPlaylists = async () => {
         const token = localStorage.getItem("accessToken");
-        if (!token) return;
+        if (!token) {
+            console.log('No token found');
+            return;
+        }
 
-        if (playlistsFetched && userPlaylists.length > 0) return;
+        if (playlistsLoading) {
+            console.log('Already loading playlists, will continue...');
+        }
 
+        if (playlistsFetched && userPlaylists.length > 0) {
+            console.log('Playlists already fetched, skipping');
+            return;
+        }
+
+        console.log('Fetching playlists...');
         setPlaylistsLoading(true);
+        
+        const timeoutId = setTimeout(() => {
+            console.log('Playlist fetch timeout, resetting loading state');
+            setPlaylistsLoading(false);
+        }, 10000);
+        
         try {
             const res = await axios.get(`${BASE_API_URL}/api/v1/user/playlist`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
+            clearTimeout(timeoutId);
+            console.log('Playlists fetched successfully:', res.data);
             setUserPlaylists(res.data.data || []);
             setPlaylistsFetched(true);
         } catch (error) {
+            clearTimeout(timeoutId);
             console.error('Fetch playlists error:', error);
             showNotification('error', t("get_playlist_failed") || "Unable to load playlist!", "Please refresh and try again");
         } finally {
@@ -159,30 +194,61 @@ const AddToPlaylistModal = ({
             showNotification('info', t('common.login_to_create_playlist'), "Please login to create playlists");
             return;
         }
+
+        try {
+            await createForm.validateFields();
+        } catch (error) {
+            showNotification('error', t('form_validation_error'), "Please check your input and try again");
+            return;
+        }
+
         setCreateLoading(true);
         try {
             const formData = new FormData();
             formData.append("name", createForm.getFieldValue("name"));
-            formData.append("description", createForm.getFieldValue("description"));
-            formData.append("isPublic", createForm.getFieldValue("isPublic"));
+            formData.append("description", createForm.getFieldValue("description") || "");
+            formData.append("isPublic", createForm.getFieldValue("isPublic") || false);
             if (createForm.getFieldValue("image")) {
-                formData.append("image", createForm.getFieldValue("image")[0].originFileObj);
+                formData.append("imageUrl", createForm.getFieldValue("image")[0].originFileObj);
             }
 
-            await axios.post(`${BASE_API_URL}/api/v1/user/playlist`, formData, {
+            console.log('FormData contents:');
+            for (let [key, value] of formData.entries()) {
+                console.log(`${key}:`, value);
+            }
+
+            const response = await axios.post(`${BASE_API_URL}/api/v1/user/playlist/add`, formData, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     "Content-Type": "multipart/form-data",
                 },
             });
+            
+            if (response.data && response.data.data) {
+                const newPlaylist = response.data.data;
+                setUserPlaylists(prevPlaylists => [newPlaylist, ...prevPlaylists]);
+                setSelectedPlaylistId(newPlaylist.id);
+                setNewlyCreatedPlaylistId(newPlaylist.id); 
+            }
+            
             showNotification('success', t('playlist_created'), "Your new playlist has been created successfully");
             setCreateModalOpen(false);
             createForm.resetFields();
-            setPlaylistsFetched(false);
-            fetchUserPlaylists();
+
         } catch (error) {
             console.error('Create playlist error:', error);
-            showNotification('error', t('create_playlist_failed'), "Please check your connection and try again");
+            
+            let errorMessage = "Please check your connection and try again";
+            if (error.response) {
+                console.log('Error response:', error.response.data);
+                if (error.response.data && error.response.data.message) {
+                    errorMessage = error.response.data.message;
+                } else if (error.response.data && error.response.data.error) {
+                    errorMessage = error.response.data.error;
+                }
+            }
+            
+            showNotification('error', t('create_playlist_failed'), errorMessage);
         } finally {
             setCreateLoading(false);
         }
@@ -246,6 +312,7 @@ const AddToPlaylistModal = ({
                                 value={selectedPlaylistId}
                                 onChange={setSelectedPlaylistId}
                                 loading={playlistsLoading}
+                                disabled={playlistsLoading}
                                 dropdownStyle={{ background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)', border: '2px solid rgba(139, 92, 246, 0.4)', borderRadius: '12px', boxShadow: '0 8px 32px rgba(139, 92, 246, 0.3)', zIndex: 10001 }}
                                 getPopupContainer={(triggerNode) => triggerNode.parentNode}
                                 notFoundContent={
@@ -262,8 +329,27 @@ const AddToPlaylistModal = ({
                                 }
                             >
                                 {userPlaylists.map(pl => (
-                                    <Select.Option key={pl.id} value={pl.id}>
+                                    <Select.Option 
+                                        key={pl.id} 
+                                        value={pl.id}
+                                        style={{
+                                            background: pl.id === newlyCreatedPlaylistId ? 'rgba(139, 92, 246, 0.4)' : 'transparent',
+                                            fontWeight: pl.id === newlyCreatedPlaylistId ? '700' : 'normal',
+                                            border: pl.id === newlyCreatedPlaylistId ? '1px solid rgba(139, 92, 246, 0.6)' : 'none',
+                                            borderRadius: pl.id === newlyCreatedPlaylistId ? '8px' : '0'
+                                        }}
+                                    >
                                         {pl.name}
+                                        {pl.id === newlyCreatedPlaylistId && (
+                                            <span style={{ 
+                                                marginLeft: '8px', 
+                                                fontSize: '12px', 
+                                                color: '#8b5cf6',
+                                                fontWeight: '600'
+                                            }}>
+                                                ✨ New
+                                            </span>
+                                        )}
                                     </Select.Option>
                                 ))}
                             </Select>

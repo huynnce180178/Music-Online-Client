@@ -29,8 +29,10 @@ import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { useTranslation } from 'react-i18next';
+import { useTokenExpirationCheck } from "../utils";
 import { GlobalOutlined, CheckCircleOutlined } from "@ant-design/icons";
 import BASE_API_URL from "../services/base.api.url";
+import TokenExpirationModal from "../components/TokenExpirationModal";
 
 const { Sider, Header, Content } = Layout;
 const { Title } = Typography;
@@ -42,6 +44,8 @@ export default function AdminLayout({ children }) {
     const navigate = useNavigate();
     const screens = useBreakpoint();
     const isMobile = !screens.md;
+
+    useTokenExpirationCheck();
 
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [collapsed, setCollapsed] = useState(false);
@@ -266,260 +270,263 @@ export default function AdminLayout({ children }) {
     );
 
     return (
-        <Layout style={{ minHeight: "100vh", background: "#181c2b" }}>
-            {!isMobile && (
-                <Sider
-                    collapsible
-                    collapsed={collapsed}
-                    onCollapse={setCollapsed}
+        <>
+            <Layout style={{ minHeight: "100vh", background: "#181c2b" }}>
+                {!isMobile && (
+                    <Sider
+                        collapsible
+                        collapsed={collapsed}
+                        onCollapse={setCollapsed}
+                        width={220}
+                        collapsedWidth={80}
+                        style={{
+                            background: "#181c2b",
+                            boxShadow: "4px 0 24px 0 #3ed8ff22",
+                            borderRadius: "0 32px 32px 0",
+                            position: "fixed",
+                            left: 0,
+                            top: 0,
+                            bottom: 0,
+                            height: "100vh",
+                            zIndex: 100,
+                            padding: 0,
+                            overflowY: "auto",
+                            overflowX: "hidden",
+                        }}
+                    >
+                        {sidebarContent}
+                    </Sider>
+                )}
+                <Drawer
+                    open={drawerOpen}
+                    onClose={() => setDrawerOpen(false)}
                     width={220}
-                    collapsedWidth={80}
-                    style={{
-                        background: "#181c2b",
-                        boxShadow: "4px 0 24px 0 #3ed8ff22",
-                        borderRadius: "0 32px 32px 0",
-                        position: "fixed",
-                        left: 0,
-                        top: 0,
-                        bottom: 0,
-                        height: "100vh",
-                        zIndex: 100,
-                        padding: 0,
-                        overflowY: "auto",
-                        overflowX: "hidden",
+                    styles={{
+                        body: {
+                            padding: 0,
+                            background: "#181d36",
+                        },
                     }}
                 >
                     {sidebarContent}
-                </Sider>
-            )}
-            <Drawer
-                open={drawerOpen}
-                onClose={() => setDrawerOpen(false)}
-                width={220}
-                styles={{
-                    body: {
+                </Drawer>
+                <Layout
+                    style={{
+                        marginLeft: !isMobile ? (collapsed ? 80 : 220) : 0,
+                        background: "#181c2b",
+                        minHeight: "100vh",
+                        transition: "margin-left 0.3s",
                         padding: 0,
-                        background: "#181d36",
-                    },
-                }}
-            >
-                {sidebarContent}
-            </Drawer>
-            <Layout
-                style={{
-                    marginLeft: !isMobile ? (collapsed ? 80 : 220) : 0,
-                    background: "#181c2b",
-                    minHeight: "100vh",
-                    transition: "margin-left 0.3s",
-                    padding: 0,
-                }}
-            >
-                <Header
-                    style={{
-                        background: "rgba(24,29,54,0.95)",
-                        borderBottom: "1px solid #23284a",
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        padding: "0 32px",
-                        height: 64,
-                        position: "sticky",
-                        top: 0,
-                        zIndex: 10,
                     }}
                 >
-                    <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-                        {isMobile && (
-                            <Button
-                                type="text"
-                                icon={<FiMenu size={22} />}
-                                style={{ color: "#3ed8ff" }}
-                                onClick={() => setDrawerOpen(true)}
-                            />
-                        )}
-                        <Button
-                            type="text"
-                            icon={<FiArrowLeft size={20} />}
-                            onClick={() => navigate("/")}
-                            style={{
-                                color: "#3ed8ff",
-                                fontWeight: 600,
-                                fontSize: 16,
-                                display: "flex",
-                                alignItems: "center",
-                                gap: 8,
-                                background: "rgba(62,216,255,0.1)",
-                                borderRadius: 20,
-                                padding: "0 16px",
-                                height: 40,
-                            }}
-                        >
-                        </Button>
-                    </div>
-                    <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                        {/* NÚT ĐỔI NGÔN NGỮ */}
-                        <Dropdown
-                            menu={{
-                                items: [
-                                    { key: 'vi', label: t('header.vi'), onClick: () => { i18n.changeLanguage('vi'); localStorage.setItem('i18nextLng', 'vi'); } },
-                                    { key: 'en', label: t('header.en'), onClick: () => { i18n.changeLanguage('en'); localStorage.setItem('i18nextLng', 'en'); } },
-                                ],
-                            }}
-                            placement="bottomRight"
-                        >
-                            <Button
-                                icon={<GlobalOutlined />}
-                                style={{
-                                    borderRadius: 20,
-                                    background: '#232b3e',
-                                    color: '#fff',
-                                    border: 'none',
-                                    minWidth: 44,
-                                    fontWeight: 500,
-                                }}
-                                aria-label={t('languages')}
-                            >
-                                {i18n.language === 'vi' ? t('header.vi') : t('header.en')}
-                            </Button>
-                        </Dropdown>
-                        <Dropdown menu={userMenu} placement="bottomRight" trigger={["click"]}>
-                            <Button
-                                type="text"
-                                style={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                    gap: 10,
-                                    color: "#fff",
-                                    fontWeight: 600,
-                                    fontSize: 16,
-                                    background: "none",
-                                }}
-                            >
-                                <Avatar
-                                    size={36}
-                                    style={{
-                                        background: "#3ed8ff",
-                                        color: "#181d36",
-                                        fontWeight: 700,
-                                        fontSize: 20,
-                                    }}
-                                >
-                                    {localStorage.getItem("userName")?.charAt(0)?.toUpperCase() || <FiUser />}
-                                </Avatar>
-                                <span>{localStorage.getItem("userName") || "Admin"}</span>
-                            </Button>
-                        </Dropdown>
-                    </div>
-                </Header>
-                <Content
-                    style={{
-                        padding: 30,
-                        background: "#101426",
-                        minHeight: "calc(100vh - 64px - 48px)",
-                        boxShadow: "0 4px 24px 0 rgba(62,216,255,0.08)",
-                    }}
-                >
-                    {children || <Outlet />}
-                </Content>
-                {/* Modal chọn role hiện đại, đồng bộ với artist và header */}
-                <Modal
-                    open={showRoleModal}
-                    onCancel={() => setShowRoleModal(false)}
-                    footer={null}
-                    centered
-                    title={
-                        <span style={{
-                            fontWeight: 800,
-                            fontSize: 22,
-                            color: "#3ed8ff",
-                            letterSpacing: 0.5,
-                            textAlign: "center",
-                            display: "block"
-                        }}>
-                            {t('role.select_your_role')}
-                        </span>
-                    }
-                    styles={{ body: { padding: "32px 24px" } }}
-                >
-                    <div
+                    <Header
                         style={{
+                            background: "rgba(24,29,54,0.95)",
+                            borderBottom: "1px solid #23284a",
                             display: "flex",
-                            flexWrap: "wrap",
-                            gap: 24,
-                            justifyContent: "center",
+                            justifyContent: "space-between",
                             alignItems: "center",
-                            minHeight: 120,
+                            padding: "0 32px",
+                            height: 64,
+                            position: "sticky",
+                            top: 0,
+                            zIndex: 10,
                         }}
                     >
-                        {roles.map(role => {
-                            let icon, color, label;
-                            switch (role) {
-                                case "ROLE_ADMIN":
-                                    icon = <FiUser size={32} color="#ff416c" />;
-                                    color = "linear-gradient(135deg, #ff416c 60%, #ff4b2b 100%)";
-                                    label = t('role.admin');
-                                    break;
-                                case "ROLE_ARTIST":
-                                    icon = <FiMusic size={32} color="#3ed8ff" />;
-                                    color = "linear-gradient(135deg, #3ed8ff 60%, #1fa2ff 100%)";
-                                    label = t('role.artist');
-                                    break;
-                                case "ROLE_USER":
-                                    icon = <FiUser size={32} color="#21A8C5" />;
-                                    color = "linear-gradient(135deg, #21A8C5 60%, #39C6E5 100%)";
-                                    label = t('role.user');
-                                    break;
-                                case "ROLE_PREMIUM":
-                                    icon = <CheckCircleOutlined style={{ fontSize: 32, color: "#FFD700" }} />;
-                                    color = "linear-gradient(135deg, #FFD700 60%, #CD9B1D 100%)";
-                                    label = t('role.premium');
-                                    break;
-                                default:
-                                    icon = <FiUser size={32} color="#8ca0c6" />;
-                                    color = "linear-gradient(135deg, #8ca0c6 60%, #232b3e 100%)";
-                                    label = role.replace("ROLE_", "");
-                            }
-                            return (
-                                <div
-                                    key={role}
+                        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+                            {isMobile && (
+                                <Button
+                                    type="text"
+                                    icon={<FiMenu size={22} />}
+                                    style={{ color: "#3ed8ff" }}
+                                    onClick={() => setDrawerOpen(true)}
+                                />
+                            )}
+                            <Button
+                                type="text"
+                                icon={<FiArrowLeft size={20} />}
+                                onClick={() => navigate("/")}
+                                style={{
+                                    color: "#3ed8ff",
+                                    fontWeight: 600,
+                                    fontSize: 16,
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: 8,
+                                    background: "rgba(62,216,255,0.1)",
+                                    borderRadius: 20,
+                                    padding: "0 16px",
+                                    height: 40,
+                                }}
+                            >
+                            </Button>
+                        </div>
+                        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                            {/* NÚT ĐỔI NGÔN NGỮ */}
+                            <Dropdown
+                                menu={{
+                                    items: [
+                                        { key: 'vi', label: t('header.vi'), onClick: () => { i18n.changeLanguage('vi'); localStorage.setItem('i18nextLng', 'vi'); } },
+                                        { key: 'en', label: t('header.en'), onClick: () => { i18n.changeLanguage('en'); localStorage.setItem('i18nextLng', 'en'); } },
+                                    ],
+                                }}
+                                placement="bottomRight"
+                            >
+                                <Button
+                                    icon={<GlobalOutlined />}
                                     style={{
-                                        minWidth: 140,
-                                        maxWidth: 180,
-                                        background: color,
-                                        borderRadius: 18,
-                                        boxShadow: "0 4px 24px #3ed8ff22",
-                                        padding: "24px 18px",
-                                        display: "flex",
-                                        flexDirection: "column",
-                                        alignItems: "center",
-                                        cursor: "pointer",
-                                        transition: "transform 0.18s, box-shadow 0.18s, background 0.18s",
-                                        fontWeight: 700,
-                                        fontSize: 18,
-                                        color: "#fff",
-                                        position: "relative",
+                                        borderRadius: 20,
+                                        background: '#232b3e',
+                                        color: '#fff',
+                                        border: 'none',
+                                        minWidth: 44,
+                                        fontWeight: 500,
                                     }}
-                                    onClick={() => handleSwitchRole(role)}
-                                    onMouseOver={e => e.currentTarget.style.transform = "scale(1.06)"}
-                                    onMouseOut={e => e.currentTarget.style.transform = "scale(1)"}
+                                    aria-label={t('languages')}
                                 >
-                                    {icon}
-                                    <span style={{
-                                        marginTop: 14,
-                                        fontWeight: 800,
-                                        fontSize: 18,
-                                        letterSpacing: 0.5,
-                                        textShadow: "0 2px 8px #181f2a88"
-                                    }}>
-                                        {label}
-                                    </span>
-                                </div>
-                            );
-                        })}
-                    </div>
-                </Modal>
+                                    {i18n.language === 'vi' ? t('header.vi') : t('header.en')}
+                                </Button>
+                            </Dropdown>
+                            <Dropdown menu={userMenu} placement="bottomRight" trigger={["click"]}>
+                                <Button
+                                    type="text"
+                                    style={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: 10,
+                                        color: "#fff",
+                                        fontWeight: 600,
+                                        fontSize: 16,
+                                        background: "none",
+                                    }}
+                                >
+                                    <Avatar
+                                        size={36}
+                                        style={{
+                                            background: "#3ed8ff",
+                                            color: "#181d36",
+                                            fontWeight: 700,
+                                            fontSize: 20,
+                                        }}
+                                    >
+                                        {localStorage.getItem("userName")?.charAt(0)?.toUpperCase() || <FiUser />}
+                                    </Avatar>
+                                    <span>{localStorage.getItem("userName") || "Admin"}</span>
+                                </Button>
+                            </Dropdown>
+                        </div>
+                    </Header>
+                    <Content
+                        style={{
+                            padding: 30,
+                            background: "#101426",
+                            minHeight: "calc(100vh - 64px - 48px)",
+                            boxShadow: "0 4px 24px 0 rgba(62,216,255,0.08)",
+                        }}
+                    >
+                        {children || <Outlet />}
+                    </Content>
+                    {/* Modal chọn role hiện đại, đồng bộ với artist và header */}
+                    <Modal
+                        open={showRoleModal}
+                        onCancel={() => setShowRoleModal(false)}
+                        footer={null}
+                        centered
+                        title={
+                            <span style={{
+                                fontWeight: 800,
+                                fontSize: 22,
+                                color: "#3ed8ff",
+                                letterSpacing: 0.5,
+                                textAlign: "center",
+                                display: "block"
+                            }}>
+                                {t('role.select_your_role')}
+                            </span>
+                        }
+                        styles={{ body: { padding: "32px 24px" } }}
+                    >
+                        <div
+                            style={{
+                                display: "flex",
+                                flexWrap: "wrap",
+                                gap: 24,
+                                justifyContent: "center",
+                                alignItems: "center",
+                                minHeight: 120,
+                            }}
+                        >
+                            {roles.map(role => {
+                                let icon, color, label;
+                                switch (role) {
+                                    case "ROLE_ADMIN":
+                                        icon = <FiUser size={32} color="#ff416c" />;
+                                        color = "linear-gradient(135deg, #ff416c 60%, #ff4b2b 100%)";
+                                        label = t('role.admin');
+                                        break;
+                                    case "ROLE_ARTIST":
+                                        icon = <FiMusic size={32} color="#3ed8ff" />;
+                                        color = "linear-gradient(135deg, #3ed8ff 60%, #1fa2ff 100%)";
+                                        label = t('role.artist');
+                                        break;
+                                    case "ROLE_USER":
+                                        icon = <FiUser size={32} color="#21A8C5" />;
+                                        color = "linear-gradient(135deg, #21A8C5 60%, #39C6E5 100%)";
+                                        label = t('role.user');
+                                        break;
+                                    case "ROLE_PREMIUM":
+                                        icon = <CheckCircleOutlined style={{ fontSize: 32, color: "#FFD700" }} />;
+                                        color = "linear-gradient(135deg, #FFD700 60%, #CD9B1D 100%)";
+                                        label = t('role.premium');
+                                        break;
+                                    default:
+                                        icon = <FiUser size={32} color="#8ca0c6" />;
+                                        color = "linear-gradient(135deg, #8ca0c6 60%, #232b3e 100%)";
+                                        label = role.replace("ROLE_", "");
+                                }
+                                return (
+                                    <div
+                                        key={role}
+                                        style={{
+                                            minWidth: 140,
+                                            maxWidth: 180,
+                                            background: color,
+                                            borderRadius: 18,
+                                            boxShadow: "0 4px 24px #3ed8ff22",
+                                            padding: "24px 18px",
+                                            display: "flex",
+                                            flexDirection: "column",
+                                            alignItems: "center",
+                                            cursor: "pointer",
+                                            transition: "transform 0.18s, box-shadow 0.18s, background 0.18s",
+                                            fontWeight: 700,
+                                            fontSize: 18,
+                                            color: "#fff",
+                                            position: "relative",
+                                        }}
+                                        onClick={() => handleSwitchRole(role)}
+                                        onMouseOver={e => e.currentTarget.style.transform = "scale(1.06)"}
+                                        onMouseOut={e => e.currentTarget.style.transform = "scale(1)"}
+                                    >
+                                        {icon}
+                                        <span style={{
+                                            marginTop: 14,
+                                            fontWeight: 800,
+                                            fontSize: 18,
+                                            letterSpacing: 0.5,
+                                            textShadow: "0 2px 8px #181f2a88"
+                                        }}>
+                                            {label}
+                                        </span>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </Modal>
+                </Layout>
             </Layout>
-        </Layout>
+            <TokenExpirationModal />
+        </>
     );
 }
 

@@ -10,6 +10,7 @@ import {
 import { Modal } from "antd";
 import { PlayerProvider } from "../context/PlayerContext";
 import PropTypes from "prop-types";
+import { useTokenExpirationCheck } from "../utils";
 
 // Components
 import Sidebar from "../components/Sidebar";
@@ -27,6 +28,7 @@ import ActivateAccount from "../components/ActiveAccount";
 import ResetPassword from "../components/ResetPassword";
 import OAuthCallback from "../components/OAuthCallback";
 import MoodModal from "../components/MoodModal";
+import TokenExpirationModal from "../components/TokenExpirationModal";
 
 // Pages
 import HomePage from "../pages/HomePage";
@@ -95,6 +97,8 @@ function MainLayout({
   onSearch,
   showMood, // nhận prop này
 }) {
+  useTokenExpirationCheck();
+  
   return (
     <>
       {/* Sidebar */}
@@ -309,6 +313,7 @@ export default function Index({ children }) {
           onClose={() => setShowMood(false)}
           onMoodSelected={() => setShowMood(false)}
         />
+        <TokenExpirationModal />
         <AppRoutes
           modalType={modalType}
           setModalType={setModalType}

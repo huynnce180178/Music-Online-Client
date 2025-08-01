@@ -38,5 +38,25 @@
   "add_to_playlist_failed": "Failed to add to playlist",
   "login_to_create_playlist": "Please login to create playlists",
   "playlist_created": "Your new playlist has been created successfully",
-  "create_playlist_failed": "Failed to create playlist"
+  "create_playlist_failed": "Failed to create playlist",
+  "api": {
+    "token_expired": "Login session has expired. Please login again.",
+    "request_timeout": "Request timeout. Please check your internet connection.",
+    "access_denied": "Access denied. You don't have permission for this action.",
+    "resource_not_found": "Resource not found. Please check the URL.",
+    "server_error": "Server error. Please try again later.",
+    "network_error": "Server connection error. Please check your internet connection and try again.",
+    "unexpected_error": "An unexpected error occurred. Please try again.",
+    "generic_error": "An error occurred. Please try again.",
+    "token_expired_error": "Token expired",
+    "invalid_token_error": "Invalid token"
+  },
+  "token_modal_title": "Login session about to expire",
+  "token_modal_description": "Your login session will expire in",
+  "token_modal_extend_question": "Do you want to extend your session?",
+  "token_modal_logout_button": "Logout",
+  "token_modal_extend_button": "Extend",
+  "token_modal_extend_message": "Please login again to extend your session.",
+  "token_modal_logout_message": "Logged out successfully.",
+  "api_token_expired": "Login session has expired. Please login again."
 } 

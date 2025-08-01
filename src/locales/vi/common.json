@@ -38,5 +38,25 @@
   "add_to_playlist_failed": "Thêm vào danh sách phát thất bại",
   "login_to_create_playlist": "Vui lòng đăng nhập để tạo danh sách phát",
   "playlist_created": "Danh sách phát mới đã được tạo thành công",
-  "create_playlist_failed": "Tạo danh sách phát thất bại"
+  "create_playlist_failed": "Tạo danh sách phát thất bại",
+  "api": {
+    "token_expired": "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.",
+    "request_timeout": "Hết thời gian yêu cầu. Vui lòng kiểm tra kết nối internet.",
+    "access_denied": "Truy cập bị từ chối. Bạn không có quyền thực hiện hành động này.",
+    "resource_not_found": "Không tìm thấy tài nguyên. Vui lòng kiểm tra URL.",
+    "server_error": "Lỗi máy chủ. Vui lòng thử lại sau.",
+    "network_error": "Lỗi kết nối máy chủ. Vui lòng kiểm tra kết nối internet và thử lại.",
+    "unexpected_error": "Đã xảy ra lỗi không mong muốn. Vui lòng thử lại.",
+    "generic_error": "Đã xảy ra lỗi. Vui lòng thử lại.",
+    "token_expired_error": "Token hết hạn",
+    "invalid_token_error": "Token không hợp lệ"
+  },
+  "token_modal_title": "Phiên đăng nhập sắp hết hạn",
+  "token_modal_description": "Phiên đăng nhập của bạn sẽ hết hạn trong",
+  "token_modal_extend_question": "Bạn có muốn gia hạn phiên làm việc không?",
+  "token_modal_logout_button": "Đăng xuất",
+  "token_modal_extend_button": "Gia hạn",
+  "token_modal_extend_message": "Vui lòng đăng nhập lại để gia hạn phiên làm việc.",
+  "token_modal_logout_message": "Đã đăng xuất.",
+  "api_token_expired": "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại."
 } 
