@@ -32,7 +32,7 @@ function RenderComment({
     comment,
     level = 0,
     setReplyTo,
-    currentUser,
+    currentUserId,
     reloadComments,
     onReport,
     parentUsername
@@ -45,7 +45,7 @@ function RenderComment({
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
     const [reactionPosition, setReactionPosition] = useState(null);
 
-    const isMine = currentUser && comment.username === currentUser;
+    const isMine = currentUserId && Number(comment.userId) === Number(currentUserId);
 
     // Update comment
     const handleUpdate = async () => {
@@ -108,19 +108,10 @@ function RenderComment({
         setReacting(false);
     };
 
-    const hasReplyLine = level > 0;
-
-    // Dùng indent chỉ cho cấp 1, từ cấp 2+ không tăng nữa
-    const getMarginLeft = (level) => {
-        if (level === 1) return 18;  // chỉ cấp 1
-        if (level >= 2) return 18;   // cấp 2+ giữ nguyên
-        return 0;                    // cấp 0
-    };
-
     // Use reactionCounts from backend response
     const userReaction = comment.currentUserReaction;
 
-    // Reaction summary: show only reactions with count > 0
+    // Only show reactions with count > 0
     const reactionSummary = Array.isArray(reactions)
         ? reactions.filter(r => r.count > 0).map(r => ({
             type: r.type,
@@ -129,43 +120,14 @@ function RenderComment({
         }))
         : [];
 
-    const bgColors = [
-        "rgba(255,255,255,0.03)",
-        "rgba(62,216,255,0.06)",
-        "rgba(62,216,255,0.03)"
-    ];
-    const borderColors = [
-        "rgba(62,216,255,0.10)",
-        "rgba(62,216,255,0.18)",
-        "rgba(62,216,255,0.08)"
-    ];
-
-    <style>
-        {`
-.fb-reply-item {
-    position: relative;
-}
-
-.fb-reply-item::before {
-    content: "";
-    position: absolute;
-    left: -10px; /* căn vào avatar/cạnh trái của reply */
-    top: 20px;   /* bắt đầu từ giữa avatar */
-    bottom: 10px;
-    width: 2.5px;
-    background: #d2e5fa;
-    border-radius: 2px;
-    z-index: 0;
-}
-
-`}
-    </style>
+    // For reply-line CSS, recommend put in main CSS or use Emotion/Styled-components
+    // Otherwise inline-style only
 
     return (
         <div
             style={{
                 position: "relative",
-                marginLeft: level === 1 ? 18 : 0, // chỉ indent cho reply cấp 1, cấp 2+ không tăng thêm
+                marginLeft: level === 1 ? 18 : 0,
                 marginBottom: 14,
                 background: "#fff",
                 borderRadius: 12,
@@ -176,7 +138,7 @@ function RenderComment({
             }}
             className={level > 0 ? "fb-reply-item" : ""}
         >
-            {/* Header: Avatar + tên user (full width, không bị cắt) */}
+            {/* Header: Avatar + tên user */}
             <div
                 style={{
                     display: "flex",
@@ -188,6 +150,7 @@ function RenderComment({
                 }}
             >
                 <Avatar
+                    src={comment.profileImage || undefined}
                     style={{
                         background: "#eaf6fb",
                         color: "#29aaff",
@@ -196,9 +159,9 @@ function RenderComment({
                         border: "1.5px solid #3ed8ff33"
                     }}
                     size={32}
-                    icon={<UserOutlined />}
+                    icon={!comment.profileImage ? <UserOutlined /> : undefined}
                 >
-                    {comment.username?.charAt(0).toUpperCase()}
+                    {!comment.profileImage && comment.username?.charAt(0).toUpperCase()}
                 </Avatar>
 
                 <div style={{
@@ -273,7 +236,6 @@ function RenderComment({
                     )}
                 </div>
             </div>
-            {/* Nội dung cmt */}
             {isEditing ? (
                 <div style={{ marginBottom: 8 }}>
                     <Input.TextArea
@@ -315,107 +277,113 @@ function RenderComment({
 
             {/* Row: reply + cảm xúc + thời gian */}
             <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                <Tooltip title="Reply">
-                    <Button
-                        size="small"
-                        type="text"
-                        icon={<CommentOutlined />}
-                        style={{ color: "#29aaff" }}
-                        onClick={() => setReplyTo(comment)}
-                    />
-                </Tooltip>
-                <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                    {reactionSummary.length > 0 && (
-                        <div style={{
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "flex-start",
-                            background: "#eaf6fb",
-                            borderRadius: 16,
-                            padding: "0 8px",
-                            fontWeight: 600,
-                            fontSize: 15,
-                            minHeight: 28,
-                            width: "fit-content"
-                        }}>
-                            {reactionSummary.map(r => (
-                                <span key={r.type} style={{ display: "flex", alignItems: "center", marginRight: 6 }}>
-                                    {r.icon}
-                                    <span style={{ marginLeft: 2, color: "#23283e" }}>{r.count}</span>
-                                </span>
-                            ))}
-                        </div>
-                    )}
-                    <div style={{ position: "relative", display: "inline-block" }}>
+                <div style={{
+                    display: "flex",
+                    alignItems: "flex-start",
+                    justifyContent: "flex-start",
+                    gap: 10
+                }}>
+                    <Tooltip title="Reply">
                         <Button
                             size="small"
                             type="text"
-                            style={{
-                                color: userReaction ? "#ffb300" : "#3ed8ff",
+                            icon={<CommentOutlined />}
+                            style={{ color: "#29aaff" }}
+                            onClick={() => setReplyTo(comment)}
+                        />
+                    </Tooltip>
+                    <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                        {reactionSummary.length > 0 && (
+                            <div style={{
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "flex-start",
                                 background: "#eaf6fb",
                                 borderRadius: 16,
+                                padding: "0 8px",
                                 fontWeight: 600,
-                                padding: "0 10px"
-                            }}
-                            onClick={handleShowReactions}
-                        >
-                            <LikeOutlined />
-                        </Button>
-                        {/* Dùng Portal để popup nổi lên trên, không bị che */}
-                        {showReactions && reactionPosition &&
-                            ReactDOM.createPortal(
-                                <div
-                                    style={{
-                                        position: "absolute",
-                                        top: reactionPosition.top,
-                                        left: reactionPosition.left,
-                                        background: "#fff",
-                                        border: "1px solid #eaf6fb",
-                                        borderRadius: 12,
-                                        boxShadow: "0 2px 8px #3ed8ff22",
-                                        padding: "8px 10px",
-                                        zIndex: 99999,
-                                        display: "flex",
-                                        gap: 6
-                                    }}
-                                    onMouseLeave={() => setShowReactions(false)}
-                                >
-                                    {Object.keys(REACTION_ICONS).map(type => (
-                                        <Button
-                                            key={type}
-                                            size="small"
-                                            type="text"
-                                            icon={REACTION_ICONS[type]}
-                                            loading={reacting}
-                                            onClick={() => {
-                                                handleReaction(type);
-                                                setShowReactions(false);
-                                            }}
-                                            style={{
-                                                color: userReaction === type ? "#ffb300" : "#23283e",
-                                                fontSize: 18,
-                                                background: "none",
-                                                border: "none"
-                                            }}
-                                        />
-                                    ))}
-                                </div>,
-                                document.body
-                            )
-                        }
+                                fontSize: 15,
+                                minHeight: 28,
+                                width: "fit-content"
+                            }}>
+                                {reactionSummary.map(r => (
+                                    <span key={r.type} style={{ display: "flex", alignItems: "center", marginRight: 6 }}>
+                                        {r.icon}
+                                        <span style={{ marginLeft: 2, color: "#23283e" }}>{r.count}</span>
+                                    </span>
+                                ))}
+                            </div>
+                        )}
+                        <div style={{ position: "relative", display: "inline-block" }}>
+                            <Button
+                                size="small"
+                                type="text"
+                                style={{
+                                    color: userReaction ? "#ffb300" : "#3ed8ff",
+                                    background: "#eaf6fb",
+                                    borderRadius: 16,
+                                    fontWeight: 600,
+                                    padding: "0 10px"
+                                }}
+                                onClick={handleShowReactions}
+                            >
+                                <LikeOutlined />
+                            </Button>
+                            {/* Dùng Portal để popup nổi lên trên, không bị che */}
+                            {showReactions && reactionPosition &&
+                                ReactDOM.createPortal(
+                                    <div
+                                        style={{
+                                            position: "absolute",
+                                            top: reactionPosition.top,
+                                            left: reactionPosition.left,
+                                            background: "#fff",
+                                            border: "1px solid #eaf6fb",
+                                            borderRadius: 12,
+                                            boxShadow: "0 2px 8px #3ed8ff22",
+                                            padding: "8px 10px",
+                                            zIndex: 99999,
+                                            display: "flex",
+                                            gap: 6
+                                        }}
+                                        onMouseLeave={() => setShowReactions(false)}
+                                    >
+                                        {Object.keys(REACTION_ICONS).map(type => (
+                                            <Button
+                                                key={type}
+                                                size="small"
+                                                type="text"
+                                                icon={REACTION_ICONS[type]}
+                                                loading={reacting}
+                                                onClick={() => {
+                                                    handleReaction(type);
+                                                    setShowReactions(false);
+                                                }}
+                                                style={{
+                                                    color: userReaction === type ? "#ffb300" : "#23283e",
+                                                    fontSize: 18,
+                                                    background: "none",
+                                                    border: "none"
+                                                }}
+                                            />
+                                        ))}
+                                    </div>,
+                                    document.body
+                                )
+                            }
+                        </div>
                     </div>
+                    {/* THỜI GIAN: đưa xuống cạnh nút cảm xúc */}
+                    <span style={{
+                        color: "#8ca0c6",
+                        fontSize: 12,
+                        marginLeft: 14,
+                        whiteSpace: "nowrap"
+                    }}>
+                        {comment.createdAt}
+                    </span>
                 </div>
-                {/* THỜI GIAN: đưa xuống cạnh nút cảm xúc */}
-                <span style={{
-                    color: "#8ca0c6",
-                    fontSize: 12,
-                    marginLeft: 14,
-                    whiteSpace: "nowrap"
-                }}>
-                    {comment.createdAt}
-                </span>
             </div>
-
             {/* Replies */}
             {Array.isArray(comment.replies) && comment.replies.length > 0 && (
                 <div style={{ marginTop: 8 }}>
@@ -425,7 +393,7 @@ function RenderComment({
                             comment={child}
                             level={level + 1}
                             setReplyTo={setReplyTo}
-                            currentUser={currentUser}
+                            currentUserId={currentUserId}
                             reloadComments={reloadComments}
                             onReport={onReport}
                             parentUsername={comment.username}
@@ -441,14 +409,25 @@ RenderComment.propTypes = {
     comment: PropTypes.object.isRequired,
     level: PropTypes.number,
     setReplyTo: PropTypes.func.isRequired,
-    currentUser: PropTypes.string,
+    currentUserId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     reloadComments: PropTypes.func.isRequired,
     onReport: PropTypes.func.isRequired,
     parentUsername: PropTypes.string,
 };
 
-export default function CommentTab({ songId, currentUser }) {
+export default function CommentTab({ songId }) {
     const { t } = useTranslation();
+    let currentUserId = null;
+    // Lấy userId từ localStorage
+    if (localStorage.getItem("userId")) {
+        currentUserId = localStorage.getItem("userId");
+    } else if (localStorage.getItem("user")) {
+        try {
+            const userRaw = localStorage.getItem("user");
+            const userObj = JSON.parse(userRaw);
+            currentUserId = userObj.userId;
+        } catch { }
+    }
     const [comments, setComments] = useState([]);
     const [newComment, setNewComment] = useState("");
     const [submitting, setSubmitting] = useState(false);
@@ -462,7 +441,6 @@ export default function CommentTab({ songId, currentUser }) {
     const fetchComments = async () => {
         try {
             const res = await axios.get(`${BASE_API_URL}/api/v1/comments/song/${songId}`);
-            // Use response directly, assuming it's already nested as needed
             setComments(Array.isArray(res.data) ? res.data : []);
         } catch {
             setComments([]);
@@ -540,7 +518,7 @@ export default function CommentTab({ songId, currentUser }) {
 
     return (
         <div style={{
-            margin: "0 8px", // ✅ thêm vào đây
+            margin: "0 8px",
             color: "#23283e",
             height: "100%",
             overflowY: "auto",
@@ -615,7 +593,7 @@ export default function CommentTab({ songId, currentUser }) {
                             key={item.id}
                             comment={item}
                             setReplyTo={setReplyTo}
-                            currentUser={currentUser}
+                            currentUserId={currentUserId}
                             reloadComments={fetchComments}
                             onReport={setReportingComment}
                         />
@@ -660,5 +638,4 @@ export default function CommentTab({ songId, currentUser }) {
 
 CommentTab.propTypes = {
     songId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-    currentUser: PropTypes.string,
 };
