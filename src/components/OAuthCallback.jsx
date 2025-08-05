@@ -52,8 +52,9 @@ export default function OAuthCallback() {
                     let endpoint = null;
                     
                     const endpoints = [
-                        `${BASE_API_URL}/api/v1/auth/${provider}/callback`,
+                        `${BASE_API_URL}/oauth2/success.html`,
                         `${BASE_API_URL}/${provider}/oauth2-success`,
+                        `${BASE_API_URL}/api/v1/auth/${provider}/callback`,
                         `${BASE_API_URL}/oauth2/callback/${provider}`,
                         `${BASE_API_URL}/api/v1/oauth2/${provider}/callback`,
                         `${BASE_API_URL}/api/v1/auth/oauth2/${provider}/callback`,
@@ -65,7 +66,8 @@ export default function OAuthCallback() {
                             console.log(`Trying endpoint: ${ep}`);
                             response = await axios.get(ep, {
                                 withCredentials: true,
-                                timeout: 5000 
+                                timeout: 10000,
+                                params: searchParams.toString() ? Object.fromEntries(searchParams.entries()) : {}
                             });
                             endpoint = ep;
                             console.log(`Success with endpoint: ${ep}`);
@@ -103,9 +105,15 @@ export default function OAuthCallback() {
                         const data = response.data.data;
                         console.log('User data received:', data);
                         
-                        if (typeof data === 'string' && data.includes('authentication failed')) {
+                        if (typeof data === 'string' && (data.includes('authentication failed') || data.includes('OAuth2'))) {
                             console.error('Backend returned error message as data:', data);
                             throw new Error(data);
+                        }
+                        
+                        // Check if response.data itself is an error string
+                        if (typeof response.data === 'string' && response.data.includes('authentication failed')) {
+                            console.error('Backend returned error string:', response.data);
+                            throw new Error(response.data);
                         }
                         
                         if (data.accessToken) {
