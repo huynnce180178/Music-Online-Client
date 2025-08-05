@@ -1,100 +1,152 @@
-import React, { useState, useEffect } from 'react';
-import { Button, Card, Space, Typography, Alert } from 'antd';
-import { testWebSocketConnection, testSockJSConnection } from '../utils/websocketTest';
-import BASE_API_URL from '../services/base.api.url';
+import { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import { Card, Typography, Space, Button, Divider } from 'antd';
+import { ReloadOutlined } from '@ant-design/icons';
 
-const { Title, Text } = Typography;
+const { Title, Text, Paragraph } = Typography;
 
-const WebSocketDebug = () => {
-    const [testResults, setTestResults] = useState({});
-    const [isTesting, setIsTesting] = useState(false);
+export default function WebSocketDebug() {
+    const [searchParams] = useSearchParams();
+    const [debugInfo, setDebugInfo] = useState({});
 
-    const runTests = async () => {
-        setIsTesting(true);
-        const results = {};
+    const collectDebugInfo = () => {
+        const info = {
+            url: window.location.href,
+            pathname: window.location.pathname,
+            search: window.location.search,
+            hash: window.location.hash,
+            userAgent: navigator.userAgent,
+            timestamp: new Date().toISOString(),
+            params: {}
+        };
 
+        // Collect URL parameters
+        searchParams.forEach((value, key) => {
+            info.params[key] = value;
+        });
+
+        // Check localStorage
         try {
-            // Test WebSocket
-            try {
-                await testWebSocketConnection();
-                results.websocket = { success: true, message: 'WebSocket connection successful' };
-            } catch (error) {
-                results.websocket = { success: false, message: error.message };
-            }
-
-            // Test SockJS
-            try {
-                await testSockJSConnection();
-                results.sockjs = { success: true, message: 'SockJS connection successful' };
-            } catch (error) {
-                results.sockjs = { success: false, message: error.message };
-            }
-
-            // Test API endpoint
-            try {
-                const response = await fetch(`${BASE_API_URL}/api/v1/user/status`, {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-                    }
-                });
-                if (response.ok) {
-                    results.api = { success: true, message: 'API endpoint accessible' };
-                } else {
-                    results.api = { success: false, message: `API returned ${response.status}` };
-                }
-            } catch (error) {
-                results.api = { success: false, message: error.message };
-            }
-
+            info.localStorage = {
+                accessToken: localStorage.getItem('accessToken') ? 'Present' : 'Not found',
+                userName: localStorage.getItem('userName') ? 'Present' : 'Not found',
+                userId: localStorage.getItem('userId') ? 'Present' : 'Not found',
+                roles: localStorage.getItem('roles') ? 'Present' : 'Not found'
+            };
         } catch (error) {
-            console.error('Test error:', error);
+            info.localStorage = { error: error.message };
         }
 
-        setTestResults(results);
-        setIsTesting(false);
+        // Check sessionStorage
+        try {
+            info.sessionStorage = {
+                accessToken: sessionStorage.getItem('accessToken') ? 'Present' : 'Not found',
+                userName: sessionStorage.getItem('userName') ? 'Present' : 'Not found',
+                userId: sessionStorage.getItem('userId') ? 'Present' : 'Not found',
+                roles: sessionStorage.getItem('roles') ? 'Present' : 'Not found'
+            };
+        } catch (error) {
+            info.sessionStorage = { error: error.message };
+        }
+
+        setDebugInfo(info);
     };
 
     useEffect(() => {
-        runTests();
-    }, []);
+        collectDebugInfo();
+    }, [searchParams]);
 
     return (
-        <Card title="WebSocket Debug" style={{ margin: 16 }}>
-            <Space direction="vertical" style={{ width: '100%' }}>
-                <div>
-                    <Title level={4}>Connection Tests</Title>
-                    <Text>Base URL: {BASE_API_URL}</Text>
-                </div>
+        <div style={{
+            minHeight: '100vh',
+            padding: '20px',
+            background: '#f0f2f5'
+        }}>
+            <Card style={{ maxWidth: '1000px', margin: '0 auto' }}>
+                <Space direction="vertical" style={{ width: '100%' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <Title level={2}>OAuth Callback Debug</Title>
+                        <Button 
+                            icon={<ReloadOutlined />} 
+                            onClick={collectDebugInfo}
+                            type="primary"
+                        >
+                            Refresh
+                        </Button>
+                    </div>
 
-                <Button 
-                    type="primary" 
-                    onClick={runTests} 
-                    loading={isTesting}
-                >
-                    Run Tests
-                </Button>
+                    <Divider />
 
-                {Object.entries(testResults).map(([test, result]) => (
-                    <Alert
-                        key={test}
-                        message={test.toUpperCase()}
-                        description={result.message}
-                        type={result.success ? 'success' : 'error'}
-                        showIcon
-                    />
-                ))}
+                    <Card title="URL Information" size="small">
+                        <Space direction="vertical" style={{ width: '100%' }}>
+                            <div>
+                                <Text strong>Full URL:</Text>
+                                <Paragraph copyable style={{ margin: 0 }}>
+                                    {debugInfo.url}
+                                </Paragraph>
+                            </div>
+                            <div>
+                                <Text strong>Pathname:</Text>
+                                <Text code>{debugInfo.pathname}</Text>
+                            </div>
+                            <div>
+                                <Text strong>Search:</Text>
+                                <Text code>{debugInfo.search}</Text>
+                            </div>
+                            <div>
+                                <Text strong>Hash:</Text>
+                                <Text code>{debugInfo.hash}</Text>
+                            </div>
+                            <div>
+                                <Text strong>Timestamp:</Text>
+                                <Text code>{debugInfo.timestamp}</Text>
+                            </div>
+                        </Space>
+                    </Card>
 
-                <div>
-                    <Title level={4}>Debug Information</Title>
-                    <Text>User ID: {localStorage.getItem('userId') || 'Not set'}</Text><br />
-                    <Text>Token: {localStorage.getItem('accessToken') ? 'Present' : 'Not set'}</Text><br />
-                    <Text>Global: {typeof global !== 'undefined' ? 'Defined' : 'Undefined'}</Text><br />
-                    <Text>Process: {typeof process !== 'undefined' ? 'Defined' : 'Undefined'}</Text>
-                </div>
-            </Space>
-        </Card>
+                    <Card title="URL Parameters" size="small">
+                        <Space direction="vertical" style={{ width: '100%' }}>
+                            {Object.keys(debugInfo.params || {}).map(key => (
+                                <div key={key}>
+                                    <Text strong>{key}:</Text>
+                                    <Text code>{debugInfo.params[key]}</Text>
+                                </div>
+                            ))}
+                            {Object.keys(debugInfo.params || {}).length === 0 && (
+                                <Text type="secondary">No URL parameters found</Text>
+                            )}
+                        </Space>
+                    </Card>
+
+                    <Card title="Local Storage" size="small">
+                        <Space direction="vertical" style={{ width: '100%' }}>
+                            {debugInfo.localStorage && Object.keys(debugInfo.localStorage).map(key => (
+                                <div key={key}>
+                                    <Text strong>{key}:</Text>
+                                    <Text code>{debugInfo.localStorage[key]}</Text>
+                                </div>
+                            ))}
+                        </Space>
+                    </Card>
+
+                    <Card title="Session Storage" size="small">
+                        <Space direction="vertical" style={{ width: '100%' }}>
+                            {debugInfo.sessionStorage && Object.keys(debugInfo.sessionStorage).map(key => (
+                                <div key={key}>
+                                    <Text strong>{key}:</Text>
+                                    <Text code>{debugInfo.sessionStorage[key]}</Text>
+                                </div>
+                            ))}
+                        </Space>
+                    </Card>
+
+                    <Card title="User Agent" size="small">
+                        <Paragraph copyable style={{ margin: 0 }}>
+                            {debugInfo.userAgent}
+                        </Paragraph>
+                    </Card>
+                </Space>
+            </Card>
+        </div>
     );
-};
-
-export default WebSocketDebug; 
+} 
