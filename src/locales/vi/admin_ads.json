@@ -43,5 +43,7 @@
   "admin_ad.media_file": "File phương tiện",
   "admin_ad.please_upload_media_file": "Vui lòng tải lên file phương tiện",
   "admin_ad.redirect_url": "URL chuyển hướng",
+  "admin_ad.please_enter_redirect_url": "Vui lòng nhập URL chuyển hướng",
+  "admin_ad.enter_redirect_url": "Nhập URL chuyển hướng",
   "admin_ad.optional": "Không bắt buộc"
 } 

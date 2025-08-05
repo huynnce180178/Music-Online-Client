@@ -43,5 +43,7 @@
   "admin_ad.media_file": "Media File",
   "admin_ad.please_upload_media_file": "Please upload media file",
   "admin_ad.redirect_url": "Redirect URL",
+  "admin_ad.please_enter_redirect_url": "Please enter redirect URL",
+  "admin_ad.enter_redirect_url": "Enter redirect URL",
   "admin_ad.optional": "Optional"
 } 

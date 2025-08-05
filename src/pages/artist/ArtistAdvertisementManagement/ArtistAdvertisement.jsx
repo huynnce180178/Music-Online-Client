@@ -136,17 +136,44 @@ export default function ArtistAdvertisement() {
 
     // --- Add Advertisement Handler ---
     const openAddModal = () => {
-        // Kiểm tra tổng số quảng cáo (audio + banner)
-        if (ads.length >= 4) {
+        // Check if user is admin
+        const roles = JSON.parse(localStorage.getItem("roles") || "[]");
+        const isAdmin = roles.includes("ROLE_ADMIN");
+        
+        // Kiểm tra tổng số quảng cáo (audio + banner) - skip for admin
+        if (!isAdmin && ads.length >= 4) {
             message.error(t('artist_ad.limit_reached') || "You can only have up to 4 advertisements.");
             return;
         }
         setAddModal(true);
         addForm.resetFields();
     };
+    // Helper function to sanitize file name for Cloudinary
+    const sanitizeFileName = (fileName) => {
+        if (!fileName) return fileName;
+        
+        // Remove or replace invalid characters
+        let sanitized = fileName
+            .replace(/[#%&{}|\\<>*?$!'":@+`|=]/g, '_') // Replace invalid chars with underscore
+            .replace(/\s+/g, '_') // Replace spaces with underscore
+            .replace(/_{2,}/g, '_') // Replace multiple underscores with single
+            .replace(/^_+|_+$/g, ''); // Remove leading/trailing underscores
+        
+        // Ensure it's not empty
+        if (!sanitized) {
+            sanitized = 'advertisement_' + Date.now();
+        }
+        
+        return sanitized;
+    };
+
     const handleAdd = async () => {
-        // Kiểm tra lại trước khi submit (tránh bypass qua UI)
-        if (ads.length >= 4) {
+        // Check if user is admin
+        const roles = JSON.parse(localStorage.getItem("roles") || "[]");
+        const isAdmin = roles.includes("ROLE_ADMIN");
+        
+        // Kiểm tra lại trước khi submit (tránh bypass qua UI) - skip for admin
+        if (!isAdmin && ads.length >= 4) {
             message.error(t('artist_ad.limit_reached') || "You can only have up to 4 advertisements.");
             setAddModal(false);
             return;
@@ -164,8 +191,21 @@ export default function ArtistAdvertisement() {
             } else if (values.mediaFile && values.mediaFile.originFileObj) {
                 fileToUpload = values.mediaFile.originFileObj;
             }
+            
             if (fileToUpload) {
-                formData.append("mediaFile", fileToUpload);
+                // Create a new file with sanitized name
+                const originalName = fileToUpload.name;
+                const sanitizedName = sanitizeFileName(originalName);
+                const fileExtension = originalName.split('.').pop();
+                const newFileName = `${sanitizedName}.${fileExtension}`;
+                
+                // Create new file with sanitized name
+                const sanitizedFile = new File([fileToUpload], newFileName, {
+                    type: fileToUpload.type,
+                    lastModified: fileToUpload.lastModified,
+                });
+                
+                formData.append("mediaFile", sanitizedFile);
             }
             // Debug: log file
             console.log('mediaFile:', fileToUpload);
@@ -388,7 +428,32 @@ export default function ArtistAdvertisement() {
                         rules={[{ required: true, message: t('artist_ad.please_upload_media_file') }]}
                     >
                         <Upload
-                            beforeUpload={() => false}
+                            beforeUpload={(file) => {
+                                // Auto-rename file if needed
+                                const fileName = file.name;
+                                const invalidChars = /[#%&{}|\\<>*?$!'":@+`|=]/;
+                                
+                                if (invalidChars.test(fileName) || fileName.trim() !== fileName) {
+                                    // Create sanitized name
+                                    const sanitizedName = sanitizeFileName(fileName);
+                                    const fileExtension = fileName.split('.').pop();
+                                    const newFileName = `${sanitizedName}.${fileExtension}`;
+                                    
+                                    // Create new file with sanitized name
+                                    const sanitizedFile = new File([file], newFileName, {
+                                        type: file.type,
+                                        lastModified: file.lastModified,
+                                    });
+                                    
+                                    // Replace the original file
+                                    file.name = newFileName;
+                                    file.uid = newFileName;
+                                    
+                                    message.info(`File renamed to: ${newFileName}`);
+                                }
+                                
+                                return false; // Prevent auto upload
+                            }}
                             maxCount={1}
                             accept={
                                 adType === "AUDIO"
