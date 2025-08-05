@@ -510,10 +510,7 @@ export default function ArtistAllSongs() {
                     <Form.Item
                         label={t('lyrics')}
                         name="lyrics"
-                        rules={[
-                            { min: 10, message: t('lyrics_min_length') },
-                            { max: 2000, message: t('lyrics_max_length') }
-                        ]}
+
                     >
                         <Input.TextArea rows={4} placeholder={t('enter_lyrics_here')} />
                     </Form.Item>

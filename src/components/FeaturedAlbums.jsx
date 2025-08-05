@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useTranslation } from 'react-i18next';
@@ -7,6 +7,14 @@ import BASE_API_URL from "../services/base.api.url";
 export default function FeaturedAlbums() {
     const navigate = useNavigate();
     const { t } = useTranslation();
+
+    // Helper function to format views
+    function formatViews(views) {
+        if (views >= 1e9) return (views / 1e9).toFixed(1).replace(/\.0$/, '') + 'B';
+        if (views >= 1e6) return (views / 1e6).toFixed(1).replace(/\.0$/, '') + 'M';
+        if (views >= 1e3) return (views / 1e3).toFixed(1).replace(/\.0$/, '') + 'K';
+        return views?.toLocaleString() || "0";
+    }
 
     function getInitialCount() {
         if (window.innerWidth < 576) return 1;
@@ -22,7 +30,7 @@ export default function FeaturedAlbums() {
 
     const [albums, setAlbums] = useState([]);
     const [visibleCount, setVisibleCount] = useState(getInitialCount());
-    const [breakpoint, setBreakpoint] = useState(getBreakpoint());
+    // Removed unused breakpoint state
     const [startIdx, setStartIdx] = useState(0);
 
     useEffect(() => {
@@ -32,7 +40,7 @@ export default function FeaturedAlbums() {
                 const mapped = data.map(album => ({
                     id: album.id,
                     title: album.title,
-                    artist: album.totalViews + " views",
+                    views: album.totalViews,
                     cover: album.coverUrl || "/img/default-cover.png",
                 }));
                 setAlbums(mapped);
@@ -43,7 +51,6 @@ export default function FeaturedAlbums() {
     useEffect(() => {
         function handleResize() {
             const bp = getBreakpoint();
-            setBreakpoint(bp);
             setVisibleCount(bp === "mobile" ? 1 : bp === "tablet" ? 2 : 6);
             setStartIdx(0);
         }
@@ -201,8 +208,19 @@ export default function FeaturedAlbums() {
                                             fontSize: 13,
                                             color: "#8ca0c6",
                                             marginTop: 4,
+                                            display: "flex",
+                                            alignItems: "center",
+                                            gap: 6
                                         }}>
-                                            {album.artist}
+                                            <span style={{
+                                                padding: "2px 8px",
+                                                fontWeight: 600,
+                                                color: "#3ed8ff",
+                                                fontSize: 13,
+                                                letterSpacing: 0.2
+                                            }}>
+                                                {formatViews(album.views)} {t('featured_artists.views')}
+                                            </span>
                                         </div>
                                     </div>
                                 </div>

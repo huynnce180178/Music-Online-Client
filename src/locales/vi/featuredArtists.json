@@ -1,4 +1,6 @@
 {
   "featured_artists.title": "Nghệ sĩ nổi bật",
-  "featured_artists.view_more": "Xem thêm"
-} 
+  "featured_artists.view_more": "Xem thêm",
+  "featured_artists.views": "lượt xem",
+  "featured_artists.login_to_view_artist": "Vui lòng đăng nhập để xem thông tin nghệ sĩ!"
+}
