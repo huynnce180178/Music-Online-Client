@@ -42,6 +42,7 @@ export default function OAuthCallback() {
 
                 const provider = getOAuthProvider(searchParams);
                 console.log('OAuth provider:', provider);
+                console.log('Search params:', Object.fromEntries(searchParams.entries()));
                 
                 if (isOAuthCallback(searchParams)) {
                     console.log('Processing OAuth callback...');
@@ -51,10 +52,12 @@ export default function OAuthCallback() {
                     let endpoint = null;
                     
                     const endpoints = [
-                        `${BASE_API_URL}/${provider}/oauth2-success`,
                         `${BASE_API_URL}/api/v1/auth/${provider}/callback`,
+                        `${BASE_API_URL}/${provider}/oauth2-success`,
                         `${BASE_API_URL}/oauth2/callback/${provider}`,
-                        `${BASE_API_URL}/api/v1/oauth2/${provider}/callback`
+                        `${BASE_API_URL}/api/v1/oauth2/${provider}/callback`,
+                        `${BASE_API_URL}/api/v1/auth/oauth2/${provider}/callback`,
+                        `${BASE_API_URL}/api/v1/oauth2/${provider}/success`
                     ];
                     
                     for (const ep of endpoints) {
@@ -66,21 +69,44 @@ export default function OAuthCallback() {
                             });
                             endpoint = ep;
                             console.log(`Success with endpoint: ${ep}`);
+                            console.log('Response data:', response.data);
+                            console.log('Response status:', response.status);
                             break;
                         } catch (error) {
                             console.log(`Failed with endpoint ${ep}:`, error.response?.status || error.message);
+                            if (error.response?.data) {
+                                console.log('Error response data:', error.response.data);
+                            }
+                            if (error.response?.status) {
+                                console.log('Error response status:', error.response.status);
+                            }
                         }
                     }
                     
                     if (!response) {
-                        throw new Error('All OAuth endpoints failed');
+                        console.error('All OAuth endpoints failed for provider:', provider);
+                        console.error('Tried endpoints:', endpoints);
+                        throw new Error(`All OAuth endpoints failed for ${provider}`);
                     }
 
                     console.log('Backend response:', response.status, response.data);
 
+                    // Check if backend returned an error status even with 200 HTTP status
+                    if (response.data?.status === 'BAD_REQUEST' || response.data?.status === 'ERROR') {
+                        console.error('Backend authentication failed:', response.data);
+                        const errorMessage = response.data?.data || response.data?.message || 'OAuth2 authentication failed';
+                        console.error('Error message:', errorMessage);
+                        throw new Error(errorMessage);
+                    }
+
                     if (response.status === 200 && response.data?.data) {
                         const data = response.data.data;
                         console.log('User data received:', data);
+                        
+                        if (typeof data === 'string' && data.includes('authentication failed')) {
+                            console.error('Backend returned error message as data:', data);
+                            throw new Error(data);
+                        }
                         
                         if (data.accessToken) {
                             storage.set("accessToken", data.accessToken);

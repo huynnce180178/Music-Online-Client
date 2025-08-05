@@ -19,12 +19,20 @@
       
       if (!callbackUrl.searchParams.has('provider')) {
         const urlPath = window.location.pathname;
-        if (urlPath.includes('facebook') || window.location.search.includes('facebook')) {
+        const searchParams = window.location.search;
+        console.log('URL path:', urlPath);
+        console.log('Search params:', searchParams);
+        
+        if (urlPath.includes('facebook') || searchParams.includes('facebook')) {
           callbackUrl.searchParams.set('provider', 'facebook');
+          console.log('Setting provider to facebook');
         } else {
           callbackUrl.searchParams.set('provider', 'google');
+          console.log('Setting provider to google');
         }
       }
+      
+      console.log('Final callback URL:', callbackUrl.toString());
       
       callbackUrl.searchParams.set('oauth2', 'true');
       
