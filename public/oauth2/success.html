@@ -18,7 +18,12 @@
       });
       
       if (!callbackUrl.searchParams.has('provider')) {
-        callbackUrl.searchParams.set('provider', 'google');
+        const urlPath = window.location.pathname;
+        if (urlPath.includes('facebook') || window.location.search.includes('facebook')) {
+          callbackUrl.searchParams.set('provider', 'facebook');
+        } else {
+          callbackUrl.searchParams.set('provider', 'google');
+        }
       }
       
       callbackUrl.searchParams.set('oauth2', 'true');
