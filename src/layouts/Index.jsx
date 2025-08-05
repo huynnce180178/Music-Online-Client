@@ -225,6 +225,7 @@ function AppRoutes(props) {
           <Route path="albums/rejected" element={<ArtistRejectedAlbums />} />
           <Route path="albums/deleted" element={<ArtistDeletedAlbums />} />
           <Route path="albums/deleted-by-admin" element={<ArtistDeletedByAdminAlbums />} />
+          <Route index element={<ArtistAllSongs />} />
           <Route path="songs" element={<ArtistAllSongs />} />
           <Route path="songs/pending" element={<ArtistPendingSongs />} />
           <Route path="songs/rejected" element={<ArtistRejectedSongs />} />

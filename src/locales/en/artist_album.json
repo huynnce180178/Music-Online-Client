@@ -38,5 +38,23 @@
   "album_name_placeholder": "Enter album name",
   "release_date_placeholder": "Select release date",
   "release_date_future_only": "Only future release dates are allowed",
-  "release_date_too_old": "Release date is too far in the past"
+  "release_date_too_old": "Release date is too far in the past",
+  "albums_page_title": "Album List",
+  "albums_page_description": "Discover the featured albums of the artist.",
+  "album_detail": {
+    "album": "Album",
+    "songs_in_album": "Songs in Album",
+    "no_songs_found": "No songs found in this album.",
+    "back_to_albums": "Back to album list",
+    "artist": "Artist",
+    "play": "Play All",
+    "shuffle": "Shuffle",
+    "download": "Download",
+    "add_to_playlist": "Add to playlist",
+    "login_to_download": "Please login to download songs.",
+    "download_failed": "Download failed.",
+    "na": "N/A",
+    "no_bio": "No artist bio available.",
+    "login_to_view_artist": "You need to login to view artist profile."
+  }
 }

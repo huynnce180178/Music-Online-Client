@@ -38,5 +38,23 @@
   "delete_failed": "Không thể xóa album!",
   "old_cover": "Ảnh cũ",
   "album_name_placeholder": "Nhập tên album",
-  "release_date_placeholder": "Chọn ngày phát hành"
+  "release_date_placeholder": "Chọn ngày phát hành",
+  "albums_page_title": "Danh sách album",
+  "albums_page_description": "Khám phá các album nổi bật của nghệ sĩ.",
+  "album_detail": {
+    "album": "Album",
+    "songs_in_album": "Các bài hát trong album",
+    "no_songs_found": "Không tìm thấy bài hát nào trong album này.",
+    "back_to_albums": "Quay về danh sách album",
+    "artist": "Nghệ sĩ",
+    "play": "Phát tất cả",
+    "shuffle": "Phát ngẫu nhiên",
+    "download": "Tải về",
+    "add_to_playlist": "Thêm vào playlist",
+    "login_to_download": "Vui lòng đăng nhập để tải bài hát.",
+    "download_failed": "Tải bài hát thất bại.",
+    "na": "Không xác định",
+    "no_bio": "Nghệ sĩ chưa có mô tả.",
+    "login_to_view_artist": "Bạn cần đăng nhập để xem trang nghệ sĩ."
+  }
 }

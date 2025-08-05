@@ -1,9 +1,9 @@
 // AlbumDetail.js
 import { useEffect, useState, useContext } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { PlayerContext } from "../context/PlayerContext";
-import { PlayCircleFilled, EllipsisOutlined, DownloadOutlined, PlusSquareOutlined } from '@ant-design/icons';
-import { Dropdown, Modal, Select, message } from "antd";
+import { PlayCircleFilled, SwapOutlined, EllipsisOutlined, DownloadOutlined, PlusSquareOutlined } from '@ant-design/icons';
+import { Dropdown, message } from "antd";
 import SubscriptionModalPlan from "./SubscriptionModalPlan";
 import AddToPlaylistModal from "./AddToPlaylistModal";
 import PropTypes from "prop-types";
@@ -163,30 +163,48 @@ export default function AlbumDetail() {
     const { t } = useTranslation();
     const { albumId } = useParams();
     const [songs, setSongs] = useState([]);
+    const [album, setAlbum] = useState(null); // album detail info
     const [addToPlaylistModal, setAddToPlaylistModal] = useState({ open: false, songId: null });
     const [showUpgradeModal, setShowUpgradeModal] = useState(false);
     const [downloadModal, setDownloadModal] = useState({ open: false, songId: null, downloadInfo: null });
 
     const playerCtx = useContext(PlayerContext) || {};
     const { playSong } = playerCtx;
+    const navigate = useNavigate();
 
     useEffect(() => {
-        fetch(`${BASE_API_URL}/api/v1/guest/ablum/${albumId}/songs`)
-            .then(res => res.json())
-            .then(data => {
-                if (data && data.data) {
-                    setSongs(data.data);
+        // Đúng endpoint là /api/v1/guest/ablum/{albumId}/songs (chú ý: "ablum" bị typo, phải giống backend)
+        axios.get(`${BASE_API_URL}/api/v1/guest/ablum/${albumId}/songs`)
+            .then(res => {
+                if (res.data && res.data.data) {
+                    setAlbum(res.data.data.albumDetailResponseDTO);
+                    setSongs(res.data.data.songResponseDTO || []);
+                } else {
+                    setAlbum(null);
+                    setSongs([]);
                 }
             })
-            .catch(err => {
-                console.error(err);
+            .catch(() => {
+                setAlbum(null);
                 setSongs([]);
             });
     }, [albumId]);
 
     const handleSelectSong = (songId) => {
         const allSongIds = songs.map(song => song.id || song.songId);
-        playSong(songId, allSongIds);
+        playSong(songId, allSongIds, "album", albumId);
+    };
+
+    // Play all
+    const handlePlayAll = () => {
+        if (songs.length > 0) playSong(songs[0].id || songs[0].songId, songs.map(s => s.id || s.songId), "album", albumId);
+    };
+    // Shuffle
+    const handleShuffle = () => {
+        if (songs.length > 0) {
+            const shuffled = [...songs].sort(() => Math.random() - 0.5);
+            playSong(shuffled[0].id || shuffled[0].songId, shuffled.map(s => s.id || s.songId), "album", albumId);
+        }
     };
 
     // Download function
@@ -202,7 +220,7 @@ export default function AlbumDetail() {
             setShowUpgradeModal(true);
             return;
         }
-        
+
         try {
             const infoResponse = await axios.get(`${BASE_API_URL}/api/v1/user/downloads/${songId}/info`, {
                 headers: { Authorization: `Bearer ${token}` }
@@ -237,6 +255,125 @@ export default function AlbumDetail() {
                     padding: "0 2vw",
                 }}
             >
+                {/* Back button styled like PlaylistSongsPage */}
+                <button
+                    type="button"
+                    onClick={() => navigate(-1)}
+                    style={{
+                        margin: "32px 0 24px 0",
+                        color: "#3ed8ff",
+                        background: "none",
+                        border: "none",
+                        fontWeight: 600,
+                        fontSize: 16,
+                        boxShadow: "none",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 8,
+                        cursor: "pointer"
+                    }}
+                >
+                    &#8592; {t('playlist.back')}
+                </button>
+                {/* Album header section */}
+                <div className="album-header-flex" style={{ display: "flex", gap: 40, alignItems: "center", marginBottom: 36 }}>
+                    <img
+                        src={album?.coverImage || "/img/default-cover.png"}
+                        alt={album?.title}
+                        style={{
+                            width: 300,
+                            height: 300,
+                            borderRadius: 18,
+                            objectFit: "cover",
+                            boxShadow: "0 4px 32px #0006",
+                            border: "2.5px solid #3ed8ff22"
+                        }}
+                    />
+                    <div style={{ flex: 1 }}>
+                        <h1 style={{
+                            color: "#fff",
+                            fontWeight: 700,
+                            fontSize: 32,
+                            marginBottom: 14,
+                            letterSpacing: 0.5
+                        }}>{album?.title || t('album_detail.album')}</h1>
+                        <div style={{ color: "#8ca0c6", fontSize: 16, marginBottom: 12, maxWidth: 500 }}>
+                            {album?.owner?.bio || t('profile.no_bio')}
+                        </div>
+                        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 18 }}>
+                            <img
+                                src={album?.owner?.profileImage || "/img/default-avatar.png"}
+                                alt={album?.owner?.fullName}
+                                style={{
+                                    width: 48,
+                                    height: 48,
+                                    borderRadius: "50%",
+                                    objectFit: "cover",
+                                    border: "2px solid #3ed8ff22",
+                                    marginRight: 8
+                                }}
+                            />
+                            <Link
+                                to={album?.owner?.userId ? `/artist/${album?.owner?.userId}` : "#"}
+                                style={{
+                                    color: album?.owner?.userId ? "#3ed8ff" : "#b3b3b3",
+                                    fontSize: 17,
+                                    fontWeight: 600,
+                                    textDecoration: "none",
+                                    transition: "color 0.18s",
+                                    pointerEvents: album?.owner?.userId ? "auto" : "none"
+                                }}
+                                onClick={e => {
+                                    if (!localStorage.getItem("accessToken")) {
+                                        e.preventDefault();
+                                        message.info(t('album_detail.login_to_view_artist'));
+                                    }
+                                }}
+                            >
+                                {album?.owner?.fullName || t('profile.na')}
+                            </Link>
+                        </div>
+
+                        <div style={{ display: "flex", gap: 16 }}>
+                            <button
+                                type="button"
+                                style={{
+                                    fontWeight: 600,
+                                    fontSize: 18,
+                                    borderRadius: 8,
+                                    background: "#3ed8ff",
+                                    border: "none",
+                                    color: "#181c2b",
+                                    padding: "8px 24px",
+                                    cursor: "pointer"
+                                }}
+                                onClick={handlePlayAll}
+                            >
+                                <PlayCircleFilled style={{ marginRight: 8 }} />
+                                {t('playlist.play')}
+                            </button>
+                            <button
+                                type="button"
+                                style={{
+                                    fontWeight: 600,
+                                    fontSize: 18,
+                                    borderRadius: 8,
+                                    background: "#23283e",
+                                    border: "none",
+                                    color: "#3ed8ff",
+                                    padding: "8px 24px",
+                                    cursor: "pointer"
+                                }}
+                                onClick={handleShuffle}
+                            >
+                                <SwapOutlined style={{ marginRight: 8 }} />
+                                {t('playlist.shuffle')}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                {/* End album header */}
+
                 <div
                     style={{
                         display: "flex",
@@ -265,10 +402,10 @@ export default function AlbumDetail() {
                 ) : (
                     songs.map((song, idx) => (
                         <SongRow
-                            key={song.id || song.songId}
+                            key={song.id}
                             song={{
-                                songId: song.id || song.songId,
-                                songName: song.title || song.songName,
+                                songId: song.id,
+                                songName: song.title,
                                 artistName: song.artistName,
                                 profile_pic_url: song.profilePicUrl,
                                 views: song.views,
@@ -302,6 +439,70 @@ export default function AlbumDetail() {
             />
 
             <style>{`
+                .album-header-flex {
+                    display: flex;
+                    gap: 40px;
+                    align-items: center;
+                    margin-bottom: 36px;
+                }
+                .album-header-flex img {
+                    width: 300px;
+                    height: 300px;
+                    border-radius: 18px;
+                    object-fit: cover;
+                    box-shadow: 0 4px 32px #0006;
+                    border: 2.5px solid #3ed8ff22;
+                }
+                .album-header-flex h1 {
+                    color: #fff;
+                    font-weight: 700;
+                    font-size: 32px;
+                    margin-bottom: 14px;
+                    letter-spacing: 0.5px;
+                }
+                @media (max-width: 900px) {
+                    .album-header-flex {
+                        flex-direction: column !important;
+                        gap: 18px !important;
+                        align-items: flex-start !important;
+                    }
+                    .album-header-flex img {
+                        width: 120px !important;
+                        height: 120px !important;
+                        border-radius: 12px !important;
+                    }
+                    .album-header-flex h1 {
+                        font-size: 22px !important;
+                    }
+                }
+                @media (max-width: 600px) {
+                    .album-header-flex {
+                        flex-direction: column !important;
+                        gap: 10px !important;
+                        align-items: flex-start !important;
+                        margin-bottom: 18px !important;
+                    }
+                    .album-header-flex img {
+                        width: 70vw !important;
+                        max-width: 160px !important;
+                        height: 70vw !important;
+                        max-height: 160px !important;
+                        border-radius: 10px !important;
+                        margin-bottom: 8px !important;
+                    }
+                    .album-header-flex h1 {
+                        font-size: 16px !important;
+                        margin-bottom: 6px !important;
+                    }
+                    .album-header-flex > div {
+                        width: 100% !important;
+                    }
+                    .album-header-flex .album-owner-avatar {
+                        width: 32px !important;
+                        height: 32px !important;
+                        margin-right: 6px !important;
+                    }
+                }
                 .song-row-modern:hover {
                     background: #163d56 !important;
                     box-shadow: 0 4px 24px 0 rgba(33,168,197,0.18);
@@ -355,3 +556,4 @@ export default function AlbumDetail() {
         </div>
     );
 }
+

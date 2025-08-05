@@ -46,6 +46,8 @@ function SongPlay({ sidebarWidth = 0 }) {
     const [addToPlaylistModal, setAddToPlaylistModal] = useState({ open: false, songId: null });
     const adAudioRef = useRef(null);
     const [viewed, setViewed] = useState(false);
+    const [adElapsed, setAdElapsed] = useState(0);
+    const [canSkipAd, setCanSkipAd] = useState(false);
 
     const generatePlayUrl = useCallback(() => {
         switch (playType) {
@@ -229,7 +231,16 @@ function SongPlay({ sidebarWidth = 0 }) {
         }
     };
 
+    useEffect(() => {
+        if (adPlaying) setShowModal(true);
+    }, [adPlaying]);
 
+    useEffect(() => {
+        if (!adPlaying) {
+            setAdElapsed(0);
+            setCanSkipAd(false);
+        }
+    }, [adPlaying, adAudio?.mediaUrl]);
 
     useEffect(() => {
         // Get songCount from localStorage on mount
@@ -490,33 +501,55 @@ function SongPlay({ sidebarWidth = 0 }) {
                             onEnded={handleAdEnded}
                             controls={false}
                             style={{ width: 160, background: "transparent" }}
+                            onTimeUpdate={e => {
+                                const sec = Math.floor(e.target.currentTime);
+                                setAdElapsed(sec);
+                                setCanSkipAd(sec >= 10);
+                            }}
                         />
                     </div>
                     {/* Ad Actions */}
                     <div className="player-actions" style={{
                         flex: "0 0 160px", marginRight: '10px', display: "flex", gap: 12, alignItems: "center"
                     }}>
-                        {adAudio.redirectUrl && (
+                        {canSkipAd ? (
                             <Button
                                 style={{
                                     borderRadius: 24,
                                     fontWeight: 700,
-                                    background: "linear-gradient(135deg, #3ed8ff 60%, #1fa2ff 100%)",
+                                    background: "#3ed8ff",
                                     color: "#23283e",
                                     border: "none",
                                     padding: "8px 22px",
                                     fontSize: 16,
                                     boxShadow: "0 2px 12px #3ed8ff33",
-                                    transition: "background 0.18s, color 0.18s"
+                                    marginLeft: 0
                                 }}
-                                onMouseOver={e => e.currentTarget.style.background = "#29aaff"}
-                                onMouseOut={e => e.currentTarget.style.background = "linear-gradient(135deg, #3ed8ff 60%, #1fa2ff 100%)"}
-                                onClick={() => setShowModal(true)}
+                                onClick={() => {
+                                    if (adAudioRef.current) {
+                                        adAudioRef.current.pause();
+                                        adAudioRef.current.currentTime = 0;
+                                    }
+                                    handleAdEnded();
+                                    setAdElapsed(0);
+                                    setCanSkipAd(false);
+                                    setShowModal(false);
+                                }}
                             >
-                                {t("song_detail.learn_more")}
+                                {t("Skip") || "Bỏ qua"}
                             </Button>
+                        ) : (
+                            <div style={{
+                                color: "#8ca0c6",
+                                marginLeft: 0,
+                                fontWeight: 600,
+                                whiteSpace: "nowrap",
+                                minWidth: 120,
+                                textAlign: "center"
+                            }}>
+                                {`Skip after ${Math.max(0, 10 - adElapsed)} seconds`}
+                            </div>
                         )}
-
                     </div>
                 </div>
             ) : null}

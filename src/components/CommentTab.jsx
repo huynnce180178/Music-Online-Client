@@ -262,7 +262,7 @@ function RenderComment({
                     </Button>
                 </div>
             ) : (
-                <div style={{
+                <div className="comment-content" style={{
                     color: "#23283e",
                     fontSize: 15,
                     lineHeight: 1.7,
@@ -276,7 +276,7 @@ function RenderComment({
             )}
 
             {/* Row: reply + cảm xúc + thời gian */}
-            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <div className="comment-row-actions" style={{ display: "flex", alignItems: "center", gap: 10 }}>
                 <div style={{
                     display: "flex",
                     alignItems: "flex-start",
@@ -426,7 +426,9 @@ export default function CommentTab({ songId }) {
             const userRaw = localStorage.getItem("user");
             const userObj = JSON.parse(userRaw);
             currentUserId = userObj.userId;
-        } catch { }
+        } catch {
+            // intentionally ignored
+        }
     }
     const [comments, setComments] = useState([]);
     const [newComment, setNewComment] = useState("");
@@ -520,14 +522,17 @@ export default function CommentTab({ songId }) {
         <div
             style={{
                 color: "#23283e",
-                height: "100%",
+                height: "100vh",
                 display: "flex",
                 flexDirection: "column",
                 background: "linear-gradient(135deg, #f7fafc 0%, #eaf6fb 100%)",
                 boxShadow: "0 4px 24px #3ed8ff11",
                 scrollbarWidth: "none",
                 msOverflowStyle: "none",
-                minHeight: 0
+                minHeight: 0,
+                flex: 1,
+                position: "relative",
+                overflow: "auto",
             }}
         >
             <style>{`
@@ -553,7 +558,127 @@ export default function CommentTab({ songId }) {
                 cursor: not-allowed;
                 opacity: 0.5;
             }
-        `}</style>
+            /* Desktop layout */
+            @media (min-width: 601px) {
+                .comment-row-actions {
+                    flex-direction: row !important;
+                    gap: 10px !important;
+                }
+            }
+            /* Mobile layout */
+            @media (max-width: 600px) {
+                .comment-tab-scroll {
+                    padding: 0 2vw !important;
+                    max-height: 60vh !important;
+                }
+                .fb-reply-item {
+                    margin-left: 10px !important;
+                    padding: 10px 8px !important;
+                    border-radius: 8px !important;
+                }
+                .ant-avatar {
+                    width: 26px !important;
+                    height: 26px !important;
+                    font-size: 13px !important;
+                }
+                .ant-btn {
+                    font-size: 13px !important;
+                    height: 28px !important;
+                    min-width: 28px !important;
+                    border-radius: 6px !important;
+                    padding: 0 6px !important;
+                }
+                .ant-input, .ant-input-textarea {
+                    font-size: 13px !important;
+                    border-radius: 6px !important;
+                    padding: 6px 8px !important;
+                    width: 100% !important;
+                    min-width: 0 !important;
+                    box-sizing: border-box !important;
+                }
+                .comment-send-btn-inside {
+                    height: 22px !important;
+                    width: 26px !important;
+                    bottom: 8px !important;
+                    right: 10px !important;
+                }
+                .ant-modal {
+                    width: 95vw !important;
+                    max-width: 360px !important;
+                    left: 2vw !important;
+                }
+                .comment-input-container {
+                    padding: 8px 8px 8px 8px !important;
+                    border-radius: 8px !important;
+                    width: 100vw !important;
+                    left: 0 !important;
+                    min-width: 0 !important;
+                    box-sizing: border-box !important;
+                }
+                /* Chuyển các nút thành hàng dọc trên mobile */
+                .comment-row-actions {
+                    flex-direction: column !important;
+                    gap: 6px !important;
+                    align-items: flex-start !important;
+                }
+                .comment-content {
+                    margin-left: 0 !important;
+                    font-size: 13px !important;
+                }
+            }
+            @media (max-width: 400px) {
+                .fb-reply-item {
+                    margin-left: 4px !important;
+                    padding: 6px 4px !important;
+                    border-radius: 5px !important;
+                }
+                .ant-avatar {
+                    width: 18px !important;
+                    height: 18px !important;
+                    font-size: 10px !important;
+                }
+                .ant-btn {
+                    font-size: 10px !important;
+                    height: 20px !important;
+                    min-width: 20px !important;
+                    border-radius: 4px !important;
+                    padding: 0 3px !important;
+                }
+                .ant-input, .ant-input-textarea {
+                    font-size: 10px !important;
+                    border-radius: 4px !important;
+                    padding: 3px 4px !important;
+                    width: 100% !important;
+                    min-width: 0 !important;
+                    box-sizing: border-box !important;
+                }
+                .comment-send-btn-inside {
+                    height: 16px !important;
+                    width: 18px !important;
+                    bottom: 4px !important;
+                    right: 4px !important;
+                }
+                .ant-modal {
+                    width: 99vw !important;
+                    max-width: 220px !important;
+                    left: 0 !important;
+                }
+                .comment-input-container {
+                    padding: 4px 4px 4px 4px !important;
+                    border-radius: 5px !important;
+                    width: 100vw !important;
+                    left: 0 !important;
+                    min-width: 0 !important;
+                    box-sizing: border-box !important;
+                }
+                .comment-content {
+                    font-size: 10px !important;
+                }
+            }
+            .fb-reply-item {
+                border-left: 2px solid #eaf6fb;
+            }
+            `}</style>
             {/* Phần comment list cuộn riêng */}
             <div
                 className="comment-tab-scroll"
@@ -583,6 +708,7 @@ export default function CommentTab({ songId }) {
             </div>
             {/* Phần input cố định phía dưới */}
             <div
+                className="comment-input-container"
                 style={{
                     background: "#fff",
                     borderRadius: 10,
@@ -591,7 +717,11 @@ export default function CommentTab({ songId }) {
                     position: "sticky",
                     bottom: 0,
                     zIndex: 2,
-                    borderTop: "1px solid #eaf6fb"
+                    borderTop: "1px solid #eaf6fb",
+                    width: "100%",
+                    minWidth: 0,
+                    boxSizing: "border-box",
+                    display: "block"
                 }}
             >
                 {replyTo && (
@@ -606,7 +736,7 @@ export default function CommentTab({ songId }) {
                         />
                     </div>
                 )}
-                <div style={{ position: "relative" }}>
+                <div style={{ position: "relative", width: "100%" }}>
                     <Input.TextArea
                         value={newComment}
                         onChange={e => setNewComment(e.target.value)}
@@ -619,6 +749,9 @@ export default function CommentTab({ songId }) {
                             paddingRight: 42, // Chừa không gian cho icon send
                             marginBottom: 0,
                             resize: "none",
+                            width: "100%",
+                            minWidth: 0,
+                            boxSizing: "border-box"
                         }}
                         disabled={submitting}
                         onPressEnter={e => {

@@ -1,10 +1,7 @@
 import { useEffect, useState } from "react";
-import { Table, Image, message, Grid, Space, Button, Modal, Input, Tabs, Tag, Form, DatePicker, Select, Upload } from "antd";
-import { DeleteOutlined } from "@ant-design/icons";
+import { Table, Image, message, Grid, Space, Button, Modal, Input, Tabs, Tag } from "antd";
 import axios from "axios";
 import { useTranslation } from 'react-i18next';
-import { UploadOutlined } from "@ant-design/icons";
-import dayjs from "dayjs";
 import BASE_API_URL from "../../../services/base.api.url";
 
 const { useBreakpoint } = Grid;
@@ -23,51 +20,46 @@ export default function AdminAdvertisement() {
     const [deleteLoading, setDeleteLoading] = useState(false);
     const [deleteReason, setDeleteReason] = useState("");
     const [pagination, setPagination] = useState({ current: 1, pageSize: 10 });
-    const [showCreateModal, setShowCreateModal] = useState(false);
-    const [createLoading, setCreateLoading] = useState(false);
-    const [adType, setAdType] = useState();
     const [createForm, setCreateForm] = useState({
-        adType: '',
         startDate: '',
         endDate: '',
         redirectUrl: '',
         mediaFile: null
     });
-    const handleCreateChange = (e) => {
-        const { name, value, type, files } = e.target;
-        setCreateForm(f => ({
-            ...f,
-            [name]: type === 'file' ? files[0] : value
-        }));
-    };
-    const handleCreateAd = async () => {
-        if (!createForm.adType || !createForm.startDate || !createForm.endDate) {
-            message.warning('Please fill all required fields!');
-            return;
-        }
-        setCreateLoading(true);
-        try {
-            const token = localStorage.getItem('accessToken');
-            const formData = new FormData();
-            formData.append('adType', createForm.adType);
-            formData.append('startDate', createForm.startDate);
-            formData.append('endDate', createForm.endDate);
-            formData.append('redirectUrl', createForm.redirectUrl || '');
-            if (createForm.mediaFile) formData.append('mediaFile', createForm.mediaFile);
-            const adminEmail = localStorage.getItem('userName') || localStorage.getItem('email') || '';
-            formData.append('adminEmail', adminEmail);
-            await axios.post(`${BASE_API_URL}/api/v1/admin/advertisements/create`, formData, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-            message.success('Advertisement created successfully!');
-            setShowCreateModal(false);
-            setCreateForm({ adType: '', startDate: '', endDate: '', redirectUrl: '', mediaFile: null });
-            fetchAdvertisements();
-        } catch (err) {
-            message.error(err?.response?.data?.message || 'Failed to create advertisement!');
-        }
-        setCreateLoading(false);
-    };
+    //     const { name, value, type, files } = e.target;
+    //     setCreateForm(f => ({
+    //         ...f,
+    //         [name]: type === 'file' ? files[0] : value
+    //     }));
+    // };
+    // const handleCreateAd = async () => {
+    //     if (!createForm.adType || !createForm.startDate || !createForm.endDate) {
+    //         message.warning('Please fill all required fields!');
+    //         return;
+    //     }
+    //     setCreateLoading(true);
+    //     try {
+    //         const token = localStorage.getItem('accessToken');
+    //         const formData = new FormData();
+    //         formData.append('adType', createForm.adType);
+    //         formData.append('startDate', createForm.startDate);
+    //         formData.append('endDate', createForm.endDate);
+    //         formData.append('redirectUrl', createForm.redirectUrl || '');
+    //         if (createForm.mediaFile) formData.append('mediaFile', createForm.mediaFile);
+    //         const adminEmail = localStorage.getItem('userName') || localStorage.getItem('email') || '';
+    //         formData.append('adminEmail', adminEmail);
+    //         await axios.post(`${BASE_API_URL}/api/v1/admin/advertisements/create`, formData, {
+    //             headers: { Authorization: `Bearer ${token}` },
+    //         });
+    //         message.success('Advertisement created successfully!');
+    //         // setShowCreateModal(false);
+    //         setCreateForm({ adType: '', startDate: '', endDate: '', redirectUrl: '', mediaFile: null });
+    //         fetchAdvertisements();
+    //     } catch (err) {
+    //         message.error(err?.response?.data?.message || 'Failed to create advertisement!');
+    //     }
+    //     setCreateLoading(false);
+    // };
 
     const screens = useBreakpoint();
     const isTablet = !screens.lg;
@@ -232,52 +224,41 @@ export default function AdminAdvertisement() {
             style={{ borderRadius: 12 }}
         />
     );
-
-    const [adminAddForm] = Form.useForm();
-    const [adminAddLoading, setAdminAddLoading] = useState(false);
-    const handleAdminAdd = async () => {
-        try {
-            const values = await adminAddForm.validateFields();
-            setAdminAddLoading(true);
-            const formData = new FormData();
-            formData.append("adType", values.adType);
-            formData.append("startDate", values.startDate.format("YYYY-MM-DD"));
-            formData.append("endDate", values.endDate.format("YYYY-MM-DD"));
-            let fileToUpload = null;
-            if (values.mediaFile && values.mediaFile.file) {
-                fileToUpload = values.mediaFile.file.originFileObj || values.mediaFile.file;
-            } else if (values.mediaFile && values.mediaFile.originFileObj) {
-                fileToUpload = values.mediaFile.originFileObj;
-            }
-            if (fileToUpload) {
-                formData.append("mediaFile", fileToUpload);
-            }
-            formData.append("redirectUrl", values.redirectUrl || "");
-            formData.append("adminEmail", values.adminEmail);
-            const token = localStorage.getItem("accessToken");
-            await axios.post(`${BASE_API_URL}/api/v1/admin/advertisements/create`, formData, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-            message.success('Advertisement created successfully!');
-            setShowCreateModal(false);
-            adminAddForm.resetFields();
-            fetchAdvertisements();
-        } catch (err) {
-            if (err?.errorFields) return;
-            message.error(err?.response?.data?.message || 'Failed to create advertisement!');
-        }
-        setAdminAddLoading(false);
-    };
+    //     try {
+    //         // const values = await adminAddForm.validateFields();
+    //         // setAdminAddLoading(true);
+    //         const formData = new FormData();
+    //         formData.append("adType", values.adType);
+    //         formData.append("startDate", values.startDate.format("YYYY-MM-DD"));
+    //         formData.append("endDate", values.endDate.format("YYYY-MM-DD"));
+    //         let fileToUpload = null;
+    //         if (values.mediaFile && values.mediaFile.file) {
+    //             fileToUpload = values.mediaFile.file.originFileObj || values.mediaFile.file;
+    //         } else if (values.mediaFile && values.mediaFile.originFileObj) {
+    //             fileToUpload = values.mediaFile.originFileObj;
+    //         }
+    //         if (fileToUpload) {
+    //             formData.append("mediaFile", fileToUpload);
+    //         }
+    //         formData.append("redirectUrl", values.redirectUrl || "");
+    //         formData.append("adminEmail", values.adminEmail);
+    //         const token = localStorage.getItem("accessToken");
+    //         await axios.post(`${BASE_API_URL}/api/v1/admin/advertisements/create`, formData, {
+    //             headers: { Authorization: `Bearer ${token}` },
+    //         });
+    //         message.success('Advertisement created successfully!');
+    //         // setShowCreateModal(false);
+    //         // adminAddForm.resetFields();
+    //         fetchAdvertisements();
+    //     } catch (err) {
+    //         if (err?.errorFields) return;
+    //         message.error(err?.response?.data?.message || 'Failed to create advertisement!');
+    //     }
+    //     // setAdminAddLoading(false);
+    // };
 
     return (
         <div style={{ padding: isTablet ? 8 : 16 }}>
-            <Button
-                type="primary"
-                style={{ marginBottom: 16 }}
-                onClick={() => setShowCreateModal(true)}
-            >
-                {t('admin_ad.create_advertisement') || 'Tạo quảng cáo'}
-            </Button>
             <Tabs
                 defaultActiveKey="AUDIO"
                 items={[
@@ -314,62 +295,6 @@ export default function AdminAdvertisement() {
                     onChange={(e) => setDeleteReason(e.target.value)}
                     placeholder={t('admin_ads.delete_reason_placeholder')}
                 />
-            </Modal>
-            <Modal
-                open={showCreateModal}
-                title={t('admin_ad.create_advertisement') || 'Tạo quảng cáo'}
-                onCancel={() => {
-                    setShowCreateModal(false);
-                    if (adminAddForm) adminAddForm.resetFields();
-                    setAdType(undefined);
-                }}
-                onOk={handleAdminAdd}
-                okText={t('admin_ad.create_advertisement') || 'Tạo quảng cáo'}
-                confirmLoading={adminAddLoading}
-                destroyOnHidden
-                centered
-            >
-                <Form form={adminAddForm} layout="vertical" autoComplete="off">
-                    <Form.Item
-                        name="adType"
-                        label={t('admin_ad.ad_type')}
-                        rules={[{ required: true, message: t('admin_ad.please_select_type') }]}
-                    >
-                        <Select
-                            placeholder={t('admin_ad.select_type')}
-                            options={[
-                                { label: t('artist_ad.audio'), value: "AUDIO" },
-                                { label: t('artist_ad.banner'), value: "BANNER" },
-                            ]}
-                            onChange={v => setAdType(v)}
-                        />
-                    </Form.Item>
-                    <Form.Item
-                        name="mediaFile"
-                        label={t('admin_ad.media_file')}
-                        valuePropName="file"
-                        rules={[{ required: true, message: t('admin_ad.please_upload_media_file') }]}
-                    >
-                        <Upload
-                            beforeUpload={() => false}
-                            maxCount={1}
-                            accept={
-                                adType === "AUDIO"
-                                    ? ".mp3"
-                                    : adType === "BANNER"
-                                        ? ".jpg,.jpeg,.png,.gif,.webp"
-                                        : undefined
-                            }
-                        >
-                            <Button icon={<UploadOutlined />}>{t('admin_ad.select_file') || t('artist_ad.select_file')}</Button>
-                        </Upload>
-                    </Form.Item>
-                    {adType === "BANNER" && (
-                        <Form.Item name="redirectUrl" label={t('admin_ad.redirect_url')}>
-                            <Input placeholder={t('admin_ad.optional')} />
-                        </Form.Item>
-                    )}
-                </Form>
             </Modal>
         </div>
     );
