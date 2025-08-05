@@ -46,10 +46,35 @@ export default function OAuthCallback() {
                 if (isOAuthCallback(searchParams)) {
                     console.log('Processing OAuth callback...');
                     
-                    const response = await axios.get(`${BASE_API_URL}/${provider}/oauth2-success`, {
-                        withCredentials: true,
-                        timeout: 5000 
-                    });
+                    // Try different possible OAuth endpoints
+                    let response = null;
+                    let endpoint = null;
+                    
+                    const endpoints = [
+                        `${BASE_API_URL}/${provider}/oauth2-success`,
+                        `${BASE_API_URL}/api/v1/auth/${provider}/callback`,
+                        `${BASE_API_URL}/oauth2/callback/${provider}`,
+                        `${BASE_API_URL}/api/v1/oauth2/${provider}/callback`
+                    ];
+                    
+                    for (const ep of endpoints) {
+                        try {
+                            console.log(`Trying endpoint: ${ep}`);
+                            response = await axios.get(ep, {
+                                withCredentials: true,
+                                timeout: 5000 
+                            });
+                            endpoint = ep;
+                            console.log(`Success with endpoint: ${ep}`);
+                            break;
+                        } catch (error) {
+                            console.log(`Failed with endpoint ${ep}:`, error.response?.status || error.message);
+                        }
+                    }
+                    
+                    if (!response) {
+                        throw new Error('All OAuth endpoints failed');
+                    }
 
                     console.log('Backend response:', response.status, response.data);
 

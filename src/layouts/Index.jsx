@@ -27,6 +27,8 @@ import GenresList from "../components/GenresList";
 import ActivateAccount from "../components/ActiveAccount";
 import ResetPassword from "../components/ResetPassword";
 import OAuthCallback from "../components/OAuthCallback";
+import OAuthTest from "../components/OAuthTest";
+import WebSocketDebug from "../components/WebSocketDebug";
 import MoodModal from "../components/MoodModal";
 import TokenExpirationModal from "../components/TokenExpirationModal";
 
@@ -249,6 +251,8 @@ function AppRoutes(props) {
 
         {/* OAuth Callback */}
         <Route path="/oauth/callback" element={<OAuthCallback />} />
+        <Route path="/oauth/test" element={<OAuthTest />} />
+        <Route path="/oauth/debug" element={<WebSocketDebug />} />
 
         {/* Main user routes */}
         <Route
