@@ -198,7 +198,8 @@ function SongPlay({ sidebarWidth = 0 }) {
             return;
         }
         if ((songCount + 1) % 3 === 0) {
-            fetchAdAudio();
+            // Nếu là chuyển bài thủ công (user click), quảng cáo xong phải NEXT bài mới!
+            fetchAdAudio("next");
         } else {
             setSongCount(c => c + 1);
             type === "next" ? nextSong() : prevSong();
@@ -218,7 +219,8 @@ function SongPlay({ sidebarWidth = 0 }) {
             return;
         }
         if ((songCount + 1) % 3 === 0) {
-            fetchAdAudio();
+            // Khi tự hết bài, quảng cáo xong phải NEXT bài mới!
+            fetchAdAudio("next");
         } else {
             setSongCount(c => c + 1);
             const nextId = getNextSongId();

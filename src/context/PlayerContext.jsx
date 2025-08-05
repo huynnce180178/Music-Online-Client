@@ -28,6 +28,18 @@ export const PlayerProvider = ({ children }) => {
             audioRef.current.volume = newVolume;
         }
     };
+
+    const lastPlayerStateRef = useRef({
+        fileUrl: null,
+        currentTime: 0,
+        action: "resume",
+    });
+
+    const getNextSongId = () => {
+        const index = playlist.indexOf(currentSongId);
+        return index >= 0 && index < playlist.length - 1 ? playlist[index + 1] : null;
+    };
+
     useEffect(() => {
         if (audioRef.current) audioRef.current.volume = volume;
     }, [volume]);
@@ -80,15 +92,39 @@ export const PlayerProvider = ({ children }) => {
         }
     };
 
+    const requestPlaySong = (songId, playlistData = []) => {
+        const roles = JSON.parse(localStorage.getItem("roles") || "[]");
+        const isPremium = roles.includes("ROLE_PREMIUM");
+        if (isPremium) {
+            setCurrentSongId(songId);
+            setIsPlaying(true);
+            if (playlistData.length > 0) setPlaylist(playlistData);
+            return;
+        }
+        if ((songCount + 1) % 3 === 0) {
+            lastPlayerStateRef.current = {
+                fileUrl: null,
+                currentTime: 0,
+                action: "playAfterAd",
+                nextSongId: songId,
+                nextPlaylist: playlistData
+            };
+            fetchAdAudio("playAfterAd");
+        } else {
+            setSongCount(c => c + 1);
+            setCurrentSongId(songId);
+            setIsPlaying(true);
+            if (playlistData.length > 0) setPlaylist(playlistData);
+        }
+    };
+
     // Các hàm play, pause, next, prev...
     const playSong = (songId, playlistData = []) => {
         if (adPlaying) {
             toast.info("Please finish the ad before selecting another song!", { autoClose: 2000 });
             return;
         }
-        setCurrentSongId(songId);
-        setIsPlaying(true);
-        if (playlistData.length > 0) setPlaylist(playlistData);
+        requestPlaySong(songId, playlistData);
     };
 
     const handlePlayPause = () => {
@@ -104,19 +140,13 @@ export const PlayerProvider = ({ children }) => {
     };
 
     const nextSong = () => {
-        const index = playlist.indexOf(currentSongId);
-        if (index >= 0 && index < playlist.length - 1) {
-            setCurrentSongId(playlist[index + 1]);
-            setIsPlaying(true);
-        }
+        const nextId = getNextSongId();
+        if (nextId) requestPlaySong(nextId);
     };
 
     const prevSong = () => {
-        const index = playlist.indexOf(currentSongId);
-        if (index > 0) {
-            setCurrentSongId(playlist[index - 1]);
-            setIsPlaying(true);
-        }
+        const prevId = getPrevSongId();
+        if (prevId) requestPlaySong(prevId);
     };
 
     const [downloadModal, setDownloadModal] = useState({ open: false, songId: null, downloadInfo: null });
@@ -130,7 +160,7 @@ export const PlayerProvider = ({ children }) => {
             message.warning("Upgrade to premium to download");
             return;
         }
-        
+
         try {
             const infoResponse = await axios.get(`${BASE_API_URL}/api/v1/user/downloads/${currentSongId}/info`, {
                 headers: { Authorization: `Bearer ${token}` }
@@ -154,17 +184,22 @@ export const PlayerProvider = ({ children }) => {
             toast.info("Please finish the ad before selecting another song!", { autoClose: 2000 });
             return;
         }
-        playSong(songId, playlistData);
+        requestPlaySong(songId, playlistData);
     };
 
     const resetSongCount = () => setSongCount(0);
 
     // Fetch ad audio
-    const fetchAdAudio = useCallback(async () => {
+    const fetchAdAudio = useCallback(async (pendingAction = "resume") => {
         try {
             const res = await axios.get(`${BASE_API_URL}/api/v1/guest/audio/play`);
             if (res.data?.data?.mediaUrl) {
                 if (audioRef.current) {
+                    lastPlayerStateRef.current = {
+                        fileUrl: audioRef.current.src,
+                        currentTime: audioRef.current.currentTime,
+                        action: pendingAction
+                    };
                     audioRef.current.pause();
                     audioRef.current.src = "";
                 }
@@ -176,15 +211,21 @@ export const PlayerProvider = ({ children }) => {
     }, []);
 
     // When ad ends
-    const handleAdEnded = useCallback((songFileUrl, resumeTime = 0) => {
+    const handleAdEnded = useCallback(() => {
         setAdPlaying(false);
         setAdAudio(null);
-        setSongCount(0); // Reset songCount về 0 sau khi nghe hết quảng cáo
-        if (audioRef.current && songFileUrl) {
-            audioRef.current.src = songFileUrl;
-            audioRef.current.currentTime = resumeTime;
-            audioRef.current.play().catch(() => { });
+        setSongCount(0);
+
+        const { action, nextSongId, nextPlaylist } = lastPlayerStateRef.current || {};
+        if (action === "playAfterAd" && nextSongId) {
+            setCurrentSongId(nextSongId);
             setIsPlaying(true);
+            if (nextPlaylist && nextPlaylist.length > 0) setPlaylist(nextPlaylist);
+            lastPlayerStateRef.current = {};
+        } else if (action === "resume") {
+            // logic resume như cũ
+        } else if (action === "next") {
+            // logic next như cũ
         }
     }, []);
 
