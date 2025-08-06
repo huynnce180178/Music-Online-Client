@@ -17,15 +17,15 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
-      - name: Build React app
+      - name: Build Vite React App
         run: npm run build
 
-      - name: Azure Login
+      - name: Login to Azure
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
@@ -33,5 +33,6 @@ jobs:
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'music-online-client'  # Tên app trên Azure
-          package: './dist'                 # Thư mục build của React + Vite
+          app-name: 'music-online'        # 👈 tên web app chính xác từ Azure
+          slot-name: 'production'
+          package: './dist'               # 👈 thư mục sau khi build từ Vite
