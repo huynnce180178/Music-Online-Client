@@ -35,4 +35,5 @@ jobs:
         with:
           app-name: 'music-online'        # 👈 tên web app chính xác từ Azure
           slot-name: 'production'
-          package: './dist'               # 👈 thư mục sau khi build từ Vite
+          package: dist              # 👈 thư mục sau khi build từ Vite
+
