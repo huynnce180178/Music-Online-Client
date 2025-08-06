@@ -1,0 +1,6 @@
+{
+  "active_account.account_activated": "アカウントが有効化されました",
+  "active_account.activation_failed": "有効化失敗",
+  "active_account.resend_activation_email": "有効化メールを再送信",
+  "active_account.go_to_login": "ログインに移動"
+} 

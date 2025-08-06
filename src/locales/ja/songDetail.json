@@ -1,0 +1,15 @@
+{
+  "song_detail.album": "アルバム",
+  "song_detail.views": "ビュー",
+  "song_detail.duration": "再生時間",
+  "song_detail.lyrics": "歌詞",
+  "song_detail.comments": "コメント",
+  "song_detail.add_to_playlist": "プレイリストに追加",
+  "song_detail.download_song": "曲をダウンロード",
+  "song_detail.download_success": "曲のダウンロードが成功しました！",
+  "song_detail.add": "追加",
+  "song_detail.select_playlist": "プレイリストを選択",
+  "song_detail.sponsored_audio_break": "スポンサーオーディオブレイク",
+  "song_detail.advertisement": "広告",
+  "song_detail.learn_more": "詳細を見る"
+} 

@@ -1,0 +1,12 @@
+{
+  "notification.title": "알림",
+  "notification.clear_all_confirm": "모든 알림을 지우시겠습니까?",
+  "notification.clear": "지우기",
+  "notification.cancel": "취소",
+  "notification.unread": "읽지 않은 알림 {{count}}개",
+  "notification.no_new": "새 알림이 없습니다",
+  "notification.empty": "알림이 없습니다",
+  "notification.mark_as_read": "읽음으로 표시",
+  "notification.delete": "삭제",
+  "notification.default_title": "알림"
+} 

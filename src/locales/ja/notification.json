@@ -1,0 +1,12 @@
+{
+  "notification.title": "通知",
+  "notification.clear_all_confirm": "すべての通知を削除しますか？",
+  "notification.clear": "クリア",
+  "notification.cancel": "キャンセル",
+  "notification.unread": "未読通知{{count}}件",
+  "notification.no_new": "新しい通知がありません",
+  "notification.empty": "通知がありません",
+  "notification.mark_as_read": "既読にする",
+  "notification.delete": "削除",
+  "notification.default_title": "通知"
+} 

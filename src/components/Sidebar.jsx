@@ -1,4 +1,4 @@
-/* eslint-disable react/prop-types */
+import { useState, useEffect } from 'react';
 import { Menu, Button } from "antd";
 import {
     HomeOutlined,
@@ -21,9 +21,53 @@ export default function Sidebar({ collapsed, setCollapsed, visible, setVisible, 
     const location = useLocation();
     const { t } = useTranslation();
 
-    // Lấy roles từ localStorage
-    const roles = JSON.parse(localStorage.getItem("roles") || "[]");
+    // Lấy roles từ localStorage với state để theo dõi thay đổi
+    const [roles, setRoles] = useState(() => {
+        try {
+            return JSON.parse(localStorage.getItem("roles") || "[]");
+        } catch {
+            return [];
+        }
+    });
+    
     const isUser = roles.includes("ROLE_USER");
+    
+    // Cập nhật roles khi localStorage thay đổi
+    useEffect(() => {
+        const updateRoles = () => {
+            try {
+                const newRoles = JSON.parse(localStorage.getItem("roles") || "[]");
+                setRoles(newRoles);
+            } catch (error) {
+                console.error("Error parsing roles from localStorage:", error);
+                setRoles([]);
+            }
+        };
+
+        // Cập nhật roles ban đầu
+        updateRoles();
+
+        // Theo dõi thay đổi localStorage
+        const handleStorageChange = (e) => {
+            if (e.key === "roles") {
+                updateRoles();
+            }
+        };
+
+        window.addEventListener("storage", handleStorageChange);
+        
+        // Custom event để theo dõi thay đổi trong cùng tab
+        const handleRolesChange = () => {
+            updateRoles();
+        };
+        
+        window.addEventListener("rolesChanged", handleRolesChange);
+
+        return () => {
+            window.removeEventListener("storage", handleStorageChange);
+            window.removeEventListener("rolesChanged", handleRolesChange);
+        };
+    }, []);
 
     // Tạo menuItems động
     const menuItems = [

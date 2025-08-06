@@ -1,0 +1,14 @@
+{
+  "welcome": "アーティストダッシュボードへようこそ！",
+  "total_songs": "総曲数",
+  "total_albums": "総アルバム数",
+  "advertisements": "広告",
+  "total_revenue": "総収益",
+  "song_name": "曲名",
+  "plays": "再生",
+  "likes": "いいね",
+  "status": "ステータス",
+  "performance_overview": "パフォーマンス概要",
+  "recent_songs": "最近の曲",
+  "no_data": "データなし"
+} 

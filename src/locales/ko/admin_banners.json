@@ -1,0 +1,18 @@
+{
+  "admin_banners.position": "위치",
+  "admin_banners.banner_image": "배너 이미지",
+  "admin_banners.preview": "미리보기",
+  "admin_banners.actions": "작업",
+  "admin_banners.edit": "편집",
+  "admin_banners.delete": "삭제",
+  "admin_banners.delete_confirm": "이 배너를 삭제하시겠습니까?",
+  "admin_banners.cancel": "취소",
+  "admin_banners.add_banner": "배너 추가",
+  "admin_banners.update_banner": "배너 업데이트",
+  "admin_banners.add_new_banner": "새 배너 추가",
+  "admin_banners.update": "업데이트",
+  "admin_banners.save": "저장",
+  "admin_banners.position_required": "위치를 입력해주세요!",
+  "admin_banners.image_required": "이미지를 선택해주세요!",
+  "admin_banners.select_image": "이미지 선택"
+} 

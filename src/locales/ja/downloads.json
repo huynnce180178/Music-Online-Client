@@ -1,0 +1,12 @@
+{
+  "downloads.title": "ダウンロード",
+  "downloads.downloadNow": "今すぐダウンロード",
+  "downloads.no_downloads": "まだダウンロードがありません。",
+  "downloads.noSongsToDownload": "ダウンロードする曲がありません。",
+  "downloads.no_songs": "ダウンロードされた曲がありません。",
+  "downloads.number": "#",
+  "downloads.song_title": "曲タイトル",
+  "downloads.album": "アルバム",
+  "downloads.duration": "再生時間",
+  "downloads.remove": "削除"
+} 

@@ -5,10 +5,12 @@ import { message } from "antd";
 import { toast } from "react-toastify";
 import BASE_API_URL from "../services/base.api.url";
 import DownloadModal from "../components/DownloadModal";
+import { useTranslation } from 'react-i18next';
 
 export const PlayerContext = createContext();
 
 export const PlayerProvider = ({ children }) => {
+    const { t } = useTranslation();
     const [currentSongId, setCurrentSongId] = useState(null);
     const [isPlaying, setIsPlaying] = useState(false);
     const [playlist, setPlaylist] = useState([]);
@@ -157,7 +159,7 @@ export const PlayerProvider = ({ children }) => {
         const roles = JSON.parse(localStorage.getItem("roles")) || [];
         const canDownload = roles.includes("ROLE_PREMIUM") || roles.includes("ROLE_ARTIST");
         if (!canDownload) {
-            message.warning("Upgrade to premium to download");
+            message.warning(t('common.upgrade_to_premium_to_download'));
             return;
         }
 
@@ -169,7 +171,7 @@ export const PlayerProvider = ({ children }) => {
             setDownloadModal({ open: true, songId: currentSongId, downloadInfo });
         } catch (error) {
             console.error('Download error:', error);
-            message.error("Download failed");
+            message.error(t('common.download_failed'));
         }
     };
 

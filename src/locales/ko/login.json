@@ -1,0 +1,13 @@
+{
+  "login": "로그인",
+  "email": "이메일",
+  "password": "비밀번호",
+  "please_enter_email": "이메일을 입력해주세요!",
+  "invalid_email": "유효하지 않은 이메일입니다!",
+  "enter_email": "이메일을 입력하세요",
+  "please_enter_password": "비밀번호를 입력해주세요!",
+  "enter_password": "비밀번호를 입력하세요",
+  "forgot_password": "비밀번호를 잊으셨나요?",
+  "no_account": "계정이 없으신가요?",
+  "register_here": "여기서 가입하세요"
+} 

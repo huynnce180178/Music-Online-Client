@@ -1,0 +1,23 @@
+{
+  "mood_modal.title": "プレイリストの提案のために気分を選択してください",
+  "mood_modal.skip": "スキップ",
+  "mood_modal.submit": "送信",
+  "mood_modal.happy_and_positive": "幸せでポジティブ",
+  "mood_modal.feeling_sad": "悲しい気分",
+  "mood_modal.angry_or_frustrated": "怒っているかイライラしている",
+  "mood_modal.tired_or_sleepy": "疲れているか眠い",
+  "mood_modal.excited_and_energetic": "興奮してエネルギッシュ",
+  "mood_modal.calm_and_relaxed": "落ち着いてリラックス",
+  "mood_modal.ready_to_party": "パーティーの準備完了",
+  "mood_modal.a_bit_down": "少し落ち込んでいる",
+  "mood_modal.already_submitted": "今日はすでに気分を送信しました！",
+  "mood_modal.check_error": "今日の気分ステータスを確認できませんでした！",
+  "mood_modal.select_warning": "気分を選択してください！",
+  "mood_modal.submit_success": "気分が送信されました！プレイリストが更新されます。",
+  "mood_modal.submit_error": "気分を送信できませんでした！",
+  "mood_modal.fun_message_1": "🎵 気分に合う完璧な曲を探しています...",
+  "mood_modal.fun_message_2": "💃 音楽が感情と一緒に踊るようにしましょう！",
+  "mood_modal.fun_message_3": "🎧 良い雰囲気が来ています！",
+  "mood_modal.fun_message_4": "🕺 少々お待ちください、プレイリストが作成されています！",
+  "mood_modal.fun_message_5": "🎶 音楽は感情の速記です。しばらくお待ちください..."
+} 

@@ -1,12 +1,14 @@
 import { Card, Dropdown, Menu, Button } from "antd";
 import { MoreOutlined, PlayCircleOutlined, DownloadOutlined } from "@ant-design/icons";
+import { useTranslation } from 'react-i18next';
 
 export default function PlaylistCard({ playlist, onEdit, onDelete, onPlay }) {
+    const { t } = useTranslation();
     const menu = (
         <Menu>
-            <Menu.Item key="edit" onClick={onEdit}>Sửa...</Menu.Item>
-            <Menu.Item key="download" icon={<DownloadOutlined />}>Tải về</Menu.Item>
-            <Menu.Item key="delete" danger onClick={onDelete}>Xóa khỏi Thư viện</Menu.Item>
+            <Menu.Item key="edit" onClick={onEdit}>{t('playlist.edit')}</Menu.Item>
+            <Menu.Item key="download" icon={<DownloadOutlined />}>{t('playlist.download')}</Menu.Item>
+            <Menu.Item key="delete" danger onClick={onDelete}>{t('playlist.delete_from_library')}</Menu.Item>
         </Menu>
     );
 

@@ -375,7 +375,7 @@ function SongPlay({ sidebarWidth = 0 }) {
                         >
                             <i className={liked ? "bi bi-heart-fill" : "bi bi-heart"}></i>
                         </button>
-                        <button className="player-btn" title={t("song_detail.download_song") || "Download"} onClick={handleDownload}>
+                        <button className="player-btn" title={t("song_detail.download_song") || t("common.download")} onClick={handleDownload}>
                             <i className="bi bi-download"></i>
                         </button>
                         <button

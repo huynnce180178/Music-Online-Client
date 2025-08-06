@@ -1,0 +1,13 @@
+{
+  "artist_profile.songs": "곡",
+  "artist_profile.albums": "앨범",
+  "artist_profile.follow": "팔로우",
+  "artist_profile.views": "조회수",
+  "artist_profile.duration": "재생 시간",
+  "artist_profile.no_songs_available": "사용 가능한 곡이 없습니다.",
+  "artist_profile.released": "발매일",
+  "artist_profile.type": "유형",
+  "artist_profile.loading_songs": "곡을 불러오는 중...",
+  "artist_profile.no_songs_in_album": "이 앨범에 곡이 없습니다.",
+  "artist_profile.no_albums_available": "사용 가능한 앨범이 없습니다."
+} 

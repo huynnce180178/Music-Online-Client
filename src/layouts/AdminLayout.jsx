@@ -47,6 +47,14 @@ export default function AdminLayout({ children }) {
 
     useTokenExpirationCheck();
 
+    // Khôi phục ngôn ngữ từ localStorage khi component mount
+    useEffect(() => {
+        const savedLanguage = localStorage.getItem('i18nextLng');
+        if (savedLanguage && savedLanguage !== i18n.language) {
+            i18n.changeLanguage(savedLanguage);
+        }
+    }, [i18n]);
+
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [collapsed, setCollapsed] = useState(false);
     const [showRoleModal, setShowRoleModal] = useState(false);
@@ -73,7 +81,39 @@ export default function AdminLayout({ children }) {
     }, [isMobile]);
 
     useEffect(() => {
-        setRoles(JSON.parse(localStorage.getItem("roles") || "[]"));
+        const updateRoles = () => {
+            try {
+                const newRoles = JSON.parse(localStorage.getItem("roles") || "[]");
+                setRoles(newRoles);
+            } catch (error) {
+                console.error("Error parsing roles from localStorage:", error);
+                setRoles([]);
+            }
+        };
+
+        // Cập nhật roles ban đầu
+        updateRoles();
+
+        // Theo dõi thay đổi localStorage
+        const handleStorageChange = (e) => {
+            if (e.key === "roles") {
+                updateRoles();
+            }
+        };
+
+        window.addEventListener("storage", handleStorageChange);
+        
+        // Custom event để theo dõi thay đổi trong cùng tab
+        const handleRolesChange = () => {
+            updateRoles();
+        };
+        
+        window.addEventListener("rolesChanged", handleRolesChange);
+
+        return () => {
+            window.removeEventListener("storage", handleStorageChange);
+            window.removeEventListener("rolesChanged", handleRolesChange);
+        };
     }, []);
 
     useEffect(() => {
@@ -104,6 +144,10 @@ export default function AdminLayout({ children }) {
 
     const handleSwitchRole = (role) => {
         setShowRoleModal(false);
+        
+        // Trigger custom event để cập nhật roles trong cùng tab
+        window.dispatchEvent(new Event("rolesChanged"));
+        
         if (role === "ROLE_ADMIN") navigate("/admin");
         else if (role === "ROLE_ARTIST") navigate("/artist");
         else navigate("/");
@@ -368,6 +412,8 @@ export default function AdminLayout({ children }) {
                                     items: [
                                         { key: 'vi', label: t('header.vi'), onClick: () => { i18n.changeLanguage('vi'); localStorage.setItem('i18nextLng', 'vi'); } },
                                         { key: 'en', label: t('header.en'), onClick: () => { i18n.changeLanguage('en'); localStorage.setItem('i18nextLng', 'en'); } },
+                                        { key: 'ko', label: t('header.ko'), onClick: () => { i18n.changeLanguage('ko'); localStorage.setItem('i18nextLng', 'ko'); } },
+                                        { key: 'ja', label: t('header.ja'), onClick: () => { i18n.changeLanguage('ja'); localStorage.setItem('i18nextLng', 'ja'); } },
                                     ],
                                 }}
                                 placement="bottomRight"
@@ -384,7 +430,10 @@ export default function AdminLayout({ children }) {
                                     }}
                                     aria-label={t('languages')}
                                 >
-                                    {i18n.language === 'vi' ? t('header.vi') : t('header.en')}
+                                    {i18n.language === 'vi' ? t('header.vi') : 
+                                     i18n.language === 'ko' ? t('header.ko') :
+                                     i18n.language === 'ja' ? t('header.ja') : 
+                                     t('header.en')}
                                 </Button>
                             </Dropdown>
                             <Dropdown menu={userMenu} placement="bottomRight" trigger={["click"]}>

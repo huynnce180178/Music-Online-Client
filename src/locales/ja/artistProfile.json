@@ -1,0 +1,13 @@
+{
+  "artist_profile.songs": "曲",
+  "artist_profile.albums": "アルバム",
+  "artist_profile.follow": "フォロー",
+  "artist_profile.views": "ビュー",
+  "artist_profile.duration": "再生時間",
+  "artist_profile.no_songs_available": "利用可能な曲がありません。",
+  "artist_profile.released": "リリース日",
+  "artist_profile.type": "タイプ",
+  "artist_profile.loading_songs": "曲を読み込み中...",
+  "artist_profile.no_songs_in_album": "このアルバムに曲がありません。",
+  "artist_profile.no_albums_available": "利用可能なアルバムがありません。"
+} 

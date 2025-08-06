@@ -311,7 +311,7 @@ export default function ArtistProfile() {
             }}>
                 {loading ? (
                     <div style={{ color: "#3ed8ff", fontSize: 22, marginTop: 24, fontWeight: 500 }}>
-                        Loading...
+                        {t('loading')}
                     </div>
                 ) : (
                     <>

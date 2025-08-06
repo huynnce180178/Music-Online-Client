@@ -1,0 +1,16 @@
+{
+  "admin_dashboard.title": "管理者ダッシュボード",
+  "admin_dashboard.user": "ユーザー",
+  "admin_dashboard.artist": "アーティスト",
+  "admin_dashboard.premium": "プレミアム",
+  "admin_dashboard.statistics": "統計",
+  "admin_dashboard.album": "アルバム",
+  "admin_dashboard.song": "曲",
+  "admin_dashboard.genre": "ジャンル",
+  "admin_dashboard.comment": "コメント",
+  "admin_dashboard.total_users": "総ユーザー数",
+  "admin_dashboard.total_subscriptions": "総サブスクリプション数",
+  "admin_dashboard.total_system_stats": "総システム統計",
+  "admin_dashboard.start_date": "開始日",
+  "admin_dashboard.end_date": "終了日"
+} 

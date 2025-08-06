@@ -1,0 +1,23 @@
+{
+  "mood_modal.title": "재생목록 추천을 위해 기분을 선택하세요",
+  "mood_modal.skip": "건너뛰기",
+  "mood_modal.submit": "제출",
+  "mood_modal.happy_and_positive": "행복하고 긍정적",
+  "mood_modal.feeling_sad": "슬픈 기분",
+  "mood_modal.angry_or_frustrated": "화나거나 좌절한",
+  "mood_modal.tired_or_sleepy": "피곤하거나 졸린",
+  "mood_modal.excited_and_energetic": "흥미진진하고 활기찬",
+  "mood_modal.calm_and_relaxed": "차분하고 편안한",
+  "mood_modal.ready_to_party": "파티할 준비가 된",
+  "mood_modal.a_bit_down": "조금 우울한",
+  "mood_modal.already_submitted": "오늘 이미 기분을 제출하셨습니다!",
+  "mood_modal.check_error": "오늘의 기분 상태를 확인할 수 없습니다!",
+  "mood_modal.select_warning": "기분을 선택해주세요!",
+  "mood_modal.submit_success": "기분이 제출되었습니다! 재생목록이 업데이트됩니다.",
+  "mood_modal.submit_error": "기분을 제출할 수 없습니다!",
+  "mood_modal.fun_message_1": "🎵 기분에 맞는 완벽한 곡을 찾는 중...",
+  "mood_modal.fun_message_2": "💃 음악이 감정과 함께 춤추도록 하세요!",
+  "mood_modal.fun_message_3": "🎧 좋은 분위기가 오고 있습니다!",
+  "mood_modal.fun_message_4": "🕺 잠깐만요, 재생목록이 만들어지고 있습니다!",
+  "mood_modal.fun_message_5": "🎶 음악은 감정의 속기입니다. 잠시만 기다려주세요..."
+} 

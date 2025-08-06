@@ -1,0 +1,14 @@
+{
+  "welcome": "아티스트 대시보드에 오신 것을 환영합니다!",
+  "total_songs": "총 곡 수",
+  "total_albums": "총 앨범 수",
+  "advertisements": "광고",
+  "total_revenue": "총 수익",
+  "song_name": "곡 이름",
+  "plays": "재생",
+  "likes": "좋아요",
+  "status": "상태",
+  "performance_overview": "성과 개요",
+  "recent_songs": "최근 곡",
+  "no_data": "데이터 없음"
+} 

@@ -153,7 +153,7 @@ export default function Top15Albums() {
                 </span>
 
                 {loading ? (
-                    <div style={{ color: "#fff" }}>Loading...</div>
+                    <div style={{ color: "#fff" }}>{t('loading')}</div>
                 ) : (
                     <div className="row gx-5">
                         {columns.map((column, colIdx) => (

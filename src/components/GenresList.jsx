@@ -118,7 +118,7 @@ export default function GenresList() {
         playSong && playSong(songId, allSongIds);
     };
 
-    if (loading) return <div style={{ color: "#fff", textAlign: "center" }}>Loading...</div>;
+    if (loading) return <div style={{ color: "#fff", textAlign: "center" }}>{t('loading')}</div>;
 
     return (
         <div style={{ width: "100%", background: "#181c2b", padding: "0 0 48px 0", display: "flex", justifyContent: "center" }}>

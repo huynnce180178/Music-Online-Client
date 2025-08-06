@@ -73,7 +73,7 @@ export default function FreeDownloads() {
 
             <div className="table-responsive" style={{ maxWidth: '90%', margin: '0 auto' }}>
                 {loading ? (
-                    <div className="col-12 text-center text-light">Loading...</div>
+                    <div className="col-12 text-center text-light">{t('loading')}</div>
                 ) : downloads.length === 0 ? (
                     <div className="col-12 text-center mt-4">
                         <i className="bi bi-cloud-arrow-down" style={{ fontSize: 42, color: "#bbb" }}></i>

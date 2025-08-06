@@ -84,7 +84,7 @@ export default function Favorite() {
             <div className="table-responsive" style={{ maxWidth: '90%', margin: '0 auto' }}>
                 {loading ? (
                     <div className="col-12 text-center text-light" style={{ minHeight: '100%', padding: "60px 0" }}>
-                        Loading...
+                        {t('loading')}
                     </div>
                 ) : favorites.length === 0 ? (
                     <div className="col-12 text-center mt-4 mb-5" style={{ minHeight: '100%' }}>
