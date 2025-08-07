@@ -75,19 +75,18 @@ export default function OAuthCallback() {
                         };
                         
                         // Thêm email nếu có (Google case) hoặc để backend tự xử lý (Facebook case)
-                        if (emailFromUrl && !emailFromUrl.includes('@facebook.temp')) {
+                        if (emailFromUrl && !emailFromUrl.includes('@facebook.temp') && !emailFromUrl.includes('@facebook.com')) {
                             // Google case - có email thật
                             verifyData.email = decodeURIComponent(emailFromUrl);
                         } else if (provider === 'facebook' && facebookIdFromUrl) {
-                            // Facebook case - sử dụng format mà backend expect: facebookId@facebook.temp
-                            verifyData.email = `${facebookIdFromUrl}@facebook.temp`;
+                            // Facebook case - sử dụng format mà backend expect: facebook_facebookId (match với token subject)
+                            verifyData.email = `facebook_${facebookIdFromUrl}`;
                             console.log('Facebook login - sending email format:', verifyData.email);
-                            console.log('Facebook login - token should contain subject: facebook_' + facebookIdFromUrl);
-                        } else if (emailFromUrl && emailFromUrl.includes('@facebook.temp')) {
+                            console.log('Facebook login - token should contain subject:', verifyData.email);
+                        } else if (emailFromUrl && (emailFromUrl.includes('@facebook.temp') || emailFromUrl.includes('@facebook.com'))) {
                             // Facebook case - đã có format đúng
                             verifyData.email = decodeURIComponent(emailFromUrl);
                             console.log('Facebook login - using existing email format:', verifyData.email);
-                            console.log('Facebook login - facebookId from email:', emailFromUrl.replace('@facebook.temp', ''));
                         } else {
                             // Fallback
                             verifyData.email = emailFromUrl ? decodeURIComponent(emailFromUrl) : 'unknown@temp.com';
