@@ -75,12 +75,25 @@ export default function OAuthCallback() {
                         };
                         
                         // Thêm email nếu có (Google case) hoặc để backend tự xử lý (Facebook case)
-                        if (emailFromUrl) {
+                        if (emailFromUrl && !emailFromUrl.includes('@facebook.temp')) {
+                            // Google case - có email thật
                             verifyData.email = decodeURIComponent(emailFromUrl);
-                        } else if (provider === 'facebook') {
-                            // Facebook case - có thể không có email, backend sẽ extract từ token
-                            verifyData.email = 'facebook_user@temp.com'; // placeholder
+                        } else if (provider === 'facebook' && facebookIdFromUrl) {
+                            // Facebook case - sử dụng format mà backend expect: facebookId@facebook.temp
+                            verifyData.email = `${facebookIdFromUrl}@facebook.temp`;
+                            console.log('Facebook login - sending email format:', verifyData.email);
+                            console.log('Facebook login - token should contain subject: facebook_' + facebookIdFromUrl);
+                        } else if (emailFromUrl && emailFromUrl.includes('@facebook.temp')) {
+                            // Facebook case - đã có format đúng
+                            verifyData.email = decodeURIComponent(emailFromUrl);
+                            console.log('Facebook login - using existing email format:', verifyData.email);
+                            console.log('Facebook login - facebookId from email:', emailFromUrl.replace('@facebook.temp', ''));
+                        } else {
+                            // Fallback
+                            verifyData.email = emailFromUrl ? decodeURIComponent(emailFromUrl) : 'unknown@temp.com';
                         }
+                        
+                        console.log('DEBUG: Final verifyData being sent:', JSON.stringify(verifyData, null, 2));
                         
                         response = await axios.post(`${BASE_API_URL}/api/v1/oauth2/verify-token`, verifyData, {
                             timeout: 5000,
