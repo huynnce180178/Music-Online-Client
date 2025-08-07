@@ -51,16 +51,38 @@ export default function OAuthCallback() {
                     // Kiểm tra nếu có accessToken trong URL parameters (từ redirect)
                     const accessTokenFromUrl = searchParams.get('accessToken');
                     const emailFromUrl = searchParams.get('email');
+                    const userIdFromUrl = searchParams.get('userId');
+                    const userNameFromUrl = searchParams.get('userName');
+                    const facebookIdFromUrl = searchParams.get('facebookId');
+                    const needCompleteProfileFromUrl = searchParams.get('needCompleteProfile');
                     
-                    if (accessTokenFromUrl && emailFromUrl) {
+                    console.log('URL Parameters check:', {
+                        accessToken: accessTokenFromUrl ? 'Found' : 'Missing',
+                        email: emailFromUrl || 'Missing',
+                        userId: userIdFromUrl || 'Missing',
+                        userName: userNameFromUrl || 'Missing',
+                        facebookId: facebookIdFromUrl || 'Missing',
+                        provider: provider
+                    });
+                    
+                    if (accessTokenFromUrl) {
                         console.log('Found accessToken in URL, verifying with backend...');
                         
-                        // Gọi endpoint verify token
-                        response = await axios.post(`${BASE_API_URL}/api/v1/oauth2/verify-token`, {
+                        // Gọi endpoint verify token - Facebook có thể không có email
+                        const verifyData = {
                             accessToken: accessTokenFromUrl,
-                            provider: provider,
-                            email: decodeURIComponent(emailFromUrl)
-                        }, {
+                            provider: provider
+                        };
+                        
+                        // Thêm email nếu có (Google case) hoặc để backend tự xử lý (Facebook case)
+                        if (emailFromUrl) {
+                            verifyData.email = decodeURIComponent(emailFromUrl);
+                        } else if (provider === 'facebook') {
+                            // Facebook case - có thể không có email, backend sẽ extract từ token
+                            verifyData.email = 'facebook_user@temp.com'; // placeholder
+                        }
+                        
+                        response = await axios.post(`${BASE_API_URL}/api/v1/oauth2/verify-token`, verifyData, {
                             timeout: 5000,
                             headers: {
                                 'Content-Type': 'application/json'
@@ -79,8 +101,13 @@ export default function OAuthCallback() {
                         console.log('Backend response:', response.status, response.data);
                     }
 
-                    // Kiểm tra response
-                    if (response.status === 200 && response.data?.data) {
+                    // Kiểm tra response - phải check lỗi TRƯỚC khi check data
+                    if (response.data?.status === 'BAD_REQUEST' || response.data?.code === 400) {
+                        // Backend trả về lỗi BAD_REQUEST
+                        console.error('Backend authentication failed:', response.data);
+                        let errorMsg = response.data?.data || response.data?.message || 'OAuth2 authentication failed';
+                        throw new Error(errorMsg);
+                    } else if (response.status === 200 && response.data?.data && typeof response.data.data === 'object') {
                         const data = response.data.data;
                         console.log('User data received:', data);
                         
