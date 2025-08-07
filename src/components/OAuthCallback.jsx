@@ -75,7 +75,7 @@ export default function OAuthCallback() {
                         };
                         
                         // Thêm email nếu có (Google case) hoặc để backend tự xử lý (Facebook case)
-                        if (emailFromUrl && !emailFromUrl.includes('@facebook.temp') && !emailFromUrl.includes('@facebook.com')) {
+                        if (emailFromUrl && !emailFromUrl.includes('@facebook.temp') && !emailFromUrl.includes('@facebook.com') && !emailFromUrl.startsWith('facebook_')) {
                             // Google case - có email thật
                             verifyData.email = decodeURIComponent(emailFromUrl);
                         } else if (provider === 'facebook' && facebookIdFromUrl) {
@@ -83,7 +83,7 @@ export default function OAuthCallback() {
                             verifyData.email = `facebook_${facebookIdFromUrl}`;
                             console.log('Facebook login - sending email format:', verifyData.email);
                             console.log('Facebook login - token should contain subject:', verifyData.email);
-                        } else if (emailFromUrl && (emailFromUrl.includes('@facebook.temp') || emailFromUrl.includes('@facebook.com'))) {
+                        } else if (emailFromUrl && (emailFromUrl.includes('@facebook.temp') || emailFromUrl.includes('@facebook.com') || emailFromUrl.startsWith('facebook_'))) {
                             // Facebook case - đã có format đúng
                             verifyData.email = decodeURIComponent(emailFromUrl);
                             console.log('Facebook login - using existing email format:', verifyData.email);
