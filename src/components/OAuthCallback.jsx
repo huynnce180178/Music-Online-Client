@@ -43,16 +43,43 @@ export default function OAuthCallback() {
                 const provider = getOAuthProvider(searchParams);
                 console.log('OAuth provider:', provider);
                 
+                let response;
+                
                 if (isOAuthCallback(searchParams)) {
                     console.log('Processing OAuth callback...');
                     
-                    const response = await axios.get(`${BASE_API_URL}/${provider}/oauth2-success`, {
-                        withCredentials: true,
-                        timeout: 5000 
-                    });
+                    // Kiểm tra nếu có accessToken trong URL parameters (từ redirect)
+                    const accessTokenFromUrl = searchParams.get('accessToken');
+                    const emailFromUrl = searchParams.get('email');
+                    
+                    if (accessTokenFromUrl && emailFromUrl) {
+                        console.log('Found accessToken in URL, verifying with backend...');
+                        
+                        // Gọi endpoint verify token
+                        response = await axios.post(`${BASE_API_URL}/api/v1/oauth2/verify-token`, {
+                            accessToken: accessTokenFromUrl,
+                            provider: provider,
+                            email: decodeURIComponent(emailFromUrl)
+                        }, {
+                            timeout: 5000,
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        });
 
-                    console.log('Backend response:', response.status, response.data);
+                        console.log('Token verification response:', response.status, response.data);
+                    } else {
+                        // Fallback: gọi endpoint cũ nếu không có token trong URL
+                        console.log('No token in URL, trying legacy endpoint...');
+                        response = await axios.get(`${BASE_API_URL}/${provider}/oauth2-success`, {
+                            withCredentials: true,
+                            timeout: 5000 
+                        });
 
+                        console.log('Backend response:', response.status, response.data);
+                    }
+
+                    // Kiểm tra response
                     if (response.status === 200 && response.data?.data) {
                         const data = response.data.data;
                         console.log('User data received:', data);
@@ -106,7 +133,17 @@ export default function OAuthCallback() {
                         }, 500);
                     } else {
                         console.error('Invalid response from server:', response);
-                        throw new Error('Invalid response from server');
+                        console.error('Response data type:', typeof response.data?.data);
+                        console.error('Full response structure:', JSON.stringify(response.data, null, 2));
+                        
+                        let errorMsg = 'Invalid response from server';
+                        if (typeof response.data?.data === 'string') {
+                            errorMsg = response.data.data;
+                        } else if (response.data?.message) {
+                            errorMsg = response.data.message;
+                        }
+                        
+                        throw new Error(errorMsg);
                     }
                 } else {
                     console.log('No OAuth parameters found, redirecting to home');
