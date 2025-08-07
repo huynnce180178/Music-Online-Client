@@ -1,0 +1,16 @@
+{
+  "admin_dashboard.title": "관리자 대시보드",
+  "admin_dashboard.user": "사용자",
+  "admin_dashboard.artist": "아티스트",
+  "admin_dashboard.premium": "프리미엄",
+  "admin_dashboard.statistics": "통계",
+  "admin_dashboard.album": "앨범",
+  "admin_dashboard.song": "노래",
+  "admin_dashboard.genre": "장르",
+  "admin_dashboard.comment": "댓글",
+  "admin_dashboard.total_users": "전체 사용자",
+  "admin_dashboard.total_subscriptions": "전체 구독",
+  "admin_dashboard.total_system_stats": "전체 시스템 통계",
+  "admin_dashboard.start_date": "시작 날짜",
+  "admin_dashboard.end_date": "종료 날짜"
+} 

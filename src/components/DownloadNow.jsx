@@ -131,7 +131,7 @@ export default function DownloadNow() {
                 {/* Song Cards & States */}
                 {loading ? (
                     <div className="w-100 text-center text-light" style={{ minHeight: 160, padding: "60px 0" }}>
-                        Loading...
+                        {t('loading')}
                     </div>
                 ) : songsToShow.length === 0 ? (
                     <div className="w-100 text-center mt-4 mb-5" style={{ minHeight: 160 }}>

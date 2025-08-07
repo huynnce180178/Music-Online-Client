@@ -1,0 +1,20 @@
+{
+  "payment.need_login": "결제하려면 로그인이 필요합니다.",
+  "payment.cannot_load_package": "업그레이드 패키지 정보를 다운로드할 수 없습니다.",
+  "payment.loading": "패키지 정보를 불러오는 중...",
+  "payment.from_only": "월 {{price}} USD부터",
+  "payment.special_privileges": "특별한 혜택:",
+  "payment.payment_method": "결제 방법:",
+  "payment.paypal": "PayPal",
+  "payment.vnpay": "VNPay",
+  "payment.zalopay": "ZaloPay",
+  "payment.processing": "처리 중...",
+  "payment.buy_now": "지금 구매",
+  "payment.zalopay_error": "ZaloPay 결제에 실패했습니다.",
+  "payment.vnpay_error": "VNPay 결제에 실패했습니다.",
+  "payment.paypal_error": "PayPal 결제에 실패했습니다.",
+  "payment.payment_error": "결제 중 오류가 발생했습니다. 다시 시도해주세요!",
+  "payment.upgrade_title": "청취 경험을 업그레이드하세요",
+  "payment.upgrade_desc": "중단 없는 음악, 독점 콘텐츠 및 더 많은 프리미엄 혜택을 즐기세요.",
+  "payment.secure_payment": "모든 결제는 PayPal 또는 선호하는 방법으로 안전하게 처리됩니다."
+} 

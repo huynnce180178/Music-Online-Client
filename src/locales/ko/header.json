@@ -1,0 +1,13 @@
+{
+  "header.profile": "프로필",
+  "header.switch_role": "역할 전환",
+  "header.logout": "로그아웃",
+  "header.login": "로그인",
+  "header.register": "회원가입",
+  "languages": "언어",
+  "header.vi": "베트남어",
+  "header.en": "영어",
+  "header.ko": "한국어",
+  "header.ja": "일본어",
+  "header.upgrade_now": "지금 업그레이드!"
+} 

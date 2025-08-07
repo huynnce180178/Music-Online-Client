@@ -1,0 +1,18 @@
+{
+  "admin_genres.genre_name": "장르 이름",
+  "admin_genres.image": "이미지",
+  "admin_genres.actions": "작업",
+  "admin_genres.edit": "편집",
+  "admin_genres.delete": "삭제",
+  "admin_genres.delete_confirm": "이 장르를 삭제하시겠습니까?",
+  "admin_genres.cancel": "취소",
+  "admin_genres.save": "저장",
+  "admin_genres.update_genre": "장르 업데이트",
+  "admin_genres.add_genre": "장르 추가",
+  "admin_genres.select_image": "이미지 선택",
+  "admin_genres.old_cover": "기존 커버",
+  "admin_genres.genre_name_required": "장르 이름을 입력해주세요!",
+  "admin_genres.image_required": "이미지를 선택해주세요!",
+  "admin_genres.no_genres": "장르를 찾을 수 없습니다",
+  "admin_genres.search_placeholder": "장르 검색"
+} 

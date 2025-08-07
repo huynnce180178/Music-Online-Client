@@ -1,0 +1,17 @@
+{
+  "admin_users.avatar": "아바타",
+  "admin_users.full_name": "전체 이름",
+  "admin_users.email": "이메일",
+  "admin_users.bio": "소개",
+  "admin_users.roles": "역할",
+  "admin_users.role_artist": "아티스트",
+  "admin_users.role_user": "사용자",
+  "admin_users.role_admin": "관리자",
+  "admin_users.role_premium": "프리미엄",
+  "admin_users.status": "상태",
+  "admin_users.status_verify": "인증",
+  "admin_users.status_active": "활성",
+  "admin_users.status_blocked": "차단됨",
+  "admin_users.action": "작업",
+  "admin_users.search_placeholder": "사용자 검색"
+} 

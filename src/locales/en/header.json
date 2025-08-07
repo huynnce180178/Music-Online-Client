@@ -7,5 +7,7 @@
   "languages": "Languages",
   "header.vi": "Vietnamese",
   "header.en": "English",
+  "header.ko": "Korean",
+  "header.ja": "Japanese",
   "header.upgrade_now": "Upgrade Now!"
 } 

@@ -1,0 +1,15 @@
+{
+  "song_detail.album": "앨범",
+  "song_detail.views": "조회수",
+  "song_detail.duration": "재생 시간",
+  "song_detail.lyrics": "가사",
+  "song_detail.comments": "댓글",
+  "song_detail.add_to_playlist": "재생목록에 추가",
+  "song_detail.download_song": "곡 다운로드",
+  "song_detail.download_success": "곡 다운로드 성공!",
+  "song_detail.add": "추가",
+  "song_detail.select_playlist": "재생목록 선택",
+  "song_detail.sponsored_audio_break": "스폰서 오디오 브레이크",
+  "song_detail.advertisement": "광고",
+  "song_detail.learn_more": "더 알아보기"
+} 

@@ -610,7 +610,7 @@ export default function SongDetail({ songId, onClose }) {
 @media (max-width: 600px) {
     .song-title {
         font-size: 18px !important;
-        margin-bottom: 5px !important;
+        margin-bottom: 2px !important;
     }
     .artist-link .artist-name {
         font-size: 23px !important;
@@ -632,14 +632,14 @@ export default function SongDetail({ songId, onClose }) {
     .player-img {
         width: 70px !important;
         height: 70px !important;
-        margin-bottom: 5px !important;
+        margin-bottom: 2px !important;
     }
     .song-progress {
         max-width: 70vw !important;
-        margin-top: 6px !important;
-        margin-bottom: 6px !important;
+        margin: 6px 0 !important;
     }
-    .song-meta-hide-on-mobile {
+    .song-meta-hide-on-mobile,
+    .hide-on-mobile {
         display: none !important;
     }
     .lyrics-scroll {
@@ -651,6 +651,14 @@ export default function SongDetail({ songId, onClose }) {
         text-align: center !important;
         background: rgba(44,68,106,0.12);
         box-shadow: 0 2px 12px 0 rgba(62,216,255,0.04);
+        word-break: break-word !important;
+        overflow-wrap: break-word !important;
+        box-sizing: border-box !important;
+        max-width: 100% !important;
+    }
+    .player-img-wrapper, .waveform-svg {
+        width: 110px !important;
+        height: 110px !important;
     }
     .comment-input-container {
         display: flex;
@@ -672,39 +680,20 @@ export default function SongDetail({ songId, onClose }) {
         padding: 7px 18px !important;
         border-radius: 6px !important;
     }
-        .lyrics-scroll {
-        word-break: break-word !important;
-        overflow-wrap: break-word !important;
-        box-sizing: border-box !important;
-        max-width: 100% !important;
-    }
-
-    .comment-tab-container {
-        width: 100% !important;
-        padding: 0 2vw !important;
-        max-height: 100% !important;
-        box-sizing: border-box !important;
-    }
-
+    .comment-tab-container,
     .comment-item {
+        width: 100% !important;
         max-width: 100% !important;
+        box-sizing: border-box !important;
         word-break: break-word !important;
         overflow-wrap: break-word !important;
     }
-
     .comment-item .email,
     .comment-item .content {
         font-size: 13px !important;
         word-break: break-word !important;
         overflow-wrap: break-word !important;
     }
-        .player-img-wrapper {
-    width: 110px;
-    height: 110px;
-  }
-  .waveform-svg {
-    width: 110px; height: 110px;
-  }
 }
 
 /* ==== Tabs hiển thị đúng cho desktop/tablet/mobile ==== */
@@ -857,7 +846,7 @@ export default function SongDetail({ songId, onClose }) {
                             </div>
                         )}
 
-                        <div className="song-meta">
+                        <div className="song-meta hide-on-mobile">
                             <b>{t('song_detail.album')}:</b> {album ? album.titleAlbum : song?.albumName || "—"}
                         </div>
                         <div className="song-meta song-meta-hide-on-mobile">
@@ -984,10 +973,16 @@ export default function SongDetail({ songId, onClose }) {
                                         key: "comments",
                                         label: <span style={{ color: "#29aaff", fontWeight: 700 }}>{t('song_detail.comments')}</span>,
                                         children: (
-                                            <div className="lyrics-scroll">
-                                                <div className="comment-tab-container"> {/* ✅ Thêm lớp bọc */}
-                                                    <CommentTab songId={songId} currentUser={currentUser} />
-                                                </div>
+                                            <div
+                                                style={{
+                                                    flex: 1,
+                                                    minHeight: 0,
+                                                    display: "flex",
+                                                    flexDirection: "column",
+                                                    height: "calc(70vh - 200px)" // Giảm 240px nếu muốn tăng vùng comment
+                                                }}
+                                            >
+                                                <CommentTab songId={songId} currentUser={currentUser} />
                                             </div>
                                         )
                                     }
@@ -1007,8 +1002,16 @@ export default function SongDetail({ songId, onClose }) {
                     </div>
 
                     {/* Cột phải chỉ hiện Tabs trên desktop */}
-                    <div className="song-detail-right">
-                        <div className="desktop-tabs">
+                    <div className="song-detail-right" style={{
+                        flex: 1,
+                        minWidth: 0,
+                        display: "flex",
+                        flexDirection: "column",
+                        height: "90%",   // hoặc "100%" nếu cha là flex/full
+                        minHeight: 0,
+                        overflow: "hidden"
+                    }}>
+                        <div className="desktop-tabs" style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}>
                             <Tabs
                                 defaultActiveKey="lyrics"
                                 centered
@@ -1023,7 +1026,14 @@ export default function SongDetail({ songId, onClose }) {
                                         key: "comments",
                                         label: <span style={{ color: "#29aaff", fontWeight: 700 }}>{t('song_detail.comments')}</span>,
                                         children: (
-                                            <div className="lyrics-scroll">
+                                            <div style={{
+                                                flex: 1,
+                                                minHeight: 0,
+                                                display: "flex",
+                                                flexDirection: "column",
+                                                height: "100%",
+                                                maxHeight: "calc(100vh - 200px)"
+                                            }}>
                                                 <CommentTab songId={songId} currentUser={currentUser} />
                                             </div>
                                         )
@@ -1038,7 +1048,7 @@ export default function SongDetail({ songId, onClose }) {
                                     marginBottom: 18,
                                     textShadow: "0 2px 8px rgba(41, 170, 255, 0.3)"
                                 }}
-                                style={{ width: "100%", marginTop: 8 }}
+                                style={{ width: "100%", marginTop: 8, height: "100%", minHeight: 0 }} // ép Tabs 100% height
                             />
                         </div>
                     </div>

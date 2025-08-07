@@ -198,7 +198,8 @@ function SongPlay({ sidebarWidth = 0 }) {
             return;
         }
         if ((songCount + 1) % 3 === 0) {
-            fetchAdAudio();
+            // Nếu là chuyển bài thủ công (user click), quảng cáo xong phải NEXT bài mới!
+            fetchAdAudio("next");
         } else {
             setSongCount(c => c + 1);
             type === "next" ? nextSong() : prevSong();
@@ -218,7 +219,8 @@ function SongPlay({ sidebarWidth = 0 }) {
             return;
         }
         if ((songCount + 1) % 3 === 0) {
-            fetchAdAudio();
+            // Khi tự hết bài, quảng cáo xong phải NEXT bài mới!
+            fetchAdAudio("next");
         } else {
             setSongCount(c => c + 1);
             const nextId = getNextSongId();
@@ -373,7 +375,7 @@ function SongPlay({ sidebarWidth = 0 }) {
                         >
                             <i className={liked ? "bi bi-heart-fill" : "bi bi-heart"}></i>
                         </button>
-                        <button className="player-btn" title={t("song_detail.download_song") || "Download"} onClick={handleDownload}>
+                        <button className="player-btn" title={t("song_detail.download_song") || t("common.download")} onClick={handleDownload}>
                             <i className="bi bi-download"></i>
                         </button>
                         <button

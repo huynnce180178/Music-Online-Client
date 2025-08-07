@@ -18,6 +18,7 @@ export default function AdminPendingSongs() {
         total: 0,
     });
     const [previewSong, setPreviewSong] = useState(null);
+    const audioRef = useState(null)[0]; // Add ref for audio
 
     const { useBreakpoint } = Grid;
     const screens = useBreakpoint();
@@ -69,7 +70,7 @@ export default function AdminPendingSongs() {
     `;
         document.head.appendChild(style);
         return () => document.head.removeChild(style);
-    }, []);
+    }, [pagination.current, pagination.pageSize]); // Add dependencies for pagination
 
     const fetchPendingSongs = async () => {
         setLoading(true);
@@ -213,6 +214,15 @@ export default function AdminPendingSongs() {
         },
     ];
 
+    // Stop audio when closing preview modal
+    const handleClosePreview = () => {
+        setPreviewSong(null);
+        if (audioRef && audioRef.pause) {
+            audioRef.pause();
+            audioRef.currentTime = 0;
+        }
+    };
+
     return (
         <div style={{ padding: isTablet ? 8 : 16 }}>
             <Table
@@ -235,15 +245,18 @@ export default function AdminPendingSongs() {
             <Modal
                 title={previewSong ? previewSong.title : ""}
                 open={!!previewSong}
-                onCancel={() => setPreviewSong(null)}
+                onCancel={handleClosePreview}
                 footer={null}
+                destroyOnHidden
             >
                 {previewSong && (
                     <audio
+                        ref={audioRef}
                         src={previewSong.fileUrl}
                         controls
                         style={{ width: "100%" }}
                         autoPlay
+                        onEnded={handleClosePreview}
                     />
                 )}
             </Modal>

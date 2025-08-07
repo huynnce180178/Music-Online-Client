@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from 'react-i18next';
 import BASE_API_URL from "../services/base.api.url";
 
@@ -44,13 +44,14 @@ export default function TopGenres() {
     const { t } = useTranslation();
     const [breakpoint, setBreakpoint] = useState(getBreakpoint());
     const [genres, setGenres] = useState([]);
+    const navigate = useNavigate();
 
     useEffect(() => {
         fetch(`${BASE_API_URL}/api/v1/guest/Top10Genre`)
             .then(res => res.json())
             .then(data => {
-                // Đảm bảo 7 tile luôn được lấp đầy
                 const mapped = data.slice(0, 7).map((genre) => ({
+                    id: genre.genreId || genre.id,
                     name: genre.genreName,
                     image: genre.genreImage || "/img/default-cover.png",
                     totalViews: genre.totalViews,
@@ -66,10 +67,11 @@ export default function TopGenres() {
         return () => window.removeEventListener("resize", handleResize);
     }, []);
 
-    // Thêm genre giả nếu thiếu để grid luôn đầy đẹp
+    // Thêm genre fill nếu thiếu
     const genresWithFill = [...genres];
     while (genresWithFill.length < 7) {
         genresWithFill.push({
+            id: null,
             name: "",
             image: "/img/default-cover.png",
             totalViews: "",
@@ -77,7 +79,6 @@ export default function TopGenres() {
         });
     }
 
-    // Responsive grid size & style
     let gridTemplate = gridTemplateAreas(breakpoint);
     let colCount = 1, rowHeight = 110, gap = 14, borderRadius = 16, fontSizeTitle = 18, fontSizeGenre = 15, paddingMain = "16px 0 12px 0", paddingInner = "0 8px";
     if (breakpoint === "sm") {
@@ -93,16 +94,8 @@ export default function TopGenres() {
     }
 
     return (
-        <div style={{
-            width: "100%",
-            background: "#181c2b",
-            padding: paddingMain,
-        }}>
-            <div style={{
-                maxWidth: 1550,
-                margin: "0 auto",
-                padding: paddingInner,
-            }}>
+        <div style={{ width: "100%", background: "#181c2b", padding: paddingMain }}>
+            <div style={{ maxWidth: 1550, margin: "0 auto", padding: paddingInner }}>
                 <div style={{
                     display: "flex",
                     justifyContent: "space-between",
@@ -157,7 +150,6 @@ export default function TopGenres() {
                             alignItems: "flex-end",
                             minHeight: 0,
                         };
-                        // Kích thước đặc biệt cho từng tile
                         if (areaNames[idx] === "big") style.minHeight = rowHeight * (colCount === 1 ? 1 : 2) + gap;
                         if (areaNames[idx] === "tall") style.minHeight = rowHeight * (colCount === 1 ? 1 : 2) + gap;
                         if (areaNames[idx] === "wide") style.minWidth = "100%";
@@ -167,10 +159,20 @@ export default function TopGenres() {
                             <div
                                 key={idx}
                                 style={style}
+                                tabIndex={genre.isFill ? -1 : 0}
+                                onClick={() => {
+                                    if (!genre.isFill && genre.id) {
+                                        navigate(`/genres-viewmore?genreId=${genre.id}`);
+                                    }
+                                }}
+                                onKeyDown={e => {
+                                    if (!genre.isFill && genre.id && e.key === "Enter") {
+                                        navigate(`/genres-viewmore?genreId=${genre.id}`);
+                                    }
+                                }}
                                 onMouseOver={e => { if (!genre.isFill) e.currentTarget.style.transform = "scale(1.035)" }}
                                 onMouseOut={e => { if (!genre.isFill) e.currentTarget.style.transform = "scale(1)" }}
                             >
-                                {/* Ảnh */}
                                 <img
                                     src={genre.image}
                                     alt={genre.name}
@@ -185,7 +187,7 @@ export default function TopGenres() {
                                         left: 0, top: 0, zIndex: 0,
                                     }}
                                 />
-                                {/* Overlay */}
+                                {/* Overlay, tên genre ... */}
                                 <div style={{
                                     position: "absolute",
                                     left: 0,
@@ -195,7 +197,6 @@ export default function TopGenres() {
                                     background: "linear-gradient(0deg, #181c2b99 76%, #181c2b0d 98%)",
                                     zIndex: 1,
                                 }} />
-                                {/* Tên genre + sub */}
                                 <div style={{
                                     position: "relative",
                                     zIndex: 2,

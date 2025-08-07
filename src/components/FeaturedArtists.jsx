@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useNavigate } from "react-router-dom"; // Thêm import này
@@ -50,6 +50,14 @@ export default function FeaturedArtists() {
     };
 
     const artistsToShow = artists.slice(startIdx, startIdx + visibleCount);
+
+    // Helper function to format views
+    function formatViews(views) {
+        if (views >= 1e9) return (views / 1e9).toFixed(1).replace(/\.0$/, '') + 'B';
+        if (views >= 1e6) return (views / 1e6).toFixed(1).replace(/\.0$/, '') + 'M';
+        if (views >= 1e3) return (views / 1e3).toFixed(1).replace(/\.0$/, '') + 'K';
+        return views?.toLocaleString() || "0";
+    }
 
     return (
         <div style={{
@@ -149,7 +157,10 @@ export default function FeaturedArtists() {
                                     if (isLoggedIn) {
                                         navigate(`/artist/${artist.artistId}`);
                                     } else {
-                                        toast.info("Please login to view artist information!", { autoClose: 2000 });
+                                        toast.info(
+                                            t('featured_artists.login_to_view_artist') || "Please login to view artist information!",
+                                            { autoClose: 2000 }
+                                        );
                                     }
                                 }}
                                 onMouseEnter={e => {
@@ -175,7 +186,6 @@ export default function FeaturedArtists() {
                                         justifyContent: "flex-end",
                                     }}
                                 >
-                                    {/* Background Image */}
                                     <img
                                         src={artist.profile_image || "/img/default-cover.png"}
                                         alt={`${artist.firstName} ${artist.lastName}`}
@@ -189,8 +199,6 @@ export default function FeaturedArtists() {
                                             zIndex: 0,
                                         }}
                                     />
-
-                                    {/* Overlay */}
                                     <div style={{
                                         position: "absolute",
                                         left: 0,
@@ -200,8 +208,6 @@ export default function FeaturedArtists() {
                                         background: "linear-gradient(0deg, #181c2baa 0%, #181c2b11 100%)",
                                         zIndex: 1,
                                     }} />
-
-                                    {/* Artist Info */}
                                     <div style={{
                                         position: "relative",
                                         zIndex: 2,
@@ -218,8 +224,19 @@ export default function FeaturedArtists() {
                                             fontSize: 13,
                                             color: "#8ca0c6",
                                             marginTop: 4,
+                                            display: "flex",
+                                            alignItems: "center",
+                                            gap: 6
                                         }}>
-                                            {artist.totalViews ? `${artist.totalViews} views` : ""}
+                                            <span style={{
+                                                padding: "2px 8px",
+                                                fontWeight: 600,
+                                                color: "#3ed8ff",
+                                                fontSize: 13,
+                                                letterSpacing: 0.2
+                                            }}>
+                                                {formatViews(artist.totalViews)} {t('featured_artists.views')}
+                                            </span>
                                         </div>
                                     </div>
                                 </div>
@@ -232,3 +249,4 @@ export default function FeaturedArtists() {
         </div>
     );
 }
+

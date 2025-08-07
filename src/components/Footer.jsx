@@ -246,7 +246,7 @@ export default function Footer() {
                                     <circle cx="22" cy="26" r="2" fill="#fff" />
                                 </svg>
                             </div>
-                            <span style={style.brand}>Sound Sound</span>
+                            <span style={style.brand}>Melozy</span>
                         </div>
                         <div style={style.slogan}>
                             {t('footer.music_connects')}

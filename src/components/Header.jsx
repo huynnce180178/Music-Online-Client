@@ -312,7 +312,7 @@ function Header({ setModalType, onMenuClick, onSearch }) {
     const [recording, setRecording] = useState(false);
     const [speechSupported] = useState(() => !!(window.SpeechRecognition || window.webkitSpeechRecognition));
     const recognitionRef = useRef(null);
-    const [roles] = useState(() => {
+    const [roles, setRoles] = useState(() => {
         try {
             return JSON.parse(localStorage.getItem("roles") || "[]");
         } catch {
@@ -321,6 +321,51 @@ function Header({ setModalType, onMenuClick, onSearch }) {
     });
     const { resetSongCount } = useContext(PlayerContext) || {};
     const { t, i18n } = useTranslation();
+
+    // Khôi phục ngôn ngữ từ localStorage khi component mount
+    useEffect(() => {
+        const savedLanguage = localStorage.getItem('i18nextLng');
+        if (savedLanguage && savedLanguage !== i18n.language) {
+            i18n.changeLanguage(savedLanguage);
+        }
+    }, [i18n]);
+
+    // Cập nhật roles khi localStorage thay đổi
+    useEffect(() => {
+        const updateRoles = () => {
+            try {
+                const newRoles = JSON.parse(localStorage.getItem("roles") || "[]");
+                setRoles(newRoles);
+            } catch (error) {
+                console.error("Error parsing roles from localStorage:", error);
+                setRoles([]);
+            }
+        };
+
+        // Cập nhật roles ban đầu
+        updateRoles();
+
+        // Theo dõi thay đổi localStorage
+        const handleStorageChange = (e) => {
+            if (e.key === "roles") {
+                updateRoles();
+            }
+        };
+
+        window.addEventListener("storage", handleStorageChange);
+        
+        // Custom event để theo dõi thay đổi trong cùng tab
+        const handleRolesChange = () => {
+            updateRoles();
+        };
+        
+        window.addEventListener("rolesChanged", handleRolesChange);
+
+        return () => {
+            window.removeEventListener("storage", handleStorageChange);
+            window.removeEventListener("rolesChanged", handleRolesChange);
+        };
+    }, []);
 
     // Style injection với cleanup
     useEffect(() => {
@@ -429,6 +474,10 @@ function Header({ setModalType, onMenuClick, onSearch }) {
     // Hàm chuyển role
     const handleSwitchRole = (role) => {
         setShowRoleModal(false);
+        
+        // Trigger custom event để cập nhật roles trong cùng tab
+        window.dispatchEvent(new Event("rolesChanged"));
+        
         if (role === "ROLE_ADMIN") window.location.href = "/admin";
         else if (role === "ROLE_ARTIST") window.location.href = "/artist";
         else window.location.href = "/";
@@ -616,8 +665,10 @@ function Header({ setModalType, onMenuClick, onSearch }) {
                         <Dropdown
                             menu={{
                                 items: [
-                                    { key: 'vi', label: t('header.vi'), onClick: () => i18n.changeLanguage('vi') },
-                                    { key: 'en', label: t('header.en'), onClick: () => i18n.changeLanguage('en') },
+                                    { key: 'vi', label: t('header.vi'), onClick: () => { i18n.changeLanguage('vi'); localStorage.setItem('i18nextLng', 'vi'); } },
+                                    { key: 'en', label: t('header.en'), onClick: () => { i18n.changeLanguage('en'); localStorage.setItem('i18nextLng', 'en'); } },
+                                    { key: 'ko', label: t('header.ko'), onClick: () => { i18n.changeLanguage('ko'); localStorage.setItem('i18nextLng', 'ko'); } },
+                                    { key: 'ja', label: t('header.ja'), onClick: () => { i18n.changeLanguage('ja'); localStorage.setItem('i18nextLng', 'ja'); } },
                                 ],
                             }}
                             placement="bottomRight"
@@ -632,9 +683,14 @@ function Header({ setModalType, onMenuClick, onSearch }) {
                                     minWidth: isMobile ? 36 : 44,
                                     fontWeight: 500,
                                 }}
-                                aria-label={t('header.languages')}
+                                aria-label={t('languages')}
                             >
-                                {!isMobile && (i18n.language === 'vi' ? t('header.vi') : t('header.en'))}
+                                {!isMobile && (
+                                    i18n.language === 'vi' ? t('header.vi') : 
+                                    i18n.language === 'ko' ? t('header.ko') :
+                                    i18n.language === 'ja' ? t('header.ja') : 
+                                    t('header.en')
+                                )}
                             </Button>
                         </Dropdown>
                         {/* Premium button styles */}

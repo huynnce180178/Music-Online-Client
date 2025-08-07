@@ -103,7 +103,7 @@ export default function PaymentPage() {
     };
 
     if (loading) {
-        return <div style={{ textAlign: 'center', color: '#fff', marginTop: 80 }}>Loading package information...</div>;
+        return <div style={{ textAlign: 'center', color: '#fff', marginTop: 80 }}>{t('loading')}</div>;
     }
 
     if (error) {
@@ -149,7 +149,7 @@ export default function PaymentPage() {
                         className="mt-4 py-2 rounded-pill border-0 fw-bold"
                         style={{ backgroundColor: styles.btnBg, color: styles.btnColor, width: "100%" }}
                     >
-                        {submitting ? "Processing..." : "BUY NOW"}
+                        {submitting ? t('common.processing') : "BUY NOW"}
                     </button>
                 </div>
             </div>

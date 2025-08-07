@@ -472,9 +472,7 @@ export default function ArtistAllSongs() {
                                     if (!allowedTypes.includes(value.type)) {
                                         return Promise.reject(new Error(t('unsupported_audio_format')));
                                     }
-                                    if (value.size > 20 * 1024 * 1024) {
-                                        return Promise.reject(new Error(t('audio_max_size')));
-                                    }
+
                                     return Promise.resolve();
                                 }
                             }
@@ -510,10 +508,7 @@ export default function ArtistAllSongs() {
                     <Form.Item
                         label={t('lyrics')}
                         name="lyrics"
-                        rules={[
-                            { min: 10, message: t('lyrics_min_length') },
-                            { max: 2000, message: t('lyrics_max_length') }
-                        ]}
+
                     >
                         <Input.TextArea rows={4} placeholder={t('enter_lyrics_here')} />
                     </Form.Item>

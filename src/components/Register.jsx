@@ -347,7 +347,7 @@ export default function Register(props) {
                                         boxShadow: '0 2px 8px rgba(33,168,197,0.08)',
                                     }}
                                 >
-                                    {loading ? "Registering..." : t('register_now')}
+                                    {loading ? t('common.registering') : t('register_now')}
                                 </Button>
                             </Form.Item>
                         </Form>

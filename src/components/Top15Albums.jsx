@@ -1,11 +1,21 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useTranslation } from 'react-i18next';
+import PropTypes from 'prop-types';
 import BASE_API_URL from "../services/base.api.url";
 
 // Component AlbumRow để render mỗi album
 function AlbumRow({ album, index, showBorder, onClick }) {
+    // Helper function to format views
+    function formatViews(views) {
+        if (views >= 1e9) return (views / 1e9).toFixed(1).replace(/\.0$/, '') + 'B';
+        if (views >= 1e6) return (views / 1e6).toFixed(1).replace(/\.0$/, '') + 'M';
+        if (views >= 1e3) return (views / 1e3).toFixed(1).replace(/\.0$/, '') + 'K';
+        return views?.toLocaleString() || "0";
+    }
+    const { t } = useTranslation();
+
     return (
         <div
             className="position-relative px-0 py-2 mb-2"
@@ -57,10 +67,21 @@ function AlbumRow({ album, index, showBorder, onClick }) {
                         style={{
                             fontSize: 13,
                             fontFamily: "'Quicksand', 'Montserrat', sans-serif",
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 6
                         }}
                         title={album.totalViews}
                     >
-                        {album.totalViews} views
+                        <span style={{
+                            padding: "2px 8px",
+                            fontWeight: 600,
+                            color: "#3ed8ff",
+                            fontSize: 13,
+                            letterSpacing: 0.2
+                        }}>
+                            {formatViews(album.totalViews)} {t('featured_artists.views')}
+                        </span>
                     </div>
                 </div>
             </div>
@@ -78,6 +99,17 @@ function AlbumRow({ album, index, showBorder, onClick }) {
         </div>
     );
 }
+AlbumRow.propTypes = {
+    album: PropTypes.shape({
+        id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+        coverUrl: PropTypes.string,
+        title: PropTypes.string,
+        totalViews: PropTypes.number,
+    }).isRequired,
+    index: PropTypes.number.isRequired,
+    showBorder: PropTypes.bool.isRequired,
+    onClick: PropTypes.func.isRequired,
+};
 
 // Component chính để hiển thị Top 15 Albums
 export default function Top15Albums() {
@@ -121,7 +153,7 @@ export default function Top15Albums() {
                 </span>
 
                 {loading ? (
-                    <div style={{ color: "#fff" }}>Loading...</div>
+                    <div style={{ color: "#fff" }}>{t('loading')}</div>
                 ) : (
                     <div className="row gx-5">
                         {columns.map((column, colIdx) => (

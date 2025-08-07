@@ -179,6 +179,30 @@ export default function AdminSongs() {
             ellipsis: isTablet,
         },
         {
+            title: t('admin_songs.status'),
+            align: "center",
+            dataIndex: "status",
+            key: "status",
+            render: (status) => {
+                let color = "#3ed8ff";
+                let text = status;
+                if (status === "APPROVED") {
+                    color = "#52c41a";
+                    text = t('admin_songs.status_approved');
+                } else if (status === "REJECTED") {
+                    color = "#faad14";
+                    text = t('admin_songs.status_rejected');
+                } else if (status === "DELETED_BY_ADMIN") {
+                    color = "#ff4d4f";
+                    text = t('admin_songs.status_deleted_by_admin');
+                } else if (status === "DELETED_BY_ARTIST") {
+                    color = "#d46b08";
+                    text = t('admin_songs.status_deleted_by_artist');
+                }
+                return <Tag style={{ backgroundColor: color, color: "#fff", fontWeight: 500 }}>{text}</Tag>;
+            }
+        },
+        {
             title: t('admin_songs.actions'),
             key: "action",
             align: "center",

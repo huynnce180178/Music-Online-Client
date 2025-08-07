@@ -123,7 +123,7 @@ export default function History() {
                 {/* Nội dung */}
                 <div className="row g-4">
                     {loading ? (
-                        <div className="col-12 text-center text-light">Loading...</div>
+                        <div className="col-12 text-center text-light">{t('loading')}</div>
                     ) : histories.length === 0 ? (
                         <div className="col-12 text-center mt-4">
                             <i className="bi bi-clock-history" style={{ fontSize: 42, color: "#bbb" }}></i>

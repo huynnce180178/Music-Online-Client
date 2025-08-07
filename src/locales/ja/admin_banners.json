@@ -1,0 +1,18 @@
+{
+  "admin_banners.position": "位置",
+  "admin_banners.banner_image": "バナー画像",
+  "admin_banners.preview": "プレビュー",
+  "admin_banners.actions": "アクション",
+  "admin_banners.edit": "編集",
+  "admin_banners.delete": "削除",
+  "admin_banners.delete_confirm": "このバナーを削除しますか？",
+  "admin_banners.cancel": "キャンセル",
+  "admin_banners.add_banner": "バナー追加",
+  "admin_banners.update_banner": "バナー更新",
+  "admin_banners.add_new_banner": "新しいバナー追加",
+  "admin_banners.update": "更新",
+  "admin_banners.save": "保存",
+  "admin_banners.position_required": "位置を入力してください！",
+  "admin_banners.image_required": "画像を選択してください！",
+  "admin_banners.select_image": "画像選択"
+} 

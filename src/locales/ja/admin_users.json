@@ -1,0 +1,17 @@
+{
+  "admin_users.avatar": "アバター",
+  "admin_users.full_name": "フルネーム",
+  "admin_users.email": "メール",
+  "admin_users.bio": "自己紹介",
+  "admin_users.roles": "役割",
+  "admin_users.role_artist": "アーティスト",
+  "admin_users.role_user": "ユーザー",
+  "admin_users.role_admin": "管理者",
+  "admin_users.role_premium": "プレミアム",
+  "admin_users.status": "ステータス",
+  "admin_users.status_verify": "認証",
+  "admin_users.status_active": "アクティブ",
+  "admin_users.status_blocked": "ブロック済み",
+  "admin_users.action": "アクション",
+  "admin_users.search_placeholder": "ユーザーを検索"
+} 

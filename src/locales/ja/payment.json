@@ -1,0 +1,20 @@
+{
+  "payment.need_login": "支払いにはログインが必要です。",
+  "payment.cannot_load_package": "アップグレードパッケージ情報をダウンロードできません。",
+  "payment.loading": "パッケージ情報を読み込み中...",
+  "payment.from_only": "月{{price}} USDから",
+  "payment.special_privileges": "特別な特典:",
+  "payment.payment_method": "支払い方法:",
+  "payment.paypal": "PayPal",
+  "payment.vnpay": "VNPay",
+  "payment.zalopay": "ZaloPay",
+  "payment.processing": "処理中...",
+  "payment.buy_now": "今すぐ購入",
+  "payment.zalopay_error": "ZaloPay支払いに失敗しました。",
+  "payment.vnpay_error": "VNPay支払いに失敗しました。",
+  "payment.paypal_error": "PayPal支払いに失敗しました。",
+  "payment.payment_error": "支払い中にエラーが発生しました。再試行してください！",
+  "payment.upgrade_title": "リスニング体験をアップグレード",
+  "payment.upgrade_desc": "中断のない音楽、独占コンテンツ、そしてより多くのプレミアム特典をお楽しみください。",
+  "payment.secure_payment": "すべての支払いはPayPalまたはお好みの方法で安全に処理されます。"
+} 

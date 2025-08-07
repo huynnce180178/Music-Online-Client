@@ -1,0 +1,8 @@
+{
+  "userBlock.blocked_title": "계정 차단됨",
+  "userBlock.unblocked_title": "계정 차단 해제됨",
+  "userBlock.logout_warning": "{{count}}초 후 자동으로 로그아웃됩니다",
+  "userBlock.unblocked_message": "계정이 복구되었습니다. 서비스를 계속 사용할 수 있습니다.",
+  "userBlock.logout_now": "지금 로그아웃",
+  "userBlock.ok": "확인"
+} 

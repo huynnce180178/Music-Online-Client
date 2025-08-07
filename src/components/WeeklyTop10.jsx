@@ -1,7 +1,7 @@
-import { useContext, useEffect, useState, useRef } from "react";
+import { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { PlayerContext } from "../context/PlayerContext";
-import { Dropdown, message, Modal, Select, Form, Input, Switch, Upload, Button } from 'antd';
+import { Dropdown, message } from 'antd';
 import { PlayCircleFilled, EllipsisOutlined, DownloadOutlined, PlusSquareOutlined } from '@ant-design/icons';
 import SubscriptionModalPlan from "./SubscriptionModalPlan";
 import DownloadModal from "./DownloadModal";
@@ -32,6 +32,14 @@ function SongRow({ song, index, onSelect, onDownload, onAddToPlaylist, t }) {
             },
         },
     ];
+
+    // Helper function to format views
+    function formatViews(views) {
+        if (views >= 1e9) return (views / 1e9).toFixed(1).replace(/\.0$/, '') + 'B';
+        if (views >= 1e6) return (views / 1e6).toFixed(1).replace(/\.0$/, '') + 'M';
+        if (views >= 1e3) return (views / 1e3).toFixed(1).replace(/\.0$/, '') + 'K';
+        return views?.toLocaleString() || "0";
+    }
 
     return (
         <div
@@ -118,7 +126,15 @@ function SongRow({ song, index, onSelect, onDownload, onAddToPlaylist, t }) {
                     {song.artistName}
                 </div>
                 <div style={{ fontSize: 12, color: "#DEDEDE", marginTop: 2 }}>
-                    <span style={{ color: "#FFFFFF" }}>{song.views?.toLocaleString() || 0} {t('weekly_top_10.plays')}</span>
+                    <span style={{
+                        color: "#3ed8ff",
+                        fontWeight: 600,
+                        fontSize: 13,
+                        letterSpacing: 0.2,
+                        padding: "2px 8px"
+                    }}>
+                        {formatViews(song.views ?? song.totalViews)} {t('featured_artists.views')}
+                    </span>
                 </div>
             </div>
             <Dropdown menu={{ items: menuItems }} trigger={['click']} placement="bottomRight">
@@ -189,15 +205,15 @@ export default function WeeklyTop10() {
             setShowUpgradeModal(true);
             return;
         }
-        
+
         try {
             const infoResponse = await axios.get(`${BASE_API_URL}/api/v1/user/downloads/${songId}/info`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            
+
             const downloadInfo = infoResponse.data.data;
             setDownloadModal({ open: true, songId, downloadInfo });
-            
+
         } catch (error) {
             console.error('Download error:', error);
             message.error({

@@ -152,7 +152,7 @@ export default function SearchResult() {
     if (loading) {
         return (
             <div style={{ color: "#fff", padding: 40, textAlign: "center" }}>
-                <Spin /> Loading...
+                <Spin /> {t('loading')}
             </div>
         );
     }

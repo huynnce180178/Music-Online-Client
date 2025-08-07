@@ -1,4 +1,6 @@
 {
   "featured_artists.title": "Featured Artists",
-  "featured_artists.view_more": "View More"
-} 
+  "featured_artists.view_more": "View More",
+  "featured_artists.views": "views",
+  "featured_artists.login_to_view_artist": "Please login to view artist information!"
+}

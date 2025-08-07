@@ -35,6 +35,14 @@ function SongRow({ song, index, onSelect, t, onDownload, onAddToPlaylist }) {
         },
     ];
 
+    // Helper function to format views
+    function formatViews(views) {
+        if (views >= 1e9) return (views / 1e9).toFixed(1).replace(/\.0$/, '') + 'B';
+        if (views >= 1e6) return (views / 1e6).toFixed(1).replace(/\.0$/, '') + 'M';
+        if (views >= 1e3) return (views / 1e3).toFixed(1).replace(/\.0$/, '') + 'K';
+        return views?.toLocaleString() || "0";
+    }
+
     return (
         <div
             className="song-row-modern d-flex align-items-center mb-3 px-4 py-2"
@@ -123,7 +131,15 @@ function SongRow({ song, index, onSelect, t, onDownload, onAddToPlaylist }) {
                     {song.artistName}
                 </div>
                 <div style={{ fontSize: 12, color: "#DEDEDE", marginTop: 2 }}>
-                    <span style={{ color: "#FFFFFF" }}>{song.views?.toLocaleString() || 0} {t('weekly_top_10.plays')}</span>
+                    <span style={{
+                        color: "#3ed8ff",
+                        fontWeight: 600,
+                        fontSize: 13,
+                        letterSpacing: 0.2,
+                        padding: "2px 8px"
+                    }}>
+                        {formatViews(song.views)} {t('featured_artists.views')}
+                    </span>
                 </div>
             </div>
             {/* Dropdown Menu */}

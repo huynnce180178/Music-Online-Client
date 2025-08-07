@@ -14,9 +14,9 @@ const { Option } = Select;
 
 const REPORT_OPTIONS = [
     { value: "SPAM", label: "Spam" },
-    { value: "OFFENSIVE", label: "Offensive language" },
-    { value: "HARASSMENT", label: "Harassment" },
-    { value: "OTHER", label: "Other" }
+    { value: "OFFENSIVE", label: "Ngôn ngữ xúc phạm" },
+    { value: "HARASSMENT", label: "Quấy rối" },
+    { value: "OTHER", label: "Khác" }
 ];
 
 const REACTION_ICONS = {
@@ -103,7 +103,7 @@ function RenderComment({
             setReactions(res.data.data || []);
             reloadComments();
         } catch {
-            message.error("Failed to react!");
+            message.error("Không thể thả cảm xúc!");
         }
         setReacting(false);
     };
@@ -192,7 +192,7 @@ function RenderComment({
                 <div style={{ display: "flex", gap: 2, marginLeft: "auto" }}>
                     {isMine ? (
                         <>
-                            <Tooltip title={isEditing ? "Cancel" : "Edit"}>
+                            <Tooltip title={isEditing ? t('comment_tab.cancel') : t('comment_tab.edit')}>
                                 <Button
                                     size="small"
                                     type="text"
@@ -201,7 +201,7 @@ function RenderComment({
                                     onClick={() => setIsEditing(!isEditing)}
                                 />
                             </Tooltip>
-                            <Tooltip title="Delete">
+                            <Tooltip title={t('comment_tab.delete')}>
                                 <Button
                                     size="small"
                                     type="text"
@@ -214,17 +214,17 @@ function RenderComment({
                                 open={showDeleteConfirm}
                                 onOk={handleDelete}
                                 onCancel={() => setShowDeleteConfirm(false)}
-                                okText="Delete"
+                                okText={t('comment_tab.delete')}
                                 okButtonProps={{ danger: true }}
-                                cancelText="Cancel"
-                                title="Confirm Delete"
+                                cancelText={t('comment_tab.cancel')}
+                                title={t('comment_tab.confirm_delete')}
                                 zIndex={4000}
                             >
-                                <div>Are you sure you want to delete this comment?</div>
+                                <div>{t('comment_tab.confirm_delete_message')}</div>
                             </Modal>
                         </>
                     ) : (
-                        <Tooltip title="Report">
+                        <Tooltip title={t('comment_tab.report')}>
                             <Button
                                 size="small"
                                 type="text"
@@ -252,13 +252,13 @@ function RenderComment({
                         disabled={!editContent.trim()}
                         style={{ marginRight: 8 }}
                     >
-                        Save
+                        {t('comment_tab.save')}
                     </Button>
                     <Button
                         size="small"
                         onClick={() => setIsEditing(false)}
                     >
-                        Cancel
+                        {t('comment_tab.cancel')}
                     </Button>
                 </div>
             ) : (
@@ -283,7 +283,7 @@ function RenderComment({
                     justifyContent: "flex-start",
                     gap: 10
                 }}>
-                    <Tooltip title="Reply">
+                    <Tooltip title={t('comment_tab.reply')}>
                         <Button
                             size="small"
                             type="text"
@@ -413,6 +413,7 @@ RenderComment.propTypes = {
     reloadComments: PropTypes.func.isRequired,
     onReport: PropTypes.func.isRequired,
     parentUsername: PropTypes.string,
+    isAdmin: PropTypes.bool,
 };
 
 export default function CommentTab({ songId }) {
@@ -457,7 +458,7 @@ export default function CommentTab({ songId }) {
         if (!newComment.trim()) return;
         const token = localStorage.getItem("accessToken");
         if (!token) {
-            message.error("You need to login to comment.");
+            message.error("Bạn cần đăng nhập để bình luận.");
             return;
         }
         setSubmitting(true);
@@ -472,12 +473,12 @@ export default function CommentTab({ songId }) {
             setNewComment("");
             setReplyTo(null);
             await fetchComments();
-            message.success("Comment posted!");
+            message.success("Bình luận đã được đăng!");
         } catch (err) {
             message.error(
                 err?.response?.data?.data ||
                 err?.response?.data?.message ||
-                "Failed to post comment!"
+                "Không thể đăng bình luận!"
             );
         }
         setSubmitting(false);
@@ -486,13 +487,13 @@ export default function CommentTab({ songId }) {
     const handleReport = async () => {
         const token = localStorage.getItem("accessToken");
         if (!token) {
-            message.error("You need to login to report a comment.");
+            message.error("Bạn cần đăng nhập để báo cáo bình luận.");
             setReportingComment(null);
             return;
         }
         if (!reportingComment) return;
         if (reportReason === "OTHER" && !customReason.trim()) {
-            message.error("Please enter your specific reason.");
+            message.error("Vui lòng nhập lý do cụ thể của bạn.");
             return;
         }
         setReporting(true);
@@ -505,14 +506,14 @@ export default function CommentTab({ songId }) {
                 },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
-            message.success("Report submitted!");
+            message.success("Báo cáo đã được gửi!");
             setReportingComment(null);
             setCustomReason("");
         } catch (err) {
             message.error(
                 err?.response?.data?.message ||
                 err?.response?.data?.data ||
-                "Failed to submit report!"
+                "Không thể gửi báo cáo!"
             );
         }
         setReporting(false);
@@ -522,17 +523,16 @@ export default function CommentTab({ songId }) {
         <div
             style={{
                 color: "#23283e",
-                height: "100vh",
                 display: "flex",
                 flexDirection: "column",
+                height: "100%",       // ✅ Đảm bảo chiếm hết chiều cao vùng tab
+                minHeight: 0,         // ✅ Cho flexbox auto co lại
                 background: "linear-gradient(135deg, #f7fafc 0%, #eaf6fb 100%)",
                 boxShadow: "0 4px 24px #3ed8ff11",
                 scrollbarWidth: "none",
                 msOverflowStyle: "none",
-                minHeight: 0,
                 flex: 1,
-                position: "relative",
-                overflow: "auto",
+                position: "relative"
             }}
         >
             <style>{`
@@ -579,7 +579,7 @@ export default function CommentTab({ songId }) {
                 .ant-avatar {
                     width: 26px !important;
                     height: 26px !important;
-                    font-size: 13px !important;
+                    font-size: 15px !important;
                 }
                 .ant-btn {
                     font-size: 13px !important;
@@ -597,7 +597,7 @@ export default function CommentTab({ songId }) {
                     box-sizing: border-box !important;
                 }
                 .comment-send-btn-inside {
-                    height: 22px !important;
+                    height: 40px !important;
                     width: 26px !important;
                     bottom: 8px !important;
                     right: 10px !important;
@@ -608,7 +608,7 @@ export default function CommentTab({ songId }) {
                     left: 2vw !important;
                 }
                 .comment-input-container {
-                    padding: 8px 8px 8px 8px !important;
+                    padding: 5px 30px 5px 30px !important;
                     border-radius: 8px !important;
                     width: 100vw !important;
                     left: 0 !important;
@@ -623,58 +623,58 @@ export default function CommentTab({ songId }) {
                 }
                 .comment-content {
                     margin-left: 0 !important;
-                    font-size: 13px !important;
+                    font-size: 16px !important;
                 }
             }
-            @media (max-width: 400px) {
-                .fb-reply-item {
-                    margin-left: 4px !important;
-                    padding: 6px 4px !important;
-                    border-radius: 5px !important;
-                }
-                .ant-avatar {
-                    width: 18px !important;
-                    height: 18px !important;
-                    font-size: 10px !important;
-                }
-                .ant-btn {
-                    font-size: 10px !important;
-                    height: 20px !important;
-                    min-width: 20px !important;
-                    border-radius: 4px !important;
-                    padding: 0 3px !important;
-                }
-                .ant-input, .ant-input-textarea {
-                    font-size: 10px !important;
-                    border-radius: 4px !important;
-                    padding: 3px 4px !important;
-                    width: 100% !important;
-                    min-width: 0 !important;
-                    box-sizing: border-box !important;
-                }
-                .comment-send-btn-inside {
-                    height: 16px !important;
-                    width: 18px !important;
-                    bottom: 4px !important;
-                    right: 4px !important;
-                }
-                .ant-modal {
-                    width: 99vw !important;
-                    max-width: 220px !important;
-                    left: 0 !important;
-                }
-                .comment-input-container {
-                    padding: 4px 4px 4px 4px !important;
-                    border-radius: 5px !important;
-                    width: 100vw !important;
-                    left: 0 !important;
-                    min-width: 0 !important;
-                    box-sizing: border-box !important;
-                }
-                .comment-content {
-                    font-size: 10px !important;
-                }
-            }
+            // @media (max-width: 400px) {
+            //     .fb-reply-item {
+            //         margin-left: 4px !important;
+            //         padding: 6px 4px !important;
+            //         border-radius: 5px !important;
+            //     }
+            //     .ant-avatar {
+            //         width: 18px !important;
+            //         height: 18px !important;
+            //         font-size: 10px !important;
+            //     }
+            //     .ant-btn {
+            //         font-size: 10px !important;
+            //         height: 20px !important;
+            //         min-width: 20px !important;
+            //         border-radius: 4px !important;
+            //         padding: 0 3px !important;
+            //     }
+            //     .ant-input, .ant-input-textarea {
+            //         font-size: 10px !important;
+            //         border-radius: 4px !important;
+            //         padding: 3px 4px !important;
+            //         width: 100% !important;
+            //         min-width: 0 !important;
+            //         box-sizing: border-box !important;
+            //     }
+            //     .comment-send-btn-inside {
+            //         height: 16px !important;
+            //         width: 18px !important;
+            //         bottom: 4px !important;
+            //         right: 4px !important;
+            //     }
+            //     .ant-modal {
+            //         width: 99vw !important;
+            //         max-width: 220px !important;
+            //         left: 0 !important;
+            //     }
+            //     .comment-input-container {
+            //         padding: 4px 4px 4px 4px !important;
+            //         border-radius: 5px !important;
+            //         width: 100vw !important;
+            //         left: 0 !important;
+            //         min-width: 0 !important;
+            //         box-sizing: border-box !important;
+            //     }
+            //     .comment-content {
+            //         font-size: 10px !important;
+            //     }
+            // }
             .fb-reply-item {
                 border-left: 2px solid #eaf6fb;
             }
@@ -686,13 +686,13 @@ export default function CommentTab({ songId }) {
                     flex: 1,
                     overflowY: "auto",
                     padding: "0",
-                    scrollbarWidth: "none",
-                    msOverflowStyle: "none",
-                    minHeight: 0,
+                    minHeight: 0
                 }}
             >
                 {comments.length === 0 ? (
-                    <div style={{ color: "#8ca0c6", textAlign: "left", marginTop: 32 }}>{t('comment_tab.no_comments')}</div>
+                    <div style={{ color: "#8ca0c6", textAlign: "left", marginTop: 32 }}>
+                        {t('comment_tab.no_comments')}
+                    </div>
                 ) : (
                     comments.map(item => (
                         <RenderComment
@@ -714,19 +714,18 @@ export default function CommentTab({ songId }) {
                     borderRadius: 10,
                     padding: "10px 20px 10px 20px",
                     boxShadow: "0 -2px 12px #3ed8ff11",
-                    position: "sticky",
-                    bottom: 0,
-                    zIndex: 2,
                     borderTop: "1px solid #eaf6fb",
                     width: "100%",
                     minWidth: 0,
                     boxSizing: "border-box",
-                    display: "block"
+                    display: "block",
+                    backgroundClip: "padding-box",
+                    transition: "box-shadow 0.2s"
                 }}
             >
                 {replyTo && (
                     <div style={{ marginBottom: 5, color: "#29aaff", fontSize: '18px' }}>
-                        Replying to <b>{replyTo.username}</b>
+                        Đang trả lời <b>{replyTo.username}</b>
                         <Button
                             size="small"
                             type="link"
@@ -746,7 +745,7 @@ export default function CommentTab({ songId }) {
                         style={{
                             borderRadius: 8,
                             fontSize: 15,
-                            paddingRight: 42, // Chừa không gian cho icon send
+                            paddingRight: 42,
                             marginBottom: 0,
                             resize: "none",
                             width: "100%",
@@ -766,6 +765,23 @@ export default function CommentTab({ songId }) {
                         onClick={() => handleSubmitComment(replyTo ? replyTo.id : null)}
                         disabled={!newComment.trim() || submitting}
                         tabIndex={-1}
+                        style={{
+                            position: "absolute",
+                            bottom: 12,
+                            right: 18,
+                            background: "transparent",
+                            border: "none",
+                            padding: 0,
+                            boxShadow: "none",
+                            zIndex: 3,
+                            cursor: "pointer",
+                            outline: "none",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            height: 28,
+                            width: 32,
+                        }}
                     >
                         <SendOutlined style={{ fontSize: 20, color: newComment.trim() ? "#3ed8ff" : "#bbb" }} />
                     </button>
@@ -773,17 +789,17 @@ export default function CommentTab({ songId }) {
             </div>
             {/* Modal báo cáo giữ nguyên */}
             <Modal
-                title="Report Comment"
+                title={t('comment_tab.report_comment')}
                 open={!!reportingComment}
                 onCancel={() => setReportingComment(null)}
                 onOk={handleReport}
                 confirmLoading={reporting}
-                okText="Submit Report"
-                cancelText="Cancel"
+                okText={t('comment_tab.submit_report')}
+                cancelText={t('comment_tab.cancel')}
                 zIndex={9999}
             >
                 <div style={{ marginBottom: 12 }}>
-                    <b>Reason:</b>
+                    <b>{t('comment_tab.report_reason')}</b>
                     <Select
                         value={reportReason}
                         onChange={setReportReason}
@@ -798,7 +814,7 @@ export default function CommentTab({ songId }) {
                     <Input.TextArea
                         value={customReason}
                         onChange={e => setCustomReason(e.target.value)}
-                        placeholder="Enter your specific reason..."
+                        placeholder={t('comment_tab.custom_reason_placeholder')}
                         autoSize={{ minRows: 2, maxRows: 4 }}
                         maxLength={200}
                     />

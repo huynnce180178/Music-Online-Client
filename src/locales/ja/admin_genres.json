@@ -1,0 +1,18 @@
+{
+  "admin_genres.genre_name": "ジャンル名",
+  "admin_genres.image": "画像",
+  "admin_genres.actions": "アクション",
+  "admin_genres.edit": "編集",
+  "admin_genres.delete": "削除",
+  "admin_genres.delete_confirm": "このジャンルを削除しますか？",
+  "admin_genres.cancel": "キャンセル",
+  "admin_genres.save": "保存",
+  "admin_genres.update_genre": "ジャンル更新",
+  "admin_genres.add_genre": "ジャンル追加",
+  "admin_genres.select_image": "画像選択",
+  "admin_genres.old_cover": "古いカバー",
+  "admin_genres.genre_name_required": "ジャンル名を入力してください！",
+  "admin_genres.image_required": "画像を選択してください！",
+  "admin_genres.no_genres": "ジャンルが見つかりません",
+  "admin_genres.search_placeholder": "ジャンルを検索"
+} 
