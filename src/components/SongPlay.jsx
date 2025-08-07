@@ -7,10 +7,11 @@ import SubscriptionModalPlan from "./SubscriptionModalPlan";
 import SongDetail from "./SongDetail";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { Modal, Select, message, Button, Form, Input, Switch, Upload } from "antd";
+import { Button } from "antd";
 import AddToPlaylistModal from "./AddToPlaylistModal";
 import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 import BASE_API_URL from "../services/base.api.url";
 
 function SongPlay({ sidebarWidth = 0 }) {
@@ -38,6 +39,7 @@ function SongPlay({ sidebarWidth = 0 }) {
     } = useContext(PlayerContext);
 
     const { t } = useTranslation();
+    const navigate = useNavigate();
 
     const [song, setSong] = useState(null);
     const [currentTime, setCurrentTime] = useState(0);
@@ -48,6 +50,8 @@ function SongPlay({ sidebarWidth = 0 }) {
     const [viewed, setViewed] = useState(false);
     const [adElapsed, setAdElapsed] = useState(0);
     const [canSkipAd, setCanSkipAd] = useState(false);
+    const [pendingNextSong, setPendingNextSong] = useState(false);
+    const [pendingAutoNextSong, setPendingAutoNextSong] = useState(false);
 
     const generatePlayUrl = useCallback(() => {
         switch (playType) {
@@ -190,15 +194,16 @@ function SongPlay({ sidebarWidth = 0 }) {
     // Get roles from localStorage
     const roles = JSON.parse(localStorage.getItem("roles") || "[]");
     const isPremium = roles.includes("ROLE_PREMIUM");
+    const isArtist = roles.includes("ROLE_ARTIST"); // Thêm dòng này
 
     // When next/prev or after every 3 songs, play an ad
     const handleSongChange = (type) => {
-        if (isPremium) {
+        if (isPremium || isArtist) { // Thêm isArtist vào điều kiện
             type === "next" ? nextSong() : prevSong();
             return;
         }
         if ((songCount + 1) % 3 === 0) {
-            // Nếu là chuyển bài thủ công (user click), quảng cáo xong phải NEXT bài mới!
+            if (type === "next") setPendingNextSong(true);
             fetchAdAudio("next");
         } else {
             setSongCount(c => c + 1);
@@ -208,7 +213,7 @@ function SongPlay({ sidebarWidth = 0 }) {
 
     // When the song ends (auto next)
     const handleSongEnd = () => {
-        if (isPremium) {
+        if (isPremium || isArtist) { // Thêm isArtist vào điều kiện
             const nextId = getNextSongId();
             if (nextId) {
                 setCurrentSongId(nextId);
@@ -220,6 +225,7 @@ function SongPlay({ sidebarWidth = 0 }) {
         }
         if ((songCount + 1) % 3 === 0) {
             // Khi tự hết bài, quảng cáo xong phải NEXT bài mới!
+            setPendingAutoNextSong(true);
             fetchAdAudio("next");
         } else {
             setSongCount(c => c + 1);
@@ -234,7 +240,14 @@ function SongPlay({ sidebarWidth = 0 }) {
     };
 
     useEffect(() => {
-        if (adPlaying) setShowModal(true);
+        // Chỉ show modal khi adPlaying chuyển từ false sang true
+        if (adPlaying) {
+            setShowModal(true);
+        }
+        // Khi quảng cáo kết thúc (adPlaying chuyển từ true sang false), tự động đóng modal
+        if (!adPlaying) {
+            setShowModal(false);
+        }
     }, [adPlaying]);
 
     useEffect(() => {
@@ -254,6 +267,25 @@ function SongPlay({ sidebarWidth = 0 }) {
         // Save songCount to localStorage whenever it changes
         localStorage.setItem("songCount", songCount);
     }, [songCount]);
+
+    useEffect(() => {
+        if (!adPlaying && currentSongId && song) {
+            setIsPlaying(true); // Khi quảng cáo kết thúc, tự động play bài nhạc
+        }
+    }, [adPlaying, currentSongId, song, setIsPlaying]);
+
+    useEffect(() => {
+        if (!adPlaying && pendingNextSong) {
+            setPendingNextSong(false);
+            nextSong();
+            setIsPlaying(true);
+        }
+        if (!adPlaying && pendingAutoNextSong) {
+            setPendingAutoNextSong(false);
+            nextSong();
+            setIsPlaying(true);
+        }
+    }, [adPlaying, pendingNextSong, pendingAutoNextSong, nextSong, setIsPlaying]);
 
     if (!currentSongId || !song) return null;
 
@@ -299,11 +331,26 @@ function SongPlay({ sidebarWidth = 0 }) {
                         textShadow: "0 1px 8px #0006", overflow: "hidden",
                         display: "-webkit-box", WebkitLineClamp: 1, WebkitBoxOrient: "vertical"
                     }}>{song?.title}</div>
-                    <div className="player-artist" style={{
-                        color: "#8ca0c6", fontWeight: 400, fontSize: 15,
-                        opacity: 0.95, marginTop: 2, whiteSpace: "nowrap",
-                        overflow: "hidden", textOverflow: "ellipsis"
-                    }}>{song?.artistName || song?.albumName}</div>
+                    <div
+                        className="player-artist"
+                        style={{
+                            color: "#8ca0c6", fontWeight: 400, fontSize: 15,
+                            opacity: 0.95, marginTop: 2, whiteSpace: "nowrap",
+                            overflow: "hidden", textOverflow: "ellipsis",
+                            cursor: "pointer"
+                        }}
+                        onClick={() => {
+                            const token = localStorage.getItem("accessToken");
+                            if (token && song?.artistId) {
+                                navigate(`/artist/${song.artistId}`);
+                            } else {
+                                toast.info(t("weekly_top_10.login_to_add_playlist") || "Please login to view artist profile!", { autoClose: 2000 });
+                            }
+                        }}
+                        title={t("Go to artist profile") || "Go to artist profile"}
+                    >
+                        {song?.artistName || song?.albumName}
+                    </div>
                 </div>
 
                 {/* Controls */}
@@ -536,6 +583,15 @@ function SongPlay({ sidebarWidth = 0 }) {
                                     setAdElapsed(0);
                                     setCanSkipAd(false);
                                     setShowModal(false);
+                                    if (pendingNextSong) {
+                                        setPendingNextSong(false);
+                                        nextSong();
+                                    }
+                                    if (pendingAutoNextSong) {
+                                        setPendingAutoNextSong(false);
+                                        nextSong();
+                                    }
+                                    setIsPlaying(true);
                                 }}
                             >
                                 {t("Skip") || "Bỏ qua"}
@@ -625,6 +681,14 @@ function SongPlay({ sidebarWidth = 0 }) {
 .player-thumb img:hover {
     box-shadow: none !important;
     transform: scale(1.04);
+}
+.player-artist {
+    cursor: pointer;
+    /* bỏ text-decoration: underline; */
+    transition: color 0.2s;
+}
+.player-artist:hover {
+    color: #3ed8ff;
 }
     @media (max-width: 767px) {
     .player-actions .hide-mobile {

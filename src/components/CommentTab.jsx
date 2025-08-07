@@ -14,9 +14,9 @@ const { Option } = Select;
 
 const REPORT_OPTIONS = [
     { value: "SPAM", label: "Spam" },
-    { value: "OFFENSIVE", label: "Ngôn ngữ xúc phạm" },
-    { value: "HARASSMENT", label: "Quấy rối" },
-    { value: "OTHER", label: "Khác" }
+    { value: "OFFENSIVE", label: "Offensive language" },
+    { value: "HARASSMENT", label: "Harassment" },
+    { value: "OTHER", label: "Other" }
 ];
 
 const REACTION_ICONS = {
@@ -103,7 +103,7 @@ function RenderComment({
             setReactions(res.data.data || []);
             reloadComments();
         } catch {
-            message.error("Không thể thả cảm xúc!");
+            message.error("Failed to react!");
         }
         setReacting(false);
     };
@@ -192,7 +192,7 @@ function RenderComment({
                 <div style={{ display: "flex", gap: 2, marginLeft: "auto" }}>
                     {isMine ? (
                         <>
-                            <Tooltip title={isEditing ? t('comment_tab.cancel') : t('comment_tab.edit')}>
+                            <Tooltip title={isEditing ? "Cancel" : "Edit"}>
                                 <Button
                                     size="small"
                                     type="text"
@@ -201,7 +201,7 @@ function RenderComment({
                                     onClick={() => setIsEditing(!isEditing)}
                                 />
                             </Tooltip>
-                            <Tooltip title={t('comment_tab.delete')}>
+                            <Tooltip title="Delete">
                                 <Button
                                     size="small"
                                     type="text"
@@ -214,17 +214,17 @@ function RenderComment({
                                 open={showDeleteConfirm}
                                 onOk={handleDelete}
                                 onCancel={() => setShowDeleteConfirm(false)}
-                                okText={t('comment_tab.delete')}
+                                okText="Delete"
                                 okButtonProps={{ danger: true }}
-                                cancelText={t('comment_tab.cancel')}
-                                title={t('comment_tab.confirm_delete')}
+                                cancelText="Cancel"
+                                title="Confirm Delete"
                                 zIndex={4000}
                             >
-                                <div>{t('comment_tab.confirm_delete_message')}</div>
+                                <div>Are you sure you want to delete this comment?</div>
                             </Modal>
                         </>
                     ) : (
-                        <Tooltip title={t('comment_tab.report')}>
+                        <Tooltip title="Report">
                             <Button
                                 size="small"
                                 type="text"
@@ -252,13 +252,13 @@ function RenderComment({
                         disabled={!editContent.trim()}
                         style={{ marginRight: 8 }}
                     >
-                        {t('comment_tab.save')}
+                        Save
                     </Button>
                     <Button
                         size="small"
                         onClick={() => setIsEditing(false)}
                     >
-                        {t('comment_tab.cancel')}
+                        Cancel
                     </Button>
                 </div>
             ) : (
@@ -283,7 +283,7 @@ function RenderComment({
                     justifyContent: "flex-start",
                     gap: 10
                 }}>
-                    <Tooltip title={t('comment_tab.reply')}>
+                    <Tooltip title="Reply">
                         <Button
                             size="small"
                             type="text"
@@ -413,7 +413,6 @@ RenderComment.propTypes = {
     reloadComments: PropTypes.func.isRequired,
     onReport: PropTypes.func.isRequired,
     parentUsername: PropTypes.string,
-    isAdmin: PropTypes.bool,
 };
 
 export default function CommentTab({ songId }) {
@@ -458,7 +457,7 @@ export default function CommentTab({ songId }) {
         if (!newComment.trim()) return;
         const token = localStorage.getItem("accessToken");
         if (!token) {
-            message.error("Bạn cần đăng nhập để bình luận.");
+            message.error("You need to login to comment.");
             return;
         }
         setSubmitting(true);
@@ -473,12 +472,12 @@ export default function CommentTab({ songId }) {
             setNewComment("");
             setReplyTo(null);
             await fetchComments();
-            message.success("Bình luận đã được đăng!");
+            message.success("Comment posted!");
         } catch (err) {
             message.error(
                 err?.response?.data?.data ||
                 err?.response?.data?.message ||
-                "Không thể đăng bình luận!"
+                "Failed to post comment!"
             );
         }
         setSubmitting(false);
@@ -487,13 +486,13 @@ export default function CommentTab({ songId }) {
     const handleReport = async () => {
         const token = localStorage.getItem("accessToken");
         if (!token) {
-            message.error("Bạn cần đăng nhập để báo cáo bình luận.");
+            message.error("You need to login to report a comment.");
             setReportingComment(null);
             return;
         }
         if (!reportingComment) return;
         if (reportReason === "OTHER" && !customReason.trim()) {
-            message.error("Vui lòng nhập lý do cụ thể của bạn.");
+            message.error("Please enter your specific reason.");
             return;
         }
         setReporting(true);
@@ -506,14 +505,14 @@ export default function CommentTab({ songId }) {
                 },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
-            message.success("Báo cáo đã được gửi!");
+            message.success("Report submitted!");
             setReportingComment(null);
             setCustomReason("");
         } catch (err) {
             message.error(
                 err?.response?.data?.message ||
                 err?.response?.data?.data ||
-                "Không thể gửi báo cáo!"
+                "Failed to submit report!"
             );
         }
         setReporting(false);
@@ -725,7 +724,7 @@ export default function CommentTab({ songId }) {
             >
                 {replyTo && (
                     <div style={{ marginBottom: 5, color: "#29aaff", fontSize: '18px' }}>
-                        Đang trả lời <b>{replyTo.username}</b>
+                        Replying to <b>{replyTo.username}</b>
                         <Button
                             size="small"
                             type="link"
@@ -789,17 +788,17 @@ export default function CommentTab({ songId }) {
             </div>
             {/* Modal báo cáo giữ nguyên */}
             <Modal
-                title={t('comment_tab.report_comment')}
+                title="Report Comment"
                 open={!!reportingComment}
                 onCancel={() => setReportingComment(null)}
                 onOk={handleReport}
                 confirmLoading={reporting}
-                okText={t('comment_tab.submit_report')}
-                cancelText={t('comment_tab.cancel')}
+                okText="Submit Report"
+                cancelText="Cancel"
                 zIndex={9999}
             >
                 <div style={{ marginBottom: 12 }}>
-                    <b>{t('comment_tab.report_reason')}</b>
+                    <b>Reason:</b>
                     <Select
                         value={reportReason}
                         onChange={setReportReason}
@@ -814,7 +813,7 @@ export default function CommentTab({ songId }) {
                     <Input.TextArea
                         value={customReason}
                         onChange={e => setCustomReason(e.target.value)}
-                        placeholder={t('comment_tab.custom_reason_placeholder')}
+                        placeholder="Enter your specific reason..."
                         autoSize={{ minRows: 2, maxRows: 4 }}
                         maxLength={200}
                     />

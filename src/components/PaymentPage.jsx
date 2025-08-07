@@ -151,7 +151,7 @@ export default function PaymentPage() {
                         className="mt-4 py-2 rounded-pill border-0 fw-bold"
                         style={{ backgroundColor: styles.btnBg, color: styles.btnColor, width: "100%" }}
                     >
-                        {submitting ? t('processing') : "BUY NOW"}
+                        {submitting ? t('common.processing') : "BUY NOW"}
                     </button>
                 </div>
             </div>

@@ -1,5 +1,5 @@
 import { useEffect, useState, useContext, useCallback } from "react";
-import { Tabs, Spin, message, Avatar, Button, Modal, Select } from "antd";
+import { Tabs, Spin, message, Avatar, Button } from "antd";
 import axios from "axios";
 import PropTypes from "prop-types";
 import { PlayerContext } from "../context/PlayerContext";
@@ -19,6 +19,8 @@ export default function SongDetail({ songId, onClose }) {
     const [currentTime, setCurrentTime] = useState(0);
     const [viewed, setViewed] = useState(false);
     const [addToPlaylistModal, setAddToPlaylistModal] = useState({ open: false, songId: null });
+    const [pendingNextSong, setPendingNextSong] = useState(false);
+    const [pendingAutoNextSong, setPendingAutoNextSong] = useState(false);
 
 
     const {
@@ -96,6 +98,7 @@ export default function SongDetail({ songId, onClose }) {
     // Check Premium
     const roles = JSON.parse(localStorage.getItem("roles") || "[]");
     const isPremium = roles.includes("ROLE_PREMIUM");
+    const isArtist = roles.includes("ROLE_ARTIST"); // Thêm dòng này
 
     // Next/Prev helpers
     const getNextSongId = useCallback(() => {
@@ -126,21 +129,23 @@ export default function SongDetail({ songId, onClose }) {
             message.info("Please listen to the entire ad before proceeding.!");
             return;
         }
-        if (isPremium) {
+        if (isPremium || isArtist) { // Thêm isArtist vào điều kiện
             type === "next" ? nextSong() : prevSong();
             return;
         }
         if ((songCount + 1) % 3 === 0) {
+            if (type === "next") setPendingNextSong(true);
+            if (type === "prev") setPendingNextSong(false);
             fetchAdAudio();
         } else {
             setSongCount(c => c + 1);
             type === "next" ? nextSong() : prevSong();
         }
-    }, [adPlaying, isPremium, songCount, setSongCount, fetchAdAudio, nextSong, prevSong]);
+    }, [adPlaying, isPremium, isArtist, songCount, setSongCount, fetchAdAudio, nextSong, prevSong]);
 
     const handleSongEnd = useCallback(() => {
         if (adPlaying) return;
-        if (isPremium) {
+        if (isPremium || isArtist) { // Thêm isArtist vào điều kiện
             const nextId = getNextSongId();
             if (nextId) {
                 setCurrentSongId(nextId);
@@ -151,6 +156,7 @@ export default function SongDetail({ songId, onClose }) {
             return;
         }
         if ((songCount + 1) % 3 === 0) {
+            setPendingAutoNextSong(true);
             fetchAdAudio();
         } else {
             setSongCount(c => c + 1);
@@ -162,7 +168,20 @@ export default function SongDetail({ songId, onClose }) {
                 setIsPlaying(false);
             }
         }
-    }, [adPlaying, isPremium, songCount, setSongCount, fetchAdAudio, getNextSongId, setCurrentSongId, setIsPlaying]);
+    }, [adPlaying, isPremium, isArtist, songCount, setSongCount, fetchAdAudio, getNextSongId, setCurrentSongId, setIsPlaying]);
+
+    useEffect(() => {
+        if (!adPlaying && pendingNextSong) {
+            setPendingNextSong(false);
+            nextSong();
+            setIsPlaying(true);
+        }
+        if (!adPlaying && pendingAutoNextSong) {
+            setPendingAutoNextSong(false);
+            nextSong();
+            setIsPlaying(true);
+        }
+    }, [adPlaying, pendingNextSong, pendingAutoNextSong, nextSong, setIsPlaying]);
 
     // ✅ Setup audio event listeners
     useEffect(() => {
