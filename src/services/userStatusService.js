@@ -81,7 +81,6 @@ class UserStatusService {
         localStorage.removeItem('userId');
         localStorage.removeItem('email');
         localStorage.removeItem('profileImage');
-        localStorage.removeItem('facebookId');
         localStorage.removeItem('needCompleteProfile');
         localStorage.removeItem('avatarUrl');
 

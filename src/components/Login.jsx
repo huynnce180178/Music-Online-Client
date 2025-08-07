@@ -240,30 +240,6 @@ export default function Login({ onClose, onSwitchToRegister }) {
                                 >
                                     Login with Google
                                 </Button>
-                                <Button
-                                    block
-                                    size="large"
-                                    icon={
-                                        <img
-                                            src="https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg"
-                                            alt="Facebook"
-                                            style={{ width: 20, marginRight: 8 }}
-                                        />
-                                    }
-                                    style={{
-                                        marginTop: 12,
-                                        borderRadius: 24,
-                                        fontWeight: 700,
-                                        fontSize: 18,
-                                        border: '1px solid #1877f2',
-                                        background: '#1877f2',
-                                        color: '#fff',
-                                        boxShadow: '0 2px 8px rgba(24,119,242,0.2)',
-                                    }}
-                                    onClick={() => window.location.href = `${BASE_API_URL}/oauth2/authorization/facebook`}
-                                >
-                                    Login with Facebook
-                                </Button>
                             </Form.Item>
                         </Form>
                         <div style={{ textAlign: 'center', marginTop: 24 }}>

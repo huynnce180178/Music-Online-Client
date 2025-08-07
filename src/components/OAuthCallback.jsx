@@ -4,7 +4,7 @@ import { Button, Progress } from 'antd';
 import { CheckCircleOutlined, CloseCircleOutlined, LoadingOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import BASE_API_URL from "../services/base.api.url";
-import { removeFacebookFragment, isOAuthCallback, getOAuthProvider, handleOAuthError, optimizeOAuthFlow } from '../utils/oauthUtils';
+import { isOAuthCallback, getOAuthProvider, handleOAuthError, optimizeOAuthFlow } from '../utils/oauthUtils';
 
 export default function OAuthCallback() {
     const [searchParams] = useSearchParams();
@@ -14,8 +14,6 @@ export default function OAuthCallback() {
     const [progress, setProgress] = useState(0);
 
     useEffect(() => {
-        removeFacebookFragment();
-        
         const { storage } = optimizeOAuthFlow();
 
         const progressInterval = setInterval(() => {
@@ -48,12 +46,11 @@ export default function OAuthCallback() {
                 if (isOAuthCallback(searchParams)) {
                     console.log('Processing OAuth callback...');
                     
-                    // Kiểm tra nếu có accessToken trong URL parameters (từ redirect)
+                    // Check for accessToken in URL parameters (from redirect)
                     const accessTokenFromUrl = searchParams.get('accessToken');
                     const emailFromUrl = searchParams.get('email');
                     const userIdFromUrl = searchParams.get('userId');
                     const userNameFromUrl = searchParams.get('userName');
-                    const facebookIdFromUrl = searchParams.get('facebookId');
                     const needCompleteProfileFromUrl = searchParams.get('needCompleteProfile');
                     
                     console.log('URL Parameters check:', {
@@ -61,36 +58,18 @@ export default function OAuthCallback() {
                         email: emailFromUrl || 'Missing',
                         userId: userIdFromUrl || 'Missing',
                         userName: userNameFromUrl || 'Missing',
-                        facebookId: facebookIdFromUrl || 'Missing',
                         provider: provider
                     });
                     
                     if (accessTokenFromUrl) {
                         console.log('Found accessToken in URL, verifying with backend...');
                         
-                        // Gọi endpoint verify token - Facebook có thể không có email
+                        // Call verify token endpoint
                         const verifyData = {
                             accessToken: accessTokenFromUrl,
-                            provider: provider
+                            provider: provider,
+                            email: emailFromUrl ? decodeURIComponent(emailFromUrl) : 'unknown@temp.com'
                         };
-                        
-                        // Thêm email nếu có (Google case) hoặc để backend tự xử lý (Facebook case)
-                        if (emailFromUrl && !emailFromUrl.includes('@facebook.temp') && !emailFromUrl.includes('@facebook.com') && !emailFromUrl.startsWith('facebook_')) {
-                            // Google case - có email thật
-                            verifyData.email = decodeURIComponent(emailFromUrl);
-                        } else if (provider === 'facebook' && facebookIdFromUrl) {
-                            // Facebook case - sử dụng format mà backend expect: facebook_facebookId (match với token subject)
-                            verifyData.email = `facebook_${facebookIdFromUrl}`;
-                            console.log('Facebook login - sending email format:', verifyData.email);
-                            console.log('Facebook login - token should contain subject:', verifyData.email);
-                        } else if (emailFromUrl && (emailFromUrl.includes('@facebook.temp') || emailFromUrl.includes('@facebook.com') || emailFromUrl.startsWith('facebook_'))) {
-                            // Facebook case - đã có format đúng
-                            verifyData.email = decodeURIComponent(emailFromUrl);
-                            console.log('Facebook login - using existing email format:', verifyData.email);
-                        } else {
-                            // Fallback
-                            verifyData.email = emailFromUrl ? decodeURIComponent(emailFromUrl) : 'unknown@temp.com';
-                        }
                         
                         console.log('DEBUG: Final verifyData being sent:', JSON.stringify(verifyData, null, 2));
                         
@@ -130,10 +109,6 @@ export default function OAuthCallback() {
                             storage.set("userId", data.userId || "");
                             storage.set("email", data.email || "");
                             storage.set("profileImage", data.profileImage || "");
-                            
-                            if (data.facebookId) {
-                                storage.set("facebookId", data.facebookId);
-                            }
                             
                             if (data.needCompleteProfile) {
                                 storage.set("needCompleteProfile", "true");

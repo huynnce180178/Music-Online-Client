@@ -1,12 +1,4 @@
 
-export const removeFacebookFragment = () => {
-    if (window.location.hash === '#_=_') {
-        window.history.replaceState(null, null, window.location.pathname + window.location.search);
-        return true;
-    }
-    return false;
-};
-
 export const isOAuthCallback = (searchParams) => {
     return searchParams.has('oauth2') || 
            searchParams.has('code') || 

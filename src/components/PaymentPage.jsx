@@ -1,10 +1,12 @@
 import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 import BASE_API_URL from "../services/base.api.url";
 
 export default function PaymentPage() {
     const { planId } = useParams();
+    const { t } = useTranslation();
 
     const [plan, setPlan] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -149,7 +151,7 @@ export default function PaymentPage() {
                         className="mt-4 py-2 rounded-pill border-0 fw-bold"
                         style={{ backgroundColor: styles.btnBg, color: styles.btnColor, width: "100%" }}
                     >
-                        {submitting ? t('common.processing') : "BUY NOW"}
+                        {submitting ? t('processing') : "BUY NOW"}
                     </button>
                 </div>
             </div>

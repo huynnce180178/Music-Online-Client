@@ -6,10 +6,6 @@
   </div>
   <script>
     window.onload = function () {
-      if (window.location.hash === '#_=_') {
-        window.history.replaceState(null, null, window.location.pathname + window.location.search);
-      }
-      
       const currentUrl = new URL(window.location.href);
       const callbackUrl = new URL('/oauth/callback', window.location.origin);
       

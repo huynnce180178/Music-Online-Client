@@ -119,11 +119,13 @@ const TokenExpirationModal = () => {
             closable={false}
             maskClosable={false}
             centered
-            bodyStyle={{
-                padding: 32,
-                borderRadius: 16,
-                background: 'linear-gradient(135deg, #fffbe6 0%, #ffe58f 100%)',
-                boxShadow: '0 8px 32px rgba(255, 193, 7, 0.15)'
+            styles={{
+                body: {
+                    padding: 32,
+                    borderRadius: 16,
+                    background: 'linear-gradient(135deg, #fffbe6 0%, #ffe58f 100%)',
+                    boxShadow: '0 8px 32px rgba(255, 193, 7, 0.15)'
+                }
             }}
         >
             <div style={{ textAlign: 'center' }}>
