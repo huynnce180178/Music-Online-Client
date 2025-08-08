@@ -110,22 +110,40 @@ export default function TopTracksOAT() {
                     aria-label="Next">&#62;</button>
 
                 {/* Header */}
-                <div className="d-flex justify-content-between align-items-end mb-3 mt-2 flex-wrap">
-                    <span style={{
-                        color: "#3ed8ff", fontWeight: 700, fontSize: 28,
-                        fontFamily: "'Quicksand', 'Montserrat', sans-serif", letterSpacing: 1
-                    }}>
-                        {t('top_tracks_oat.title')}
-                    </span>
-                    {visibleCount < songs.length && (
-                        <a href="#" onClick={e => { e.preventDefault(); handleViewMore(); }} style={{
-                            color: "#fff", fontSize: 16,
+                <div className="mb-3 mt-2">
+                    <div className="d-flex justify-content-between align-items-center flex-wrap">
+                        <span style={{
+                            color: "#3ed8ff",
+                            fontWeight: 700,
+                            fontSize: 28,
                             fontFamily: "'Quicksand', 'Montserrat', sans-serif",
-                            fontWeight: 400, cursor: "pointer", textDecoration: "none", marginRight: 8,
+                            letterSpacing: 1,
                         }}>
-                            {t('top_tracks_oat.view_more')}
-                        </a>
-                    )}
+                            {t('top_tracks_oat.title')}
+                        </span>
+
+                        {visibleCount < songs.length && (
+                            <a
+                                href="#"
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    handleViewMore();
+                                }}
+                                style={{
+                                    color: "#fff",
+                                    fontSize: 16,
+                                    fontFamily: "'Quicksand', 'Montserrat', sans-serif",
+                                    fontWeight: 400,
+                                    cursor: "pointer",
+                                    textDecoration: "none",
+                                    marginTop: 8,
+                                    marginLeft: "auto",  // ✅ giúp căn phải dù rớt dòng
+                                }}
+                            >
+                                {t('top_tracks_oat.view_more')}
+                            </a>
+                        )}
+                    </div>
                 </div>
 
                 {/* Song Cards */}

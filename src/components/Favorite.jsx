@@ -71,7 +71,7 @@ export default function Favorite() {
     };
 
     return (
-        <div style={{ backgroundColor: '#181C2B', padding: '2rem',  minHeight: '45vh' }}>
+        <div style={{ backgroundColor: '#181C2B', padding: '2rem', minHeight: '45vh' }}>
             <h5 style={{
                 color: '#3ed8ff',
                 fontWeight: 700,
@@ -101,7 +101,12 @@ export default function Favorite() {
                                     <th style={{ backgroundColor: '#181C2B', color: '#00e0ff' }}>#</th>
                                     <th style={{ backgroundColor: '#181C2B', color: '#00e0ff' }}>{t('favorites.song_title')}</th>
                                     <th style={{ backgroundColor: '#181C2B', color: '#00e0ff' }}>{t('favorites.artist')}</th>
-                                    <th style={{ backgroundColor: '#181C2B', color: '#00e0ff' }}>{t('favorites.duration')}</th>
+                                    <th
+                                        className="d-none d-sm-table-cell"
+                                        style={{ backgroundColor: '#181C2B', color: '#00e0ff' }}
+                                    >
+                                        {t('favorites.duration')}
+                                    </th>
                                     <th style={{ backgroundColor: '#181C2B', color: '#00e0ff' }}>{t('favorites.remove')}</th>
                                 </tr>
                             </thead>
@@ -133,7 +138,10 @@ export default function Favorite() {
                                         <td style={{ backgroundColor: '#181C2B', color: song.playing ? '#00e0ff' : 'white' }}>
                                             {song.artistName || "Unknown Artist"}
                                         </td>
-                                        <td style={{ backgroundColor: '#181C2B', color: song.playing ? '#00e0ff' : 'white' }}>
+                                        <td
+                                            className="d-none d-sm-table-cell"
+                                            style={{ backgroundColor: '#181C2B', color: song.playing ? '#00e0ff' : 'white' }}
+                                        >
                                             {song.duration}
                                         </td>
                                         <td style={{ backgroundColor: '#181C2B' }}>

@@ -110,32 +110,40 @@ export default function FeaturedArtists() {
                 }} aria-label="Next">&#62;</button>
 
                 {/* Header */}
-                <div className="d-flex justify-content-between align-items-end mb-3 mt-2 flex-wrap">
-                    <span style={{
-                        color: "#3ed8ff",
-                        fontWeight: 700,
-                        fontSize: 28,
-                        fontFamily: "'Quicksand', 'Montserrat', sans-serif",
-                        letterSpacing: 1,
-                    }}>
-                        {t('featured_artists.title')}
-                    </span>
-                    {showViewMore && (
-                        <a href="#" onClick={(e) => {
-                            e.preventDefault();
-                            handleViewMore();
-                        }} style={{
-                            color: "#fff",
-                            fontSize: 16,
-                            fontWeight: 400,
+                <div className="mb-3 mt-2">
+                    <div className="d-flex justify-content-between align-items-center flex-wrap">
+                        <span style={{
+                            color: "#3ed8ff",
+                            fontWeight: 700,
+                            fontSize: 28,
                             fontFamily: "'Quicksand', 'Montserrat', sans-serif",
-                            cursor: "pointer",
-                            textDecoration: "none",
-                            marginRight: 8,
+                            letterSpacing: 1,
                         }}>
-                            {t('featured_artists.view_more')}
-                        </a>
-                    )}
+                            {t('featured_artists.title')}
+                        </span>
+
+                        {showViewMore && (
+                            <a
+                                href="#"
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    handleViewMore();
+                                }}
+                                style={{
+                                    color: "#fff",
+                                    fontSize: 16,
+                                    fontWeight: 400,
+                                    fontFamily: "'Quicksand', 'Montserrat', sans-serif",
+                                    cursor: "pointer",
+                                    textDecoration: "none",
+                                    marginTop: 8,
+                                    marginLeft: "auto",  // ✅ Căn phải nếu rơi xuống dòng
+                                }}
+                            >
+                                {t('featured_artists.view_more')}
+                            </a>
+                        )}
+                    </div>
                 </div>
 
                 {/* Artist Grid */}

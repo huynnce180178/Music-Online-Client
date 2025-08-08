@@ -119,38 +119,42 @@ export default function AlbumsByArtists() {
                     &#62;
                 </button>
 
-                <div className="d-flex justify-content-between align-items-end mb-3 mt-2 flex-wrap">
-                    <span
-                        style={{
-                            color: "#3ed8ff",
-                            fontWeight: 700,
-                            fontSize: 28,
-                            fontFamily: "'Quicksand', 'Montserrat', sans-serif",
-                            letterSpacing: 1,
-                        }}
-                    >
-                        {t('albums_page.albums_by_artists')}
-                    </span>
-                    {showViewMore && (
-                        <a
-                            href="#"
-                            onClick={e => {
-                                e.preventDefault();
-                                setVisibleCount(c => Math.min(c + 6, albums.length));
-                            }}
+                <div className="mb-3 mt-2">
+                    <div className="d-flex justify-content-between align-items-center flex-wrap">
+                        <span
                             style={{
-                                color: "#fff",
-                                fontSize: 16,
+                                color: "#3ed8ff",
+                                fontWeight: 700,
+                                fontSize: 28,
                                 fontFamily: "'Quicksand', 'Montserrat', sans-serif",
-                                fontWeight: 400,
-                                cursor: "pointer",
-                                textDecoration: "none",
-                                marginRight: 8,
+                                letterSpacing: 1,
                             }}
                         >
-                            {t('albums_page.view_more')}
-                        </a>
-                    )}
+                            {t('albums_page.albums_by_artists')}
+                        </span>
+
+                        {showViewMore && (
+                            <a
+                                href="#"
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    setVisibleCount((c) => Math.min(c + 6, albums.length));
+                                }}
+                                style={{
+                                    color: "#fff",
+                                    fontSize: 16,
+                                    fontFamily: "'Quicksand', 'Montserrat', sans-serif",
+                                    fontWeight: 400,
+                                    cursor: "pointer",
+                                    textDecoration: "none",
+                                    marginTop: 8,
+                                    marginLeft: "auto",
+                                }}
+                            >
+                                {t('albums_page.view_more')}
+                            </a>
+                        )}
+                    </div>
                 </div>
 
                 <div className="row g-4">

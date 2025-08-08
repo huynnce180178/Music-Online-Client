@@ -231,6 +231,8 @@ export default function GenresList() {
                                             handleViewMore(genreIdVal, (genre.songs || []).length);
                                         }}
                                         style={{
+                                            position: "absolute", // ✅ luôn ở bên phải
+                                            right: 0,
                                             height: 42,
                                             minWidth: 42,
                                             display: "flex",

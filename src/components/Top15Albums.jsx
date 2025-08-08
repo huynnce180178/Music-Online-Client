@@ -132,8 +132,11 @@ export default function Top15Albums() {
     }, []);
 
     // Chia album thành 3 cột
-    const columns = [[], [], []];
-    albums.forEach((album, i) => columns[i % 3].push({ ...album, i }));
+    // const columns = [[], [], []];
+    // albums.forEach((album, i) => columns[i % 3].push({ ...album, i }));
+
+    // Gán chỉ số index cho từng album
+    const indexedAlbums = albums.map((album, i) => ({ ...album, i }));
 
     const handleAlbumClick = (albumId) => {
         navigate(`/album/${albumId}`);
@@ -155,20 +158,15 @@ export default function Top15Albums() {
                 {loading ? (
                     <div style={{ color: "#fff" }}>{t('loading')}</div>
                 ) : (
-                    <div className="row gx-5">
-                        {columns.map((column, colIdx) => (
-                            <div className="col-12 col-lg-4" key={colIdx}>
-                                <div>
-                                    {column.map((album, idx) => (
-                                        <AlbumRow
-                                            album={album}
-                                            index={album.i}
-                                            key={album.i}
-                                            showBorder={idx !== column.length - 1}
-                                            onClick={handleAlbumClick}
-                                        />
-                                    ))}
-                                </div>
+                    <div className="row gx-3 gy-2">
+                        {indexedAlbums.map((album, idx) => (
+                            <div className="col-12 col-md-6 col-lg-4" key={album.id}>
+                                <AlbumRow
+                                    album={album}
+                                    index={album.i}
+                                    showBorder={idx !== indexedAlbums.length - 1}
+                                    onClick={handleAlbumClick}
+                                />
                             </div>
                         ))}
                     </div>

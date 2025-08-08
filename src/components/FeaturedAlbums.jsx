@@ -113,21 +113,42 @@ export default function FeaturedAlbums() {
                 }} aria-label="Next">&#62;</button>
 
                 {/* Header */}
-                <div className="d-flex justify-content-between align-items-end mb-3 mt-2 flex-wrap">
-                    <span style={{
-                        color: "#3ed8ff", fontWeight: 700, fontSize: 28,
-                        fontFamily: "'Quicksand', 'Montserrat', sans-serif", letterSpacing: 1,
-                    }}>{t('featured_albums.title')}</span>
-                    {showViewMore && (
-                        <a href="#" onClick={e => {
-                            e.preventDefault();
-                            setVisibleCount(c => Math.min(c + 6, albums.length));
-                        }} style={{
-                            color: "#fff", fontSize: 16, fontWeight: 400,
-                            fontFamily: "'Quicksand', 'Montserrat', sans-serif",
-                            cursor: "pointer", textDecoration: "none", marginRight: 8,
-                        }}>{t('featured_albums.view_more')}</a>
-                    )}
+                <div className="mb-3 mt-2">
+                    <div className="d-flex justify-content-between align-items-center flex-wrap">
+                        <span
+                            style={{
+                                color: "#3ed8ff",
+                                fontWeight: 700,
+                                fontSize: 28,
+                                fontFamily: "'Quicksand', 'Montserrat', sans-serif",
+                                letterSpacing: 1,
+                            }}
+                        >
+                            {t('featured_albums.title')}
+                        </span>
+
+                        {showViewMore && (
+                            <a
+                                href="#"
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    setVisibleCount((c) => Math.min(c + 6, albums.length));
+                                }}
+                                style={{
+                                    color: "#fff",
+                                    fontSize: 16,
+                                    fontWeight: 400,
+                                    fontFamily: "'Quicksand', 'Montserrat', sans-serif",
+                                    cursor: "pointer",
+                                    textDecoration: "none",
+                                    marginTop: 8,
+                                    marginLeft: "auto",
+                                }}
+                            >
+                                {t('featured_albums.view_more')}
+                            </a>
+                        )}
+                    </div>
                 </div>
 
                 {/* Album Grid */}

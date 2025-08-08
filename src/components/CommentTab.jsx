@@ -621,59 +621,11 @@ export default function CommentTab({ songId }) {
                     align-items: flex-start !important;
                 }
                 .comment-content {
-                    margin-left: 0 !important;
+                    margin-left: 40px !important;
                     font-size: 16px !important;
                 }
             }
-            // @media (max-width: 400px) {
-            //     .fb-reply-item {
-            //         margin-left: 4px !important;
-            //         padding: 6px 4px !important;
-            //         border-radius: 5px !important;
-            //     }
-            //     .ant-avatar {
-            //         width: 18px !important;
-            //         height: 18px !important;
-            //         font-size: 10px !important;
-            //     }
-            //     .ant-btn {
-            //         font-size: 10px !important;
-            //         height: 20px !important;
-            //         min-width: 20px !important;
-            //         border-radius: 4px !important;
-            //         padding: 0 3px !important;
-            //     }
-            //     .ant-input, .ant-input-textarea {
-            //         font-size: 10px !important;
-            //         border-radius: 4px !important;
-            //         padding: 3px 4px !important;
-            //         width: 100% !important;
-            //         min-width: 0 !important;
-            //         box-sizing: border-box !important;
-            //     }
-            //     .comment-send-btn-inside {
-            //         height: 16px !important;
-            //         width: 18px !important;
-            //         bottom: 4px !important;
-            //         right: 4px !important;
-            //     }
-            //     .ant-modal {
-            //         width: 99vw !important;
-            //         max-width: 220px !important;
-            //         left: 0 !important;
-            //     }
-            //     .comment-input-container {
-            //         padding: 4px 4px 4px 4px !important;
-            //         border-radius: 5px !important;
-            //         width: 100vw !important;
-            //         left: 0 !important;
-            //         min-width: 0 !important;
-            //         box-sizing: border-box !important;
-            //     }
-            //     .comment-content {
-            //         font-size: 10px !important;
-            //     }
-            // }
+            
             .fb-reply-item {
                 border-left: 2px solid #eaf6fb;
             }

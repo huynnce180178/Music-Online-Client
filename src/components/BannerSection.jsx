@@ -177,7 +177,7 @@ const style = {
         flex: "0 0 180px",
     },
     imgMobile: {
-        width: 120,
+        width: 350,
         height: 180,
         borderRadius: 12,
     },

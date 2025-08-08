@@ -89,7 +89,12 @@ export default function FreeDownloads() {
                                     <th style={{ backgroundColor: '#181C2B', color: '#00e0ff' }}>{t('downloads.number')}</th>
                                     <th style={{ backgroundColor: '#181C2B', color: '#00e0ff' }}>{t('downloads.song_title')}</th>
                                     <th style={{ backgroundColor: '#181C2B', color: '#00e0ff' }}>{t('downloads.album')}</th>
-                                    <th style={{ backgroundColor: '#181C2B', color: '#00e0ff' }}>{t('downloads.duration')}</th>
+                                    <th
+                                        className="d-none d-sm-table-cell"
+                                        style={{ backgroundColor: '#181C2B', color: '#00e0ff' }}
+                                    >
+                                        {t('downloads.duration')}
+                                    </th>
                                     <th style={{ backgroundColor: '#181C2B', color: '#00e0ff' }}>{t('downloads.remove')}</th>
                                 </tr>
                             </thead>
@@ -114,7 +119,10 @@ export default function FreeDownloads() {
                                         <td style={{ backgroundColor: '#181C2B', color: song.playing ? '#00e0ff' : 'white' }}>
                                             {song.albumName}
                                         </td>
-                                        <td style={{ backgroundColor: '#181C2B', color: song.playing ? '#00e0ff' : 'white' }}>
+                                        <td
+                                            className="d-none d-sm-table-cell"
+                                            style={{ backgroundColor: '#181C2B', color: song.playing ? '#00e0ff' : 'white' }}
+                                        >
                                             {song.duration}
                                         </td>
                                         <td style={{ backgroundColor: '#181C2B' }}>
