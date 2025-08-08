@@ -1,7 +1,7 @@
-import { Button, message, Pagination } from 'antd';
+import { Button, message, Pagination, Modal } from 'antd';
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState, useCallback } from 'react';
 import { PlayerContext } from '../context/PlayerContext';
 import { useTranslation } from 'react-i18next';
 import BASE_API_URL from "../services/base.api.url";
@@ -17,7 +17,7 @@ export default function History() {
     const playerCtx = useContext(PlayerContext) || {};
     const { playSong } = playerCtx;
 
-    const fetchHistories = (pageNumber = 1) => {
+    const fetchHistories = useCallback((pageNumber = 1) => {
         if (!token) {
             setHistories([]);
             setLoading(false);
@@ -48,34 +48,38 @@ export default function History() {
                 setTotalPages(0);
             })
             .finally(() => setLoading(false));
-    };
+    }, [token]);
 
     useEffect(() => {
         fetchHistories(page);
-    }, [page]);
+    }, [page, fetchHistories]);
 
     const handleClearAll = () => {
         if (!token) {
-            message.warning("You are not logged in.");
+            message.warning(t('history.not_logged_in', 'You are not logged in.'));
             return;
         }
 
-        const confirmed = window.confirm("Are you sure you want to delete all music listening history?");
-        if (!confirmed) return;
-
-        axios.delete(`${BASE_API_URL}/api/v1/user/history/clear-all`, {
-            headers: {
-                Authorization: `Bearer ${token}`
+        Modal.confirm({
+            title: t('history.clear_confirm_title', 'Clear listening history'),
+            content: t('history.clear_confirm_desc', 'This action will permanently remove all your listening history. Do you wish to continue?'),
+            okText: t('common.confirm', 'Confirm'),
+            cancelText: t('common.cancel', 'Cancel'),
+            okButtonProps: { danger: true },
+            centered: true,
+            onOk: async () => {
+                try {
+                    await axios.delete(`${BASE_API_URL}/api/v1/user/history/clear-all`, {
+                        headers: { Authorization: `Bearer ${token}` }
+                    });
+                    setHistories([]);
+                    setTotalPages(0);
+                    message.success(t('history.clear_success', 'All history has been cleared.'));
+                } catch (err) {
+                    message.error(t('history.clear_failed', 'Failed to clear history. Please try again later.'));
+                }
             }
-        })
-            .then(() => {
-                setHistories([]);
-                setTotalPages(0);
-                message.success("All history cleared!");
-            })
-            .catch(() => {
-                message.error("Delete history failed!");
-            });
+        });
     };
 
     const handlePlaySong = (songId, historyId) => {
@@ -110,25 +114,25 @@ export default function History() {
                             height: "40px",
                             background: "#3BC8E7",
                             color: "white",
-                            fontSize: 18,
+                            fontSize: 15,
                             borderRadius: 50,
                         }}
                         onClick={handleClearAll}
                         disabled={histories.length === 0}
                     >
-                        {t('history.clear')}
+                        {t('history.clear_button', t('history.clear'))}
                     </Button>
                 </div>
 
                 {/* Nội dung */}
                 <div className="row g-4">
                     {loading ? (
-                        <div className="col-12 text-center text-light">{t('loading')}</div>
+                        <div className="col-12 text-center text-light">{t('loading', 'Loading...')}</div>
                     ) : histories.length === 0 ? (
                         <div className="col-12 text-center mt-4">
                             <i className="bi bi-clock-history" style={{ fontSize: 42, color: "#bbb" }}></i>
                             <p style={{ color: "#ccc", fontSize: 18, marginTop: 12 }}>
-                                {t('history.empty')}
+                                {t('history.empty', 'No listening history yet.')}
                             </p>
                         </div>
                     ) : (
@@ -158,7 +162,9 @@ export default function History() {
                                         overflow: "hidden",
                                         background: "#23283e",
                                         boxShadow: "0 4px 24px #3ed8ff22",
-                                        height: 200,
+                                        // Make square card
+                                        aspectRatio: '1 / 1',
+                                        height: 'auto',
                                         display: "flex",
                                         flexDirection: "column",
                                         justifyContent: "flex-end",

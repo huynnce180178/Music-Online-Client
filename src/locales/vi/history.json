@@ -1,5 +1,11 @@
 {
   "history.title": "Lịch sử nghe nhạc",
   "history.clear": "Xóa",
-  "history.empty": "Bạn chưa nghe bài hát nào."
+  "history.clear_button": "Xóa hết",
+  "history.empty": "Bạn chưa nghe bài hát nào.",
+  "history.not_logged_in": "Bạn chưa đăng nhập.",
+  "history.clear_confirm_title": "Xóa lịch sử nghe nhạc",
+  "history.clear_confirm_desc": "Hành động này sẽ xóa vĩnh viễn toàn bộ lịch sử nghe nhạc của bạn. Bạn có chắc muốn tiếp tục?",
+  "history.clear_success": "Đã xóa toàn bộ lịch sử.",
+  "history.clear_failed": "Xóa lịch sử thất bại. Vui lòng thử lại sau."
 } 

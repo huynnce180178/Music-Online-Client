@@ -1,5 +1,11 @@
 {
   "history.title": "History",
   "history.clear": "Clear",
-  "history.empty": "Music history is empty."
+  "history.clear_button": "Clear All",
+  "history.empty": "Music history is empty.",
+  "history.not_logged_in": "You are not logged in.",
+  "history.clear_confirm_title": "Clear listening history",
+  "history.clear_confirm_desc": "This action will permanently remove all your listening history. Do you wish to continue?",
+  "history.clear_success": "All history has been cleared.",
+  "history.clear_failed": "Failed to clear history. Please try again later."
 } 

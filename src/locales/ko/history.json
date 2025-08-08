@@ -1,5 +1,11 @@
 {
   "history.title": "히스토리",
   "history.clear": "지우기",
-  "history.empty": "음악 히스토리가 비어있습니다."
+  "history.clear_button": "전체 지우기",
+  "history.empty": "음악 히스토리가 비어있습니다.",
+  "history.not_logged_in": "로그인되어 있지 않습니다.",
+  "history.clear_confirm_title": "히스토리 지우기",
+  "history.clear_confirm_desc": "이 작업은 모든 음악 히스토리를 영구적으로 삭제합니다. 계속하시겠습니까?",
+  "history.clear_success": "모든 히스토리가 삭제되었습니다.",
+  "history.clear_failed": "히스토리 삭제에 실패했습니다. 나중에 다시 시도해 주세요."
 } 

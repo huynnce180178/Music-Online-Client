@@ -108,10 +108,19 @@ export default function GenresList() {
     };
 
     const handleViewMore = (genreId, songLen) => {
-        setVisibleCounts(counts => ({
-            ...counts,
-            [genreId]: Math.min(getCount(genreId, songLen) + getInitialCount(), songLen)
-        }));
+        // Tăng visibleCount và đồng thời điều chỉnh startIdx nếu đang ở cuối
+        setVisibleCounts(counts => {
+            const currentVisible = getCount(genreId, songLen);
+            const newVisible = Math.min(currentVisible + getInitialCount(), songLen);
+            // Nếu cửa sổ hiện tại vượt quá phạm vi mới => kéo startIdx về để hiển thị đủ newVisible
+            setStartIdxs(idxObj => {
+                const currentStart = idxObj[genreId] || 0;
+                const maxStart = songLen - newVisible; // startIdx lớn nhất cho phép để vẫn đủ newVisible bài
+                const adjustedStart = Math.min(currentStart, Math.max(0, maxStart));
+                return { ...idxObj, [genreId]: adjustedStart };
+            });
+            return { ...counts, [genreId]: newVisible };
+        });
     };
 
     const handleSelectSong = (songId, allSongIds) => {

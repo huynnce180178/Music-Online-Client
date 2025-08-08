@@ -1,5 +1,11 @@
 {
   "history.title": "履歴",
   "history.clear": "クリア",
-  "history.empty": "音楽履歴が空です。"
+  "history.clear_button": "すべてクリア",
+  "history.empty": "音楽履歴が空です。",
+  "history.not_logged_in": "ログインしていません。",
+  "history.clear_confirm_title": "履歴をクリア",
+  "history.clear_confirm_desc": "この操作はすべての音楽履歴を完全に削除します。続行しますか？",
+  "history.clear_success": "すべての履歴がクリアされました。",
+  "history.clear_failed": "履歴のクリアに失敗しました。後でもう一度お試しください。"
 } 
