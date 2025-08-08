@@ -16,5 +16,11 @@
   "payment.payment_error": "支払い中にエラーが発生しました。再試行してください！",
   "payment.upgrade_title": "リスニング体験をアップグレード",
   "payment.upgrade_desc": "中断のない音楽、独占コンテンツ、そしてより多くのプレミアム特典をお楽しみください。",
-  "payment.secure_payment": "すべての支払いはPayPalまたはお好みの方法で安全に処理されます。"
+  "payment.secure_payment": "すべての支払いはPayPalまたはお客様の希望する方法で安全に処理されます。",
+  "payment.success_title": "お支払い完了！",
+  "payment.success_subtitle": "取引コード: {{paymentId}}",
+  "payment.failed_title": "お支払い失敗",
+  "payment.failed_subtitle": "{{message}}",
+  "payment.failed_default_message": "不明なエラーによりお支払いが失敗しました。",
+  "payment.go_home": "ホームに戻る"
 } 

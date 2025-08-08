@@ -16,5 +16,11 @@
   "payment.payment_error": "An error occurred during payment. Please try again!",
   "payment.upgrade_title": "Upgrade Your Listening Experience",
   "payment.upgrade_desc": "Enjoy uninterrupted music, exclusive content, and more premium benefits.",
-  "payment.secure_payment": "All payments are securely processed via PayPal or your preferred method."
+  "payment.secure_payment": "All payments are securely processed via PayPal or your preferred method.",
+  "payment.success_title": "Payment Successful!",
+  "payment.success_subtitle": "Transaction code: {{paymentId}}",
+  "payment.failed_title": "Payment Failed",
+  "payment.failed_subtitle": "{{message}}",
+  "payment.failed_default_message": "Payment failed due to unknown error.",
+  "payment.go_home": "Go to Home Now"
 } 

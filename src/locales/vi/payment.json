@@ -16,5 +16,11 @@
   "payment.payment_error": "Có lỗi xảy ra khi thanh toán. Vui lòng thử lại!",
   "payment.upgrade_title": "Nâng cấp trải nghiệm nghe nhạc",
   "payment.upgrade_desc": "Thưởng thức âm nhạc không gián đoạn, nội dung độc quyền và nhiều đặc quyền cao cấp hơn.",
-  "payment.secure_payment": "Mọi thanh toán đều được bảo mật qua PayPal hoặc phương thức bạn chọn."
+  "payment.secure_payment": "Mọi thanh toán đều được bảo mật qua PayPal hoặc phương thức bạn chọn.",
+  "payment.success_title": "Thanh toán thành công!",
+  "payment.success_subtitle": "Mã giao dịch: {{paymentId}}",
+  "payment.failed_title": "Thanh toán thất bại",
+  "payment.failed_subtitle": "{{message}}",
+  "payment.failed_default_message": "Thanh toán thất bại do lỗi không xác định.",
+  "payment.go_home": "Về trang chủ ngay"
 } 
