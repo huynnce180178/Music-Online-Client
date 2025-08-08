@@ -1,46 +1,4 @@
-/* PC: >= 1025px */
-@media (min-width: 1025px) {
-  .container {
-    padding: 0 48px;
-    max-width: 1460px;
-  }
-  .sidebar {
-    width: 200px;
-  }
-  .header {
-    height: 72px;
-  }
+body {
+  background-color: #181c2b;
 }
 
-/* Tablet: 601px - 1024px */
-@media (max-width: 1024px) and (min-width: 601px) {
-  .container {
-    padding: 0 16px;
-    max-width: 100vw;
-  }
-  .sidebar {
-    width: 70px;
-  }
-  .header {
-    height: 56px;
-  }
-}
-
-/* Mobile: <= 600px */
-@media (max-width: 600px) {
-  .container {
-    padding: 0 4px;
-    max-width: 100vw;
-  }
-  .sidebar {
-    display: none; /* Ẩn sidebar trên mobile */
-  }
-  .header {
-    height: 48px;
-    padding: 0 8px;
-  }
-  .footer {
-    font-size: 12px;
-    padding: 8px 0;
-  }
-}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext } from "react";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { PlayerContext } from "../context/PlayerContext";
 import { useTranslation } from 'react-i18next';
@@ -89,7 +89,8 @@ export default function TrendingTracks() {
                             style={{
                                 color: "#fff", fontSize: 32,
                                 marginRight: bp === "mobile" ? 4 : 12,
-                                marginTop: 18, zIndex: 5, minWidth: 40
+                                marginTop: 35, zIndex: 5, minWidth: 40,
+                                textDecoration: 'none'
                             }}
                             onClick={() => canPrev && setStartIdx(startIdx - 1)}
                             disabled={!canPrev}
@@ -161,7 +162,8 @@ export default function TrendingTracks() {
                             style={{
                                 color: "#fff", fontSize: 32,
                                 marginLeft: bp === "mobile" ? 4 : 12,
-                                marginTop: 18, zIndex: 5, minWidth: 40
+                                marginTop: 35, zIndex: 5, minWidth: 40,
+                                textDecoration: 'none'
                             }}
                             onClick={() => canNext && setStartIdx(startIdx + 1)}
                             disabled={!canNext}
