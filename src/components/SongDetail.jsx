@@ -5,24 +5,13 @@ import PropTypes from "prop-types";
 import { PlayerContext } from "../context/PlayerContext";
 import CommentTab from "./CommentTab";
 import AddToPlaylistModal from "./AddToPlaylistModal";
-import { useNavigate } from "react-router-dom"; // Thêm import này
+import { useNavigate } from "react-router-dom";
 import { useTranslation } from 'react-i18next';
 import BASE_API_URL from "../services/base.api.url";
 
 export default function SongDetail({ songId, onClose }) {
-    const { t } = useTranslation();
-    const [song, setSong] = useState(null);
-    const [artist, setArtist] = useState(null);
-    const [album, setAlbum] = useState(null);
-    const [lyrics, setLyrics] = useState("");
-    const [loading, setLoading] = useState(true);
-    const [currentTime, setCurrentTime] = useState(0);
-    const [viewed, setViewed] = useState(false);
-    const [addToPlaylistModal, setAddToPlaylistModal] = useState({ open: false, songId: null });
-    const [pendingNextSong, setPendingNextSong] = useState(false);
-    const [pendingAutoNextSong, setPendingAutoNextSong] = useState(false);
 
-
+    // Move PlayerContext destructuring to the top so all hooks below can use its values
     const {
         adPlaying,
         adAudio,
@@ -45,6 +34,61 @@ export default function SongDetail({ songId, onClose }) {
         fetchAdAudio
     } = useContext(PlayerContext);
 
+    // Keyboard shortcut: left/right seek, up/down volume, space play/pause
+    useEffect(() => {
+        window.focus();
+        const handleKeyDown = (e) => {
+            if (!audioRef.current || adPlaying) return;
+            // Space: play/pause
+            if (e.code === "Space" || e.key === " " || e.key === "Spacebar") {
+                e.preventDefault();
+                if (audioRef.current.paused) {
+                    audioRef.current.play();
+                    setIsPlaying && setIsPlaying(true);
+                } else {
+                    audioRef.current.pause();
+                    setIsPlaying && setIsPlaying(false);
+                }
+                return;
+            }
+            if (e.key === "ArrowLeft") {
+                audioRef.current.currentTime = Math.max(0, audioRef.current.currentTime - 5);
+                setCurrentTime(audioRef.current.currentTime);
+                e.preventDefault();
+            } else if (e.key === "ArrowRight") {
+                audioRef.current.currentTime = Math.min(audioRef.current.duration || 0, audioRef.current.currentTime + 5);
+                setCurrentTime(audioRef.current.currentTime);
+                e.preventDefault();
+            } else if (e.key === "ArrowUp") {
+                let newVol = Math.min(1, (audioRef.current.volume || 0) + 0.05);
+                audioRef.current.volume = newVol;
+                contextHandleVolume(newVol);
+                e.preventDefault();
+            } else if (e.key === "ArrowDown") {
+                let newVol = Math.max(0, (audioRef.current.volume || 0) - 0.05);
+                audioRef.current.volume = newVol;
+                contextHandleVolume(newVol);
+                e.preventDefault();
+            }
+        };
+        window.addEventListener("keydown", handleKeyDown);
+        return () => window.removeEventListener("keydown", handleKeyDown);
+    }, [audioRef, adPlaying, contextHandleVolume, setIsPlaying]);
+
+    // ...existing code...
+    const [song, setSong] = useState(null);
+    const [artist, setArtist] = useState(null);
+    const [album, setAlbum] = useState(null);
+    const [lyrics, setLyrics] = useState("");
+    const { t } = useTranslation();
+    // Đã khai báo ở trên, xóa các dòng này
+    const [loading, setLoading] = useState(true);
+    const [currentTime, setCurrentTime] = useState(0);
+    const [viewed, setViewed] = useState(false);
+    const [addToPlaylistModal, setAddToPlaylistModal] = useState({ open: false, songId: null });
+    const [pendingNextSong, setPendingNextSong] = useState(false);
+    const [pendingAutoNextSong, setPendingAutoNextSong] = useState(false);
+
     const navigate = useNavigate(); // Thêm hook này
     const [pulsePhase, setPulsePhase] = useState(0);
 
@@ -53,14 +97,13 @@ export default function SongDetail({ songId, onClose }) {
         if (!isPlaying) return;
         let raf;
         const animate = () => {
-            setPulsePhase(p => p + 0.13); // Tăng tốc độ ở đây
+            setPulsePhase(p => p + 0.13); 
             raf = requestAnimationFrame(animate);
         };
         animate();
         return () => raf && cancelAnimationFrame(raf);
     }, [isPlaying]);
 
-    // Luôn đồng bộ liked khi songId thay đổi (mỗi khi mở chi tiết bài mới)
     useEffect(() => {
         if (songId) checkLiked(songId);
     }, [songId, checkLiked]);
@@ -787,38 +830,36 @@ export default function SongDetail({ songId, onClose }) {
                                     r="175"
                                     fill="none"
                                     stroke="#23283e"
-                                    strokeWidth="6"
+                                    strokeWidth={6}
                                 />
-                                {
-                                    Array.from({ length: 48 }).map((_, i) => {
-                                        const angle = (i / 48) * 2 * Math.PI;
-                                        const radius = 175;
-                                        const pulse =
-                                            18 +
-                                            (isPlaying
-                                                ? Math.abs(Math.sin(pulsePhase + i * 0.26)) * 24
-                                                : 0);
-                                        const x1 = 200 + Math.cos(angle) * radius;
-                                        const y1 = 200 + Math.sin(angle) * radius;
-                                        const x2 = 200 + Math.cos(angle) * (radius + pulse);
-                                        const y2 = 200 + Math.sin(angle) * (radius + pulse);
-                                        return (
-                                            <line
-                                                key={i}
-                                                x1={x1}
-                                                y1={y1}
-                                                x2={x2}
-                                                y2={y2}
-                                                stroke="#3ed8ff"
-                                                strokeWidth="3"
-                                                strokeLinecap="round"
-                                                style={{
-                                                    transition: "all 0.18s cubic-bezier(.55,.01,.55,1.01)"
-                                                }}
-                                            />
-                                        );
-                                    })
-                                }
+                                {Array.from({ length: 48 }).map((_, i) => {
+                                    const angle = (i / 48) * 2 * Math.PI;
+                                    const radius = 175;
+                                    const pulse =
+                                        18 +
+                                        (isPlaying
+                                            ? Math.abs(Math.sin(pulsePhase + i * 0.26)) * 24
+                                            : 0);
+                                    const x1 = 200 + Math.cos(angle) * radius;
+                                    const y1 = 200 + Math.sin(angle) * radius;
+                                    const x2 = 200 + Math.cos(angle) * (radius + pulse);
+                                    const y2 = 200 + Math.sin(angle) * (radius + pulse);
+                                    return (
+                                        <line
+                                            key={i}
+                                            x1={x1}
+                                            y1={y1}
+                                            x2={x2}
+                                            y2={y2}
+                                            stroke="#3ed8ff"
+                                            strokeWidth={3}
+                                            strokeLinecap="round"
+                                            style={{
+                                                transition: "all 0.18s cubic-bezier(.55,.01,.55,1.01)"
+                                            }}
+                                        />
+                                    );
+                                })}
                             </svg>
                             <img
                                 className={`player-img${isPlaying ? " spinning" : " paused"}`}
@@ -1147,6 +1188,7 @@ export default function SongDetail({ songId, onClose }) {
                                     fontSize: 20,
                                     boxShadow: "0 2px 12px rgba(62, 216, 255, 0.2)",
                                     transition: "all 0.3s ease",
+
                                     cursor: "pointer"
                                 }}
                                 onMouseEnter={e => {
@@ -1176,7 +1218,10 @@ export default function SongDetail({ songId, onClose }) {
     );
 }
 
+
+
 SongDetail.propTypes = {
     songId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
     onClose: PropTypes.func.isRequired
 };
+

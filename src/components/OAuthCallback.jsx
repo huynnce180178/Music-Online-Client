@@ -25,53 +25,38 @@ export default function OAuthCallback() {
 
         const handleOAuthCallback = async () => {
             try {
-                // Check for OAuth errors first
                 const oauthError = handleOAuthError(searchParams);
                 if (oauthError) {
-                    console.log('OAuth error detected:', oauthError);
                     setError(oauthError.description);
                     setStatus('error');
                     setProgress(100);
                     setTimeout(() => {
                         navigate('/', { replace: true });
-                    }, 800);
+                    }, 2000); // Giữ nguyên thời gian cho lỗi
                     return;
                 }
 
                 const provider = getOAuthProvider(searchParams);
-                console.log('OAuth provider:', provider);
                 
                 let response;
                 
                 if (isOAuthCallback(searchParams)) {
-                    console.log('Processing OAuth callback...');
                     
-                    // Check for accessToken in URL parameters (from redirect)
                     const accessTokenFromUrl = searchParams.get('accessToken');
                     const emailFromUrl = searchParams.get('email');
                     const userIdFromUrl = searchParams.get('userId');
                     const userNameFromUrl = searchParams.get('userName');
                     const needCompleteProfileFromUrl = searchParams.get('needCompleteProfile');
                     
-                    console.log('URL Parameters check:', {
-                        accessToken: accessTokenFromUrl ? 'Found' : 'Missing',
-                        email: emailFromUrl || 'Missing',
-                        userId: userIdFromUrl || 'Missing',
-                        userName: userNameFromUrl || 'Missing',
-                        provider: provider
-                    });
                     
                     if (accessTokenFromUrl) {
-                        console.log('Found accessToken in URL, verifying with backend...');
                         
-                        // Call verify token endpoint
                         const verifyData = {
                             accessToken: accessTokenFromUrl,
                             provider: provider,
                             email: emailFromUrl ? decodeURIComponent(emailFromUrl) : 'unknown@temp.com'
                         };
                         
-                        console.log('DEBUG: Final verifyData being sent:', JSON.stringify(verifyData, null, 2));
                         
                         response = await axios.post(`${BASE_API_URL}/api/v1/oauth2/verify-token`, verifyData, {
                             timeout: 5000,
@@ -80,27 +65,20 @@ export default function OAuthCallback() {
                             }
                         });
 
-                        console.log('Token verification response:', response.status, response.data);
                     } else {
-                        // Fallback: gọi endpoint cũ nếu không có token trong URL
-                        console.log('No token in URL, trying legacy endpoint...');
                         response = await axios.get(`${BASE_API_URL}/${provider}/oauth2-success`, {
                             withCredentials: true,
                             timeout: 5000 
                         });
 
-                        console.log('Backend response:', response.status, response.data);
                     }
 
-                    // Kiểm tra response - phải check lỗi TRƯỚC khi check data
                     if (response.data?.status === 'BAD_REQUEST' || response.data?.code === 400) {
-                        // Backend trả về lỗi BAD_REQUEST
                         console.error('Backend authentication failed:', response.data);
                         let errorMsg = response.data?.data || response.data?.message || 'OAuth2 authentication failed';
                         throw new Error(errorMsg);
                     } else if (response.status === 200 && response.data?.data && typeof response.data.data === 'object') {
                         const data = response.data.data;
-                        console.log('User data received:', data);
                         
                         if (data.accessToken) {
                             storage.set("accessToken", data.accessToken);
@@ -114,7 +92,6 @@ export default function OAuthCallback() {
                                 storage.set("needCompleteProfile", "true");
                             }
 
-                            // Trigger storage event to notify WebSocketProvider
                             window.dispatchEvent(new StorageEvent('storage', {
                                 key: 'userId',
                                 newValue: data.userId || "",
@@ -127,7 +104,6 @@ export default function OAuthCallback() {
                                 oldValue: null
                             }));
 
-                            // Also dispatch custom event for immediate notification
                             window.dispatchEvent(new CustomEvent('userLogin', {
                                 detail: {
                                     userId: data.userId,
@@ -135,16 +111,14 @@ export default function OAuthCallback() {
                                 }
                             }));
                             
-                            console.log('OAuthCallback: Dispatched storage events and userLogin event');
                         }
                         
                         setProgress(100);
                         setStatus('success');
-                        console.log('Setting status to success');
                         
                         setTimeout(() => {
                             navigate('/', { replace: true });
-                        }, 500);
+                        }, 2000);
                     } else {
                         console.error('Invalid response from server:', response);
                         console.error('Response data type:', typeof response.data?.data);
@@ -160,7 +134,6 @@ export default function OAuthCallback() {
                         throw new Error(errorMsg);
                     }
                 } else {
-                    console.log('No OAuth parameters found, redirecting to home');
                     navigate('/', { replace: true });
                 }
             } catch (err) {
@@ -203,7 +176,6 @@ export default function OAuthCallback() {
         return () => clearInterval(progressInterval);
     }, [searchParams, navigate]);
 
-    console.log('Current status:', status);
 
     if (status === 'loading') {
         return (
@@ -254,7 +226,7 @@ export default function OAuthCallback() {
                             '100%': '#764ba2',
                         }}
                         showInfo={false}
-                        strokeWidth={8}
+                        size={["default", 8]}
                         style={{ marginBottom: '20px' }}
                     />
                     

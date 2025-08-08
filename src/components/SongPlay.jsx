@@ -15,6 +15,7 @@ import { useNavigate } from "react-router-dom";
 import BASE_API_URL from "../services/base.api.url";
 
 function SongPlay({ sidebarWidth = 0 }) {
+
     const {
         currentSongId,
         isPlaying,
@@ -37,6 +38,57 @@ function SongPlay({ sidebarWidth = 0 }) {
         volume,
         setVolume,
     } = useContext(PlayerContext);
+
+
+    const handleSongChange = (type) => {
+        let nextId = null;
+        if (type === "next") nextId = getNextSongId();
+        else if (type === "prev") nextId = getPrevSongId();
+        if (nextId === currentSongId) {
+            return;
+        }
+        if (isPremium || isArtist) {
+            type === "next" ? nextSong() : prevSong();
+            return;
+        }
+        if ((songCount + 1) % 5 === 0) {
+            if (type === "next") setPendingNextSong(true);
+            fetchAdAudio("next");
+        } else {
+            setSongCount(c => c + 1);
+            type === "next" ? nextSong() : prevSong();
+        }
+    };
+
+
+    // Keyboard shortcut: left/right seek, up/down volume
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (!audioRef.current || adPlaying) return;
+            // Seek backward/forward 10s
+            if (e.key === "ArrowLeft") {
+                audioRef.current.currentTime = Math.max(0, audioRef.current.currentTime - 5);
+                setCurrentTime(audioRef.current.currentTime);
+                e.preventDefault();
+            } else if (e.key === "ArrowRight") {
+                audioRef.current.currentTime = Math.min(audioRef.current.duration || 0, audioRef.current.currentTime + 5);
+                setCurrentTime(audioRef.current.currentTime);
+                e.preventDefault();
+            } else if (e.key === "ArrowUp") {
+                let newVol = Math.min(1, (audioRef.current.volume || 0) + 0.05);
+                audioRef.current.volume = newVol;
+                setVolume(newVol);
+                e.preventDefault();
+            } else if (e.key === "ArrowDown") {
+                let newVol = Math.max(0, (audioRef.current.volume || 0) - 0.05);
+                audioRef.current.volume = newVol;
+                setVolume(newVol);
+                e.preventDefault();
+            }
+        };
+        window.addEventListener("keydown", handleKeyDown);
+        return () => window.removeEventListener("keydown", handleKeyDown);
+    }, [audioRef, adPlaying, setVolume]);
 
     const { t } = useTranslation();
     const navigate = useNavigate();
@@ -136,7 +188,7 @@ function SongPlay({ sidebarWidth = 0 }) {
     };
 
     useEffect(() => {
-        setViewed(false); // reset khi chuyển sang bài mới
+        setViewed(false); 
     }, [song?.id]);
 
     function formatTime(secs) {
@@ -151,7 +203,7 @@ function SongPlay({ sidebarWidth = 0 }) {
         if (song?.duration && !viewed) {
             const durationSec = song.duration.split(":").reduce((acc, val) => 60 * acc + +val, 0);
             if (audioRef.current.currentTime / durationSec > 0.8) {
-                setViewed(true); // đánh dấu đã cộng view bài này
+                setViewed(true); 
                 axios.post(`${BASE_API_URL}/api/v1/play/song/${song.id}/update-views`, null, {
                     params: { playedDuration: audioRef.current.currentTime }
                 }).catch(() => { });
@@ -178,7 +230,10 @@ function SongPlay({ sidebarWidth = 0 }) {
 
     const getPrevSongId = () => {
         const index = playlist.indexOf(currentSongId);
-        return index > 0 ? playlist[index - 1] : null;
+        if (playlist.length === 0) return null;
+        if (index === 0) return playlist[playlist.length - 1]; 
+        if (index > 0) return playlist[index - 1];
+        return null;
     };
 
     const nextSong = () => {
@@ -188,32 +243,20 @@ function SongPlay({ sidebarWidth = 0 }) {
 
     const prevSong = () => {
         const prevId = getPrevSongId();
-        if (prevId) setCurrentSongId(prevId);
+        if (prevId) {
+            setCurrentSongId(prevId);
+            setIsPlaying(false); 
+            setTimeout(() => setIsPlaying(true), 0); 
+        }
     };
 
-    // Get roles from localStorage
     const roles = JSON.parse(localStorage.getItem("roles") || "[]");
     const isPremium = roles.includes("ROLE_PREMIUM");
-    const isArtist = roles.includes("ROLE_ARTIST"); // Thêm dòng này
+    const isArtist = roles.includes("ROLE_ARTIST"); 
 
-    // When next/prev or after every 3 songs, play an ad
-    const handleSongChange = (type) => {
-        if (isPremium || isArtist) { // Thêm isArtist vào điều kiện
-            type === "next" ? nextSong() : prevSong();
-            return;
-        }
-        if ((songCount + 1) % 3 === 0) {
-            if (type === "next") setPendingNextSong(true);
-            fetchAdAudio("next");
-        } else {
-            setSongCount(c => c + 1);
-            type === "next" ? nextSong() : prevSong();
-        }
-    };
 
-    // When the song ends (auto next)
     const handleSongEnd = () => {
-        if (isPremium || isArtist) { // Thêm isArtist vào điều kiện
+        if (isPremium || isArtist) { 
             const nextId = getNextSongId();
             if (nextId) {
                 setCurrentSongId(nextId);
@@ -223,8 +266,7 @@ function SongPlay({ sidebarWidth = 0 }) {
             }
             return;
         }
-        if ((songCount + 1) % 3 === 0) {
-            // Khi tự hết bài, quảng cáo xong phải NEXT bài mới!
+    if ((songCount + 1) % 5 === 0) {
             setPendingAutoNextSong(true);
             fetchAdAudio("next");
         } else {
@@ -240,11 +282,9 @@ function SongPlay({ sidebarWidth = 0 }) {
     };
 
     useEffect(() => {
-        // Chỉ show modal khi adPlaying chuyển từ false sang true
         if (adPlaying) {
             setShowModal(true);
         }
-        // Khi quảng cáo kết thúc (adPlaying chuyển từ true sang false), tự động đóng modal
         if (!adPlaying) {
             setShowModal(false);
         }
@@ -258,19 +298,17 @@ function SongPlay({ sidebarWidth = 0 }) {
     }, [adPlaying, adAudio?.mediaUrl]);
 
     useEffect(() => {
-        // Get songCount from localStorage on mount
         const count = Number(localStorage.getItem("songCount") || 0);
         setSongCount(count);
     }, [setSongCount]);
 
     useEffect(() => {
-        // Save songCount to localStorage whenever it changes
         localStorage.setItem("songCount", songCount);
     }, [songCount]);
 
     useEffect(() => {
         if (!adPlaying && currentSongId && song) {
-            setIsPlaying(true); // Khi quảng cáo kết thúc, tự động play bài nhạc
+            setIsPlaying(true); 
         }
     }, [adPlaying, currentSongId, song, setIsPlaying]);
 
@@ -322,7 +360,6 @@ function SongPlay({ sidebarWidth = 0 }) {
                         }} />
                 </div>
 
-                {/* Song Info */}
                 <div className="player-info" style={{
                     flex: 1, padding: "0 24px 5px 18px", overflow: "hidden"
                 }}>
@@ -353,7 +390,6 @@ function SongPlay({ sidebarWidth = 0 }) {
                     </div>
                 </div>
 
-                {/* Controls */}
                 <div className="player-controls" style={{
                     flex: "0 0 170px", display: 'flex', gap: 18, alignItems: "center"
                 }}>
