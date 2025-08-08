@@ -213,7 +213,7 @@ export default function TopGenres() {
                                     alignItems: "flex-end"
                                 }}>
                                     <div>
-                                        {t('genres.' + genre.name, genre.name)}
+                                        {genre.name ? t(`genres.${genre.name}`, { defaultValue: genre.name }) : ''}
                                         <div style={{
                                             fontWeight: 400,
                                             fontSize: fontSizeGenre - 1,

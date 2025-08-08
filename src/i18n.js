@@ -33,7 +33,7 @@ i18n
 // Debug: Test translation after initialization
 i18n.on('initialized', () => {
   console.log('i18n initialized');
-  console.log('Test translation:', i18n.t('common.loading'));
+  console.log('Test translation:', i18n.t('loading'));
   console.log('Available languages:', i18n.languages);
 });
 

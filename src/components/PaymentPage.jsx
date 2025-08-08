@@ -1,9 +1,8 @@
 import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import axios from 'axios';
 import { useTranslation } from 'react-i18next';
-
-axios.defaults.baseURL = 'http://localhost:8080';
+import axios from 'axios';
+import BASE_API_URL from "../services/base.api.url";
 
 export default function PaymentPage() {
     const { t } = useTranslation();
@@ -20,26 +19,27 @@ export default function PaymentPage() {
 
     useEffect(() => {
         if (!userId || !accessToken) {
-            setError(t('payment.need_login'));
+            setError("You need to login to pay.");
             setLoading(false);
             return;
         }
 
         const fetchPlan = async () => {
             try {
-                const res = await axios.get(`/api/v1/subscriptionPlan/${planId}`, {
+                const res = await axios.get(`${BASE_API_URL}/api/v1/subscriptionPlan/${planId}`, {
                     headers: { Authorization: `Bearer ${accessToken}` }
                 });
                 setPlan(res.data.data);
             } catch (err) {
-                setError(t('payment.cannot_load_package'));
+                console.error("Error downloading upgrade package:", err);
+                setError("Unable to download upgrade package information.");
             } finally {
                 setLoading(false);
             }
         };
 
         fetchPlan();
-    }, [planId, accessToken, userId, t]);
+    }, [planId, accessToken, userId]);
 
     const handlePayment = async () => {
         if (!plan || !paymentMethod) return;
@@ -49,46 +49,58 @@ export default function PaymentPage() {
             const transitionId = `${paymentMethod}-${Date.now()}`;
             let approvalUrl = '';
 
+            console.log('Payment method selected:', paymentMethod);
+            console.log('Plan:', plan);
+            console.log('Base API URL:', BASE_API_URL);
+
             if (paymentMethod === 'ZALO_PAY') {
-                const res = await axios.post(`/api/v1/user/payment/zalopay`, null, {
+                const res = await axios.post(`${BASE_API_URL}/api/v1/user/payment/zalopay`, null, {
                     params: { amount: plan.price },
                     headers: { Authorization: `Bearer ${accessToken}` }
                 });
 
                 if (res.data?.return_code === 1 && res.data?.order_url) {
                     approvalUrl = res.data.order_url;
-                    window.open(approvalUrl, '_blank');
-                    return;
                 } else {
-                    setError(t('payment.zalopay_error'));
+                    throw new Error(res.data?.return_message || "ZaloPay error");
                 }
-            } else if (paymentMethod === 'VNPAY') {
-                const res = await axios.post(`/api/v1/user/payment/vnpay`, null, {
-                    params: { amount: plan.price },
+            } else if (paymentMethod === 'PAYPAL' || paymentMethod === 'VNPAY') {
+                console.log('Making request to:', `${BASE_API_URL}/api/v1/user/payment`);
+                console.log('Request body:', {
+                    planId: plan.id,
+                    transitionId,
+                    paymentMethod
+                });
+                
+                const res = await axios.post(`${BASE_API_URL}/api/v1/user/payment`, {
+                    planId: plan.id,
+                    transitionId,
+                    paymentMethod
+                }, {
                     headers: { Authorization: `Bearer ${accessToken}` }
                 });
-                if (res.data?.code === '00' && res.data?.data) {
+
+                console.log('Response from payment API:', res.data);
+
+                if (res.data?.data) {
                     approvalUrl = res.data.data;
-                    window.open(approvalUrl, '_blank');
-                    return;
                 } else {
-                    setError(t('payment.vnpay_error'));
+                    throw new Error("Not receiving URL from payment gateway.");
                 }
-            } else if (paymentMethod === 'PAYPAL') {
-                const res = await axios.post(`/api/v1/user/payment/paypal`, null, {
-                    params: { amount: plan.price },
-                    headers: { Authorization: `Bearer ${accessToken}` }
-                });
-                if (res.data?.approvalUrl) {
-                    approvalUrl = res.data.approvalUrl;
-                    window.open(approvalUrl, '_blank');
-                    return;
-                } else {
-                    setError(t('payment.paypal_error'));
-                }
+            } else {
+                throw new Error("Invalid payment method selected.");
             }
+
+            // 👉 Redirect trực tiếp, KHÔNG gắn thêm param FE
+            window.location.href = approvalUrl;
+
         } catch (err) {
-            setError(t('payment.payment_error'));
+            console.error("Error while processing payment:", err);
+            setError(
+                typeof err.response?.data === 'string'
+                    ? err.response.data
+                    : err.response?.data?.message || err.message || "Unable to process payment."
+            );
         } finally {
             setSubmitting(false);
         }
@@ -106,7 +118,7 @@ export default function PaymentPage() {
     };
 
     if (loading) {
-        return <div style={{ textAlign: 'center', color: '#fff', marginTop: 80 }}>{t('payment.loading')}</div>;
+        return <div style={{ textAlign: 'center', color: '#fff', marginTop: 80 }}>{t('loading')}</div>;
     }
 
     if (error) {
@@ -121,9 +133,9 @@ export default function PaymentPage() {
                 <div className="card-body d-flex flex-column">
                     <h3 className="card-title fw-bold">{plan.planName}</h3>
                     <p>{plan.description.split(',')[0]}</p>
-                    <h4 className="my-2 fw-bold">{t('payment.from_only', { price: Number(plan.price).toLocaleString() })}</h4>
+                    <h4 className="my-2 fw-bold">From only {Number(plan.price).toLocaleString()} USD / Month</h4>
 
-                    <h6 className="fw-bold mt-3">{t('payment.special_privileges')}</h6>
+                    <h6 className="fw-bold mt-3">Special privileges:</h6>
                     <ul className="list-unstyled">
                         {plan.description.split(',').map((item, index) => (
                             <li key={index} className="d-flex align-items-start mb-1">
@@ -133,16 +145,16 @@ export default function PaymentPage() {
                     </ul>
 
                     <div className="mt-4">
-                        <label htmlFor="method"><strong>{t('payment.payment_method')}</strong></label>
+                        <label htmlFor="method"><strong>Payment method:</strong></label>
                         <select
                             id="method"
                             value={paymentMethod}
                             onChange={(e) => setPaymentMethod(e.target.value)}
                             className="form-select mt-2"
                         >
-                            <option value="PAYPAL">{t('payment.paypal')}</option>
-                            <option value="VNPAY">{t('payment.vnpay')}</option>
-                            <option value="ZALO_PAY">{t('payment.zalopay')}</option>
+                            <option value="PAYPAL">Paypal</option>
+                            <option value="VNPAY">VNPay</option>
+                            <option value="ZALO_PAY">ZaloPay</option>
                         </select>
                     </div>
 
@@ -152,7 +164,7 @@ export default function PaymentPage() {
                         className="mt-4 py-2 rounded-pill border-0 fw-bold"
                         style={{ backgroundColor: styles.btnBg, color: styles.btnColor, width: "100%" }}
                     >
-                        {submitting ? t('payment.processing') : t('payment.buy_now')}
+                        {submitting ? t('processing') : "BUY NOW"}
                     </button>
                 </div>
             </div>
