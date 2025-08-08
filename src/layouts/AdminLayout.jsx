@@ -242,20 +242,21 @@ export default function AdminLayout({ children }) {
         <>
             <div
                 style={{
-                    height: 64,
+                    height: 40,
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    marginBottom: 16,
+                    marginBottom: 8,
+                    marginTop: 8,
                 }}
             >
                 <Avatar
-                    size={48}
+                    size={36}
                     style={{
                         background: "linear-gradient(135deg, #3ed8ff 60%, #38bdf8 100%)",
                         color: "#181d36",
                         fontWeight: "bold",
-                        fontSize: 28,
+                        fontSize: 20,
                         cursor: "pointer"
                     }}
                     onClick={() => navigate("/")}
@@ -341,19 +342,31 @@ export default function AdminLayout({ children }) {
                         {sidebarContent}
                     </Sider>
                 )}
-                <Drawer
-                    open={drawerOpen}
-                    onClose={() => setDrawerOpen(false)}
-                    width={220}
-                    styles={{
-                        body: {
-                            padding: 0,
-                            background: "#181d36",
-                        },
-                    }}
-                >
-                    {sidebarContent}
-                </Drawer>
+                {isMobile && (
+                    <Drawer
+                        placement="left"
+                        open={drawerOpen}
+                        onClose={() => setDrawerOpen(false)}
+                        width={220}
+                        closeIcon={false}
+                        styles={{
+                            header: {
+                                minHeight: 20,
+                                height: 20,
+                                padding: '0 6px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                background: '#fff',
+                            },
+                            body: {
+                                padding: 0,
+                                background: "#181d36",
+                            },
+                        }}
+                    >
+                        {sidebarContent}
+                    </Drawer>
+                )}
                 <Layout
                     style={{
                         marginLeft: !isMobile ? (collapsed ? 80 : 220) : 0,
@@ -458,9 +471,18 @@ export default function AdminLayout({ children }) {
                                             fontSize: 20,
                                         }}
                                     >
-                                        {localStorage.getItem("userName")?.charAt(0)?.toUpperCase() || <FiUser />}
+                                        {(() => {
+                                            const name = localStorage.getItem("userName") || "A";
+                                            return name.charAt(0).toUpperCase();
+                                        })()}
                                     </Avatar>
-                                    <span>{localStorage.getItem("userName") || "Admin"}</span>
+                                    <span>
+                                        {(() => {
+                                            const name = localStorage.getItem("userName") || "Admin";
+                                            if (name.length > 12 || name.includes("@")) return "Admin";
+                                            return name;
+                                        })()}
+                                    </span>
                                 </Button>
                             </Dropdown>
                         </div>
