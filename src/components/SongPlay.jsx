@@ -347,7 +347,7 @@ function SongPlay({ sidebarWidth = 0 }) {
                                 toast.info(t("weekly_top_10.login_to_add_playlist") || "Please login to view artist profile!", { autoClose: 2000 });
                             }
                         }}
-                        title={t("Go to artist profile") || "Go to artist profile"}
+                        title={t("go_to_artist_profile")}
                     >
                         {song?.artistName || song?.albumName}
                     </div>
@@ -369,7 +369,7 @@ function SongPlay({ sidebarWidth = 0 }) {
                     <button
                         className="player-btn main"
                         onClick={() => !adPlaying && handlePlayPause()}
-                        title={isPlaying ? t("common.pause") || "Pause" : t("common.play") || "Play"}
+                        title={isPlaying ? t("pause") : t("play")}
                         disabled={adPlaying}
                         style={adPlaying ? { opacity: 0.5, pointerEvents: "none" } : {}}
                     >
@@ -440,7 +440,7 @@ function SongPlay({ sidebarWidth = 0 }) {
                             <i className="bi bi-plus-square"></i>
                         </button>
                     </div>
-                    <button className="player-btn close" title={t("common.close") || "Close Player"} onClick={stopPlayer}>
+                    <button className="player-btn close" title={t("close")} onClick={stopPlayer}>
                         <i className="bi bi-x-lg"></i>
                     </button>
                 </div>

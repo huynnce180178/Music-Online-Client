@@ -846,7 +846,7 @@ export default function SongDetail({ songId, onClose }) {
                                         message.info("Please login to view artist profile!");
                                     }
                                 }}
-                                title="Go to artist profile"
+                                title={t("go_to_artist_profile")}
                             >
                                 <Avatar
                                     src={

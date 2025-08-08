@@ -8,5 +8,13 @@
   "genres.K-Pop": "K-Pop",
   "genres.Rap": "ラップ",
   "genres.Pop": "ポップ",
-  "genres.HipHop": "ヒップホップ"
+  "genres.HipHop": "ヒップホップ",
+  "genres.C-Pop": "C-Pop",
+  "genres.Alternative R&B": "オルタナティブR&B",
+  "genres.Soundtrack (OST)": "サウンドトラック (OST)",
+  "genres.Rock": "ロック",
+  "genres.Indie": "インディー",
+  "genres.EDM": "EDM",
+  "genres.World Music": "ワールドミュージック",
+  "genres.Jazz": "ジャズ"
 } 
