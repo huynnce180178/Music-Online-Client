@@ -30,6 +30,7 @@
   "preview": "プレビュー",
   "actions": "アクション",
   "view_lyrics": "歌詞を見る",
+  "edit_song": "曲を編集",
   "add_to_album": "アルバムに追加",
   "delete_song": "曲を削除",
   "add_song": "曲を追加",
@@ -47,6 +48,8 @@
   "download": "ダウンロード",
   "cover_image": "カバー画像",
   "select_cover_image": "カバー画像を選択",
+  "change_music_file": "音楽ファイルを変更",
+  "change_cover_image": "カバー画像を変更",
   "enter_lyrics_here": "ここに歌詞を入力してください...",
   "update": "更新",
   "add": "追加",
@@ -65,5 +68,8 @@
   "cover_max_size": "カバー画像は2MB未満である必要があります！",
   "lyrics_min_length": "歌詞は最低10文字以上である必要があります！",
   "lyrics_max_length": "歌詞は最大2000文字まで可能です！",
-  "please_upload_cover_image": "曲のカバー画像をアップロードしてください！"
+  "please_upload_cover_image": "曲のカバー画像をアップロードしてください！",
+  "optional": "オプション",
+  "optional_keep_if_not_selected": "オプション - 選択しない場合は変更されません",
+  "current_cover_image": "現在のカバー画像"
 } 

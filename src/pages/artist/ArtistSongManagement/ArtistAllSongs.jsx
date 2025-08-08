@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Table, Button, Space, Image, message, Modal, Select, Form, Input, Upload, Grid } from "antd";
-import { DeleteOutlined, PlusOutlined, UploadOutlined, EyeOutlined } from "@ant-design/icons";
+import { DeleteOutlined, PlusOutlined, UploadOutlined, EyeOutlined, EditOutlined, MinusCircleOutlined } from "@ant-design/icons";
 import axios from "axios";
 import { useTranslation } from 'react-i18next';
 import BASE_API_URL from "../../../services/base.api.url";
@@ -14,6 +14,7 @@ export default function ArtistAllSongs() {
     const [loading, setLoading] = useState(false);
     const [selectedAlbum] = useState(null);
     const [modalOpen, setModalOpen] = useState(false);
+    const [editingSong, setEditingSong] = useState(null);
     const [form] = Form.useForm();
 
     const screens = useBreakpoint();
@@ -180,54 +181,119 @@ export default function ArtistAllSongs() {
     };
 
     const openModal = () => {
+        setEditingSong(null);
         setModalOpen(true);
-        form.resetFields();
+        setTimeout(() => {
+            form.resetFields();
+        }, 0);
     };
 
     const handleSubmitSong = async (values) => {
         setLoading(true);
         const formData = new FormData();
         formData.append("title", values.title);
-        const artistId = localStorage.getItem("userId");
-        if (!artistId || isNaN(Number(artistId))) {
-            message.error(t('artist_id_not_found'));
-            setLoading(false);
-            return;
-        }
-        formData.append("artistId", artistId);
 
-        if (values.file && values.file.originFileObj) {
-            formData.append("file", values.file.originFileObj);
-        }
-        if (values.profilePic && values.profilePic.originFileObj) {
-            formData.append("profilePic", values.profilePic.originFileObj);
-        }
-        if (values.genreIds) values.genreIds.forEach(id => formData.append("genreIds", id));
-        if (values.lyrics) formData.append("lyrics", values.lyrics);
+        if (editingSong) {
+            // Update song - send all provided fields
 
-        try {
-            const resp = await axios.post(
-                `${BASE_API_URL}/api/v1/artist/song/add`,
-                formData,
-                {
-                    headers: {
-                        ...config.headers,
-                        "Content-Type": "multipart/form-data"
-                    },
-                    onUploadProgress: () => setLoading(true),
-                }
-            );
-            if (resp.data.code === 201) {
-                message.success(t('song_added_successfully'));
-            } else {
-                message.error(resp.data.data || t('failed_to_add_song'));
+            // Always send files if provided
+            if (values.file && values.file.originFileObj) {
+                formData.append("file", values.file.originFileObj);
             }
-            setModalOpen(false);
-            form.resetFields();
-            if (selectedAlbum) fetchSongs(selectedAlbum);
-            else fetchSongs();
-        } catch (err) {
-            message.error(t('failed_to_add_song'));
+            if (values.profilePic && values.profilePic.originFileObj) {
+                formData.append("profilePic", values.profilePic.originFileObj);
+            }
+
+            // Always send genreIds from form (form already has current genres loaded)
+            if (values.genreIds && values.genreIds.length > 0) {
+                values.genreIds.forEach(id => formData.append("genreIds", id));
+            }
+
+            // Always send lyrics from form (form already has current lyrics loaded)
+            const lyricsValue = values.lyrics !== undefined ? values.lyrics : "";
+            formData.append("lyrics", lyricsValue);
+
+            try {
+                const resp = await axios.put(
+                    `${BASE_API_URL}/api/v1/artist/song/${editingSong.id}`,
+                    formData,
+                    {
+                        headers: {
+                            ...config.headers,
+                            "Content-Type": "multipart/form-data"
+                        },
+                        onUploadProgress: () => setLoading(true),
+                    }
+                );
+                if (resp.data.code === 200) {
+                    message.success(t('song_updated_successfully'));
+                } else {
+                    message.error(resp.data.data || t('failed_to_update_song'));
+                }
+                setModalOpen(false);
+                setEditingSong(null);
+                setTimeout(() => {
+                    form.resetFields();
+                }, 100);
+                if (selectedAlbum) fetchSongs(selectedAlbum);
+                else fetchSongs();
+            } catch (err) {
+                let errorMessage = t('failed_to_update_song');
+                if (err.response?.data?.message) {
+                    errorMessage = err.response.data.message;
+                } else if (err.response?.data?.data) {
+                    errorMessage = err.response.data.data;
+                } else if (err.response?.data) {
+                    errorMessage = JSON.stringify(err.response.data);
+                }
+                
+                message.error(`${errorMessage} (Status: ${err.response?.status || 'Unknown'})`);
+            }
+        } else {
+            // Add new song
+            const artistId = localStorage.getItem("userId");
+            if (!artistId || isNaN(Number(artistId))) {
+                message.error(t('artist_id_not_found'));
+                setLoading(false);
+                return;
+            }
+            formData.append("artistId", artistId);
+
+            if (values.file && values.file.originFileObj) {
+                formData.append("file", values.file.originFileObj);
+            }
+            if (values.profilePic && values.profilePic.originFileObj) {
+                formData.append("profilePic", values.profilePic.originFileObj);
+            }
+            if (values.genreIds) values.genreIds.forEach(id => formData.append("genreIds", id));
+            if (values.lyrics) formData.append("lyrics", values.lyrics);
+
+            try {
+                const resp = await axios.post(
+                    `${BASE_API_URL}/api/v1/artist/song/add`,
+                    formData,
+                    {
+                        headers: {
+                            ...config.headers,
+                            "Content-Type": "multipart/form-data"
+                        },
+                        onUploadProgress: () => setLoading(true),
+                    }
+                );
+                if (resp.data.code === 201) {
+                    message.success(t('song_added_successfully'));
+                } else {
+                    message.error(resp.data.data || t('failed_to_add_song'));
+                }
+                setModalOpen(false);
+                setTimeout(() => {
+                    form.resetFields();
+                }, 100);
+                if (selectedAlbum) fetchSongs(selectedAlbum);
+                else fetchSongs();
+            } catch (err) {
+                message.error(t('failed_to_add_song'));
+            }
         }
         setLoading(false);
     };
@@ -243,6 +309,40 @@ export default function ArtistAllSongs() {
         } catch {
             message.error(t('failed_to_load_lyrics'));
         }
+    };
+
+    const handleEditSong = async (song) => {
+        setEditingSong(song);
+        setModalOpen(true);
+        
+        // Load full lyrics from API
+        let fullLyrics = song.lyrics || '';
+        if (song.id) {
+            try {
+                const lyricsRes = await axios.get(`${BASE_API_URL}/api/v1/song/lyric/${song.id}`, config);
+                if (lyricsRes.data && lyricsRes.data.data) {
+                    fullLyrics = lyricsRes.data.data;
+                }
+            } catch (error) {
+                // If API fails, use existing lyrics from song object
+                console.warn('Failed to load full lyrics, using existing:', error);
+            }
+        }
+        
+        // Prepare genre IDs from song data (data already includes genres)
+        let genreIds = [];
+        if (song.genres && Array.isArray(song.genres)) {
+            genreIds = song.genres.map(g => g.id);
+        }
+        
+        // Use setTimeout to ensure modal is opened before setting form values
+        setTimeout(() => {
+            form.setFieldsValue({
+                title: song.title || '',
+                lyrics: fullLyrics,
+                genreIds: genreIds
+            });
+        }, 100);
     };
 
     const columns = [
@@ -301,46 +401,79 @@ export default function ArtistAllSongs() {
             align: "center",
             key: "action",
             render: (_, song) => (
-                <Space>
+                <Space size="small">
                     <Button
-                        icon={<EyeOutlined />}
+                        icon={<EyeOutlined style={{ fontSize: '16px' }} />}
                         onClick={() => handleViewLyrics(song.id, song.title)}
                         title={t('view_lyrics')}
-                        size={isMobile || isTablet ? "small" : undefined}
-                    >
-                        {!isMobile && !isTablet && t('view_lyrics')}
-                    </Button>
+                        size="middle"
+                        style={{ 
+                            width: '36px', 
+                            height: '36px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center'
+                        }}
+                    />
                     <Button
-                        icon={<PlusOutlined />}
+                        icon={<EditOutlined style={{ fontSize: '16px' }} />}
+                        onClick={() => handleEditSong(song)}
+                        title={t('edit_song')}
+                        size="middle"
+                        style={{ 
+                            width: '36px', 
+                            height: '36px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center'
+                        }}
+                    />
+                    <Button
+                        icon={<PlusOutlined style={{ fontSize: '16px' }} />}
                         onClick={() => handleAddToAlbum(song.id)}
                         title={t('add_to_album')}
-                        size={isMobile || isTablet ? "small" : undefined}
-                    >
-                        {!isMobile && !isTablet && t('add_to_album')}
-                    </Button>
+                        size="middle"
+                        style={{ 
+                            width: '36px', 
+                            height: '36px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center'
+                        }}
+                    />
                     {song.albumId && (
                         <Button
-                            danger
-                            icon={<DeleteOutlined />}
+                            icon={<MinusCircleOutlined style={{ fontSize: '16px' }} />}
                             onClick={() => handleRemoveFromAlbum(song.id, song.albumId)}
                             title={t('remove_from_album')}
-                            size={isMobile || isTablet ? "small" : undefined}
-                        >
-                            {!isMobile && !isTablet && t('remove_from_album')}
-                        </Button>
+                            size="middle"
+                            style={{ 
+                                width: '36px', 
+                                height: '36px',
+                                color: '#ff7875',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center'
+                            }}
+                        />
                     )}
                     <Button
-                        icon={<DeleteOutlined />}
+                        icon={<DeleteOutlined style={{ fontSize: '16px' }} />}
                         danger
                         onClick={() => handleDelete(song.id)}
                         title={t('delete_song')}
-                        size={isMobile || isTablet ? "small" : undefined}
-                    >
-                        {!isMobile && !isTablet && t('delete_song')}
-                    </Button>
+                        size="middle"
+                        style={{ 
+                            width: '36px', 
+                            height: '36px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center'
+                        }}
+                    />
                 </Space>
             ),
-            width: isMobile ? 90 : isTablet ? 120 : 300,
+            width: isMobile ? 160 : isTablet ? 200 : 250,
         }
     ];
 
@@ -404,11 +537,15 @@ export default function ArtistAllSongs() {
             </div>
             <Modal
                 className="modal-light"
-                title={t('add_new_song')}
+                title={editingSong ? t('edit_song') : t('add_new_song')}
                 open={modalOpen}
                 onCancel={() => {
                     setModalOpen(false);
-                    form.resetFields();
+                    setEditingSong(null);
+                    // Reset form after a short delay to avoid the warning
+                    setTimeout(() => {
+                        form.resetFields();
+                    }, 100);
                 }}
                 footer={null}
                 destroyOnHidden
@@ -442,8 +579,12 @@ export default function ArtistAllSongs() {
                             { required: true, message: t('please_select_genres') },
                             {
                                 validator: (_, value) => {
-                                    if (!value || value.length === 0) return Promise.reject(new Error(t('please_select_genres')));
-                                    if (value.length > 5) return Promise.reject(new Error(t('genre_max_count')));
+                                    if (!value || value.length === 0) {
+                                        return Promise.reject(new Error(t('please_select_genres')));
+                                    }
+                                    if (value && value.length > 5) {
+                                        return Promise.reject(new Error(t('genre_max_count')));
+                                    }
                                     return Promise.resolve();
                                 }
                             }
@@ -460,8 +601,13 @@ export default function ArtistAllSongs() {
                         name="file"
                         valuePropName="file"
                         getValueFromEvent={e => e && e.fileList && e.fileList[0]}
+                        extra={editingSong && editingSong.fileUrl && (
+                            <div style={{ fontSize: '12px', color: '#666' }}>
+                                {t('current_file')}: {editingSong.title}.mp3
+                            </div>
+                        )}
                         rules={[
-                            { required: true, message: t('please_select_music_file') },
+                            { required: !editingSong, message: t('please_select_music_file') },
                             {
                                 validator: (_, value) => {
                                     if (!value) return Promise.resolve();
@@ -472,14 +618,15 @@ export default function ArtistAllSongs() {
                                     if (!allowedTypes.includes(value.type)) {
                                         return Promise.reject(new Error(t('unsupported_audio_format')));
                                     }
-
                                     return Promise.resolve();
                                 }
                             }
                         ]}
                     >
                         <Upload beforeUpload={() => false} maxCount={1} accept=".mp3,.wav,.flac,.m4a,.ogg,.aac">
-                            <Button icon={<UploadOutlined />}>{t('select_music_file')}</Button>
+                            <Button icon={<UploadOutlined />}>
+                                {editingSong ? `${t('change_music_file')} (${t('optional')})` : t('select_music_file')}
+                            </Button>
                         </Upload>
                     </Form.Item>
                     <Form.Item
@@ -487,8 +634,20 @@ export default function ArtistAllSongs() {
                         name="profilePic"
                         valuePropName="file"
                         getValueFromEvent={e => e && e.fileList && e.fileList[0]}
+                        extra={editingSong && editingSong.profilePicUrl && (
+                            <div style={{ marginTop: 8 }}>
+                                <img 
+                                    src={editingSong.profilePicUrl} 
+                                    alt="Current cover" 
+                                    style={{ width: '50px', height: '50px', objectFit: 'cover', borderRadius: '4px' }}
+                                />
+                                <div style={{ fontSize: '12px', color: '#666', marginTop: 4 }}>
+                                    {t('current_cover_image')}
+                                </div>
+                            </div>
+                        )}
                         rules={[
-                            { required: true, message: t('please_upload_cover_image') },
+                            { required: !editingSong, message: t('please_upload_cover_image') },
                             {
                                 validator: (_, value) => {
                                     if (!value) return Promise.resolve();
@@ -502,7 +661,9 @@ export default function ArtistAllSongs() {
                         ]}
                     >
                         <Upload beforeUpload={() => false} maxCount={1} accept="image/*">
-                            <Button icon={<UploadOutlined />}>{t('select_cover_image')}</Button>
+                            <Button icon={<UploadOutlined />}>
+                                {editingSong ? `${t('change_cover_image')} (${t('optional')})` : t('select_cover_image')}
+                            </Button>
                         </Upload>
                     </Form.Item>
                     <Form.Item
@@ -514,7 +675,7 @@ export default function ArtistAllSongs() {
                     </Form.Item>
                     <Form.Item>
                         <Button type="primary" htmlType="submit" loading={loading} block>
-                            {t('add')}
+                            {editingSong ? t('update') : t('add')}
                         </Button>
                     </Form.Item>
                 </Form>

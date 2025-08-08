@@ -30,6 +30,7 @@
   "preview": "Nghe thử",
   "actions": "Thao tác",
   "view_lyrics": "Xem lời bài hát",
+  "edit_song": "Chỉnh sửa bài hát",
   "add_to_album": "Thêm vào album",
   "delete_song": "Xóa bài hát",
   "add_song": "Thêm bài hát",
@@ -47,6 +48,8 @@
   "download": "Tải xuống",
   "cover_image": "Ảnh bìa",
   "select_cover_image": "Chọn ảnh bìa",
+  "change_music_file": "Thay đổi file nhạc",
+  "change_cover_image": "Thay đổi ảnh bìa",
   "enter_lyrics_here": "Nhập lời bài hát...",
   "update": "Cập nhật",
   "add": "Thêm",
@@ -65,5 +68,8 @@
   "cover_max_size": "Ảnh bìa phải nhỏ hơn 2MB!",
   "lyrics_min_length": "Lời bài hát phải có ít nhất 10 ký tự!",
   "lyrics_max_length": "Lời bài hát không quá 2000 ký tự!",
-  "please_upload_cover_image": "Vui lòng tải lên ảnh bìa bài hát!"
+  "please_upload_cover_image": "Vui lòng tải lên ảnh bìa bài hát!",
+  "optional": "Tùy chọn",
+  "optional_keep_if_not_selected": "Tùy chọn - giữ nguyên nếu không chọn",
+  "current_cover_image": "Ảnh bìa hiện tại"
 }

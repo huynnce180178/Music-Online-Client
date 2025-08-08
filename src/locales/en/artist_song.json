@@ -30,6 +30,7 @@
   "preview": "Preview",
   "actions": "Actions",
   "view_lyrics": "View lyrics",
+  "edit_song": "Edit song",
   "add_to_album": "Add to album",
   "delete_song": "Delete song",
   "add_song": "Add Song",
@@ -47,6 +48,8 @@
   "download": "Download",
   "cover_image": "Cover Image",
   "select_cover_image": "Select cover image",
+  "change_music_file": "Change music file",
+  "change_cover_image": "Change cover image",
   "enter_lyrics_here": "Enter lyrics here...",
   "update": "Update",
   "add": "Add",
@@ -65,5 +68,8 @@
   "cover_max_size": "Cover image must be less than 2MB!",
   "lyrics_min_length": "Lyrics must be at least 10 characters!",
   "lyrics_max_length": "Lyrics must be at most 2000 characters!",
-  "please_upload_cover_image": "Please upload the song cover image!"
+  "please_upload_cover_image": "Please upload the song cover image!",
+  "optional": "Optional",
+  "optional_keep_if_not_selected": "Optional - keep unchanged if not selected",
+  "current_cover_image": "Current cover image"
 }
