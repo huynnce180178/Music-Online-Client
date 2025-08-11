@@ -102,12 +102,12 @@ export default function AdminLayout({ children }) {
         };
 
         window.addEventListener("storage", handleStorageChange);
-        
+
         // Custom event để theo dõi thay đổi trong cùng tab
         const handleRolesChange = () => {
             updateRoles();
         };
-        
+
         window.addEventListener("rolesChanged", handleRolesChange);
 
         return () => {
@@ -144,10 +144,10 @@ export default function AdminLayout({ children }) {
 
     const handleSwitchRole = (role) => {
         setShowRoleModal(false);
-        
+
         // Trigger custom event để cập nhật roles trong cùng tab
         window.dispatchEvent(new Event("rolesChanged"));
-        
+
         if (role === "ROLE_ADMIN") navigate("/admin");
         else if (role === "ROLE_ARTIST") navigate("/artist");
         else navigate("/");
@@ -242,21 +242,20 @@ export default function AdminLayout({ children }) {
         <>
             <div
                 style={{
-                    height: 40,
+                    height: 64,
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    marginBottom: 8,
-                    marginTop: 8,
+                    marginBottom: 16,
                 }}
             >
                 <Avatar
-                    size={36}
+                    size={48}
                     style={{
                         background: "linear-gradient(135deg, #3ed8ff 60%, #38bdf8 100%)",
                         color: "#181d36",
                         fontWeight: "bold",
-                        fontSize: 20,
+                        fontSize: 28,
                         cursor: "pointer"
                     }}
                     onClick={() => navigate("/")}
@@ -284,6 +283,7 @@ export default function AdminLayout({ children }) {
                 selectedKeys={getMenuSelectedKeys()}
                 openKeys={openKeys}
                 items={menuItems}
+                className="hide-scrollbar"      // <— thêm dòng này
                 style={{
                     background: "transparent",
                     fontWeight: 600,
@@ -292,7 +292,6 @@ export default function AdminLayout({ children }) {
                     maxHeight: "calc(100vh - 160px)",
                 }}
                 onClick={({ key }) => {
-                    // Nếu là route, điều hướng
                     if (typeof key === "string" && key.startsWith("/admin")) navigate(key);
                     if (isMobile) setDrawerOpen(false);
                 }}
@@ -309,6 +308,14 @@ export default function AdminLayout({ children }) {
                 }
                 .ant-menu-dark .ant-menu-item-selected a {
                     color: #181c2b !important;
+                }
+                .hide-scrollbar {
+                    scrollbar-width: none;
+                    -ms-overflow-style: none;
+                }
+                .hide-scrollbar::-webkit-scrollbar {
+                    width: 0;  
+                    height: 0;
                 }
             `}</style>
         </>
@@ -342,31 +349,19 @@ export default function AdminLayout({ children }) {
                         {sidebarContent}
                     </Sider>
                 )}
-                {isMobile && (
-                    <Drawer
-                        placement="left"
-                        open={drawerOpen}
-                        onClose={() => setDrawerOpen(false)}
-                        width={220}
-                        closeIcon={false}
-                        styles={{
-                            header: {
-                                minHeight: 20,
-                                height: 20,
-                                padding: '0 6px',
-                                display: 'flex',
-                                alignItems: 'center',
-                                background: '#fff',
-                            },
-                            body: {
-                                padding: 0,
-                                background: "#181d36",
-                            },
-                        }}
-                    >
-                        {sidebarContent}
-                    </Drawer>
-                )}
+                <Drawer
+                    open={drawerOpen}
+                    onClose={() => setDrawerOpen(false)}
+                    width={220}
+                    styles={{
+                        body: {
+                            padding: 0,
+                            background: "#181d36",
+                        },
+                    }}
+                >
+                    {sidebarContent}
+                </Drawer>
                 <Layout
                     style={{
                         marginLeft: !isMobile ? (collapsed ? 80 : 220) : 0,
@@ -443,10 +438,10 @@ export default function AdminLayout({ children }) {
                                     }}
                                     aria-label={t('languages')}
                                 >
-                                    {i18n.language === 'vi' ? t('header.vi') : 
-                                     i18n.language === 'ko' ? t('header.ko') :
-                                     i18n.language === 'ja' ? t('header.ja') : 
-                                     t('header.en')}
+                                    {i18n.language === 'vi' ? t('header.vi') :
+                                        i18n.language === 'ko' ? t('header.ko') :
+                                            i18n.language === 'ja' ? t('header.ja') :
+                                                t('header.en')}
                                 </Button>
                             </Dropdown>
                             <Dropdown menu={userMenu} placement="bottomRight" trigger={["click"]}>
@@ -471,18 +466,9 @@ export default function AdminLayout({ children }) {
                                             fontSize: 20,
                                         }}
                                     >
-                                        {(() => {
-                                            const name = localStorage.getItem("userName") || "A";
-                                            return name.charAt(0).toUpperCase();
-                                        })()}
+                                        {localStorage.getItem("userName")?.charAt(0)?.toUpperCase() || <FiUser />}
                                     </Avatar>
-                                    <span>
-                                        {(() => {
-                                            const name = localStorage.getItem("userName") || "Admin";
-                                            if (name.length > 12 || name.includes("@")) return "Admin";
-                                            return name;
-                                        })()}
-                                    </span>
+                                    <span>{localStorage.getItem("userName") || "Admin"}</span>
                                 </Button>
                             </Dropdown>
                         </div>

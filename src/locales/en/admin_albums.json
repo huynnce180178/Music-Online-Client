@@ -20,5 +20,6 @@
   "admin_albums.no_albums_found": "No albums found",
   "artist_album.restore_request_sent": "Restore request sent",
   "artist_album.restore_request_sent_description": "Your request to restore this albuml.",
-  "admin_albums.restore_to_pending": "Restore to Pending"
+  "admin_albums.restore_to_pending": "Restore to Pending",
+  "admin_albums.search_placeholder" : "Search album title"
 } 

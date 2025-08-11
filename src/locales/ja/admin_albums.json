@@ -20,5 +20,6 @@
   "admin_albums.no_albums_found": "アルバムが見つかりません",
   "artist_album.restore_request_sent": "復元リクエストが送信されました",
   "artist_album.restore_request_sent_description": "このアルバムを復元するリクエストが送信されました。",
-  "admin_albums.restore_to_pending": "保留状態に復元"
+  "admin_albums.restore_to_pending": "保留状態に復元",
+  "admin_albums.search_placeholder": "アルバムタイトルを検索"
 } 
