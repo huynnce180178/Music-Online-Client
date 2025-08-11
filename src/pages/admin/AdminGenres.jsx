@@ -284,7 +284,7 @@ export default function AdminGenres() {
                 size={isTablet ? "small" : "middle"}
                 scroll={isTablet ? { x: 400 } : undefined}
                 locale={{
-                    emptyText: <Empty description={t('admin_genres.no_genres')} imageStyle={{ filter: "invert(0.7)" }} />,
+                    emptyText: <Empty description={t('admin_genres.no_genres')} styles={{ image: { filter: "invert(0.7)" } }} />,
                 }}
             />
             <Modal

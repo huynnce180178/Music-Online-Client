@@ -36,18 +36,21 @@ export default function Login({ onClose, onSwitchToRegister }) {
                 password: values.password,
             });
             const data = res.data;
+            // Debug: log the full response from backend (for Google login)
+            console.log('Login response:', data);
             if (data && data.data && data.data.accessToken) {
                 localStorage.setItem("accessToken", data.data.accessToken);
-                localStorage.setItem("userName", data.data.userName || data.data.name || data.data.email || "");
+                localStorage.setItem("userName", data.data.userName || data.data.email || "");
+                // Google OAuth: prefer data.data.fullName, then data.data.name (not given_name), fallback to userName
+                let fullName = data.data.fullName || data.data.name || data.data.userName || data.data.email || "";
+                if (typeof fullName === "string") fullName = fullName.trim();
+                localStorage.setItem("fullName", fullName);
                 localStorage.setItem("roles", JSON.stringify(data.data.roles));
                 localStorage.setItem("userId", data.data.userId);
-                Modal.success({
-                    title: "Login successful!",
-                    onOk: () => {
-                        onClose();
-                        window.location.href = "/";
-                    }
-                });
+                // Lưu avatarUrl cho header
+                localStorage.setItem("avatarUrl", data.data.avatarUrl || data.data.profileImage || "");
+                onClose();
+                window.location.href = "/";
             } else {
                 Modal.error({ title: "Login failed", content: data.data || "Login failed" });
             }

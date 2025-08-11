@@ -80,14 +80,20 @@ export default function OAuthCallback() {
                     } else if (response.status === 200 && response.data?.data && typeof response.data.data === 'object') {
                         const data = response.data.data;
                         
+
                         if (data.accessToken) {
                             storage.set("accessToken", data.accessToken);
-                            storage.set("userName", data.userName || data.name || "");
+                            // Ưu tiên fullName, sau đó đến name, cuối cùng mới đến userName
+                            const fullName = data.fullName || data.name || data.userName || "";
+                            storage.set("userName", fullName);
+                            storage.set("fullName", fullName);
                             storage.set("roles", JSON.stringify(data.roles || []));
                             storage.set("userId", data.userId || "");
                             storage.set("email", data.email || "");
-                            storage.set("profileImage", data.profileImage || "");
-                            
+                            // Ưu tiên avatarUrl, fallback sang profileImage nếu có
+                            const avatarUrl = data.avatarUrl || data.profileImage || "";
+                            storage.set("avatarUrl", avatarUrl);
+
                             if (data.needCompleteProfile) {
                                 storage.set("needCompleteProfile", "true");
                             }
@@ -97,10 +103,16 @@ export default function OAuthCallback() {
                                 newValue: data.userId || "",
                                 oldValue: null
                             }));
-                            
+
                             window.dispatchEvent(new StorageEvent('storage', {
                                 key: 'accessToken',
                                 newValue: data.accessToken,
+                                oldValue: null
+                            }));
+
+                            window.dispatchEvent(new StorageEvent('storage', {
+                                key: 'avatarUrl',
+                                newValue: avatarUrl,
                                 oldValue: null
                             }));
 
@@ -110,7 +122,6 @@ export default function OAuthCallback() {
                                     accessToken: data.accessToken
                                 }
                             }));
-                            
                         }
                         
                         setProgress(100);

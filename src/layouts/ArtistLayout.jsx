@@ -1,30 +1,5 @@
-import {
-    Layout,
-    Menu,
-    Avatar,
-    Dropdown,
-    Button,
-    Typography,
-    Badge,
-    Drawer,
-    Grid,
-    Modal,
-    Spin,
-    List,
-    Empty,
-    Tooltip,
-    Popconfirm,
-} from "antd";
-import {
-    FiUser,
-    FiMusic,
-    FiDisc,
-    FiLogOut,
-    FiBell,
-    FiMenu,
-    FiVolume2,
-    FiArrowLeft,
-} from "react-icons/fi";
+import { Layout, Menu, Avatar, Dropdown, Button, Typography, Drawer, Grid, Modal } from "antd"; 
+import { FiUser, FiMusic, FiDisc, FiUsers, FiTag, FiMessageCircle, FiTrendingUp, FiImage, FiHome, FiLogOut, FiMenu, FiVolume2, FiArrowLeft } from "react-icons/fi";
 import { DeleteOutlined, CheckCircleOutlined } from "@ant-design/icons";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
@@ -36,6 +11,7 @@ import { useTranslation } from "react-i18next";
 import { GlobalOutlined } from "@ant-design/icons";
 import BASE_API_URL from "../services/base.api.url";
 import TokenExpirationModal from "../components/TokenExpirationModal";
+import ArtistHeader from "../components/Header";
 
 const { Sider, Header, Content } = Layout;
 const { Title } = Typography;
@@ -576,115 +552,12 @@ export default function ArtistLayout({ children }) {
                         padding: 0,
                     }}
                 >
-                    <Header
-                        style={{
-                            background: "rgba(24,29,54,0.95)",
-                            borderBottom: "1px solid #23284a",
-                            display: "flex",
-                            justifyContent: "space-between",
-                            alignItems: "center",
-                            padding: isMobile ? "0 12px" : isTablet ? "0 18px" : "0 32px",
-                            height: isMobile ? 52 : 64,
-                            position: "sticky",
-                            top: 0,
-                            zIndex: 10,
-                        }}
-                    >
-                        <div style={{ display: "flex", alignItems: "center", gap: isMobile ? 8 : 16 }}>
-                            {isMobile && (
-                                <Button
-                                    type="text"
-                                    icon={<FiMenu size={isMobile ? 18 : 22} />}
-                                    style={{ color: "#3ed8ff" }}
-                                    onClick={() => setDrawerOpen(true)}
-                                />
-                            )}
-                            <Button
-                                type="text"
-                                icon={<FiArrowLeft size={isMobile ? 16 : 20} />}
-                                onClick={() => navigate("/")}
-                                style={{
-                                    color: "#3ed8ff",
-                                    fontWeight: 600,
-                                    fontSize: isMobile ? 13 : 16,
-                                    display: "flex",
-                                    alignItems: "center",
-                                    gap: 8,
-                                    background: "rgba(62,216,255,0.1)",
-                                    borderRadius: 20,
-                                    padding: isMobile ? "0 8px" : "0 16px",
-                                    height: isMobile ? 32 : 40,
-                                }}
-                            >
-                            </Button>
-                        </div>
-                        <div style={{ display: "flex", alignItems: "center", gap: isMobile ? 6 : 12 }}>
-                            {/* NÚT ĐỔI NGÔN NGỮ */}
-                            <Dropdown
-                                menu={{
-                                    items: [
-                                        { key: 'vi', label: t('header.vi'), onClick: () => { i18n.changeLanguage('vi'); localStorage.setItem('i18nextLng', 'vi'); } },
-                                        { key: 'en', label: t('header.en'), onClick: () => { i18n.changeLanguage('en'); localStorage.setItem('i18nextLng', 'en'); } },
-                                        { key: 'ko', label: t('header.ko'), onClick: () => { i18n.changeLanguage('ko'); localStorage.setItem('i18nextLng', 'ko'); } },
-                                        { key: 'ja', label: t('header.ja'), onClick: () => { i18n.changeLanguage('ja'); localStorage.setItem('i18nextLng', 'ja'); } },
-                                    ],
-                                }}
-                                placement="bottomRight"
-                            >
-                                <Button
-                                    icon={<GlobalOutlined />}
-                                    style={{
-                                        borderRadius: 20,
-                                        background: '#232b3e',
-                                        color: '#fff',
-                                        border: 'none',
-                                        minWidth: isMobile ? 32 : 44,
-                                        fontWeight: 500,
-                                        fontSize: isMobile ? 13 : 15,
-                                        padding: isMobile ? "0 6px" : "0 12px",
-                                    }}
-                                    aria-label={t('languages')}
-                                >
-                                    {i18n.language === 'vi' ? t('header.vi') : 
-                                     i18n.language === 'ko' ? t('header.ko') :
-                                     i18n.language === 'ja' ? t('header.ja') : 
-                                     t('header.en')}
-                                </Button>
-                            </Dropdown>
-                            {/* THÔNG BÁO ARTIST */}
-                            <NotificationDropdown />
-                            {/* USER DROPDOWN */}
-                            <Dropdown menu={userMenu} placement="bottomRight" trigger={["click"]}>
-                                <Button
-                                    type="text"
-                                    style={{
-                                        display: "flex",
-                                        alignItems: "center",
-                                        gap: isMobile ? 6 : 10,
-                                        color: "#fff",
-                                        fontWeight: 600,
-                                        fontSize: isMobile ? 13 : 16,
-                                        background: "none",
-                                        padding: isMobile ? "0 4px" : undefined,
-                                    }}
-                                >
-                                    <Avatar
-                                        size={isMobile ? 28 : 36}
-                                        style={{
-                                            background: "#3ed8ff",
-                                            color: "#181d36",
-                                            fontWeight: 700,
-                                            fontSize: isMobile ? 15 : 20,
-                                        }}
-                                        icon={<FiUser />}
-                                    />
-                                    <span style={{ display: isMobile ? "none" : "inline" }}>
-                                        {localStorage.getItem("userName") || "Artist"}
-                                    </span>
-                                </Button>
-                            </Dropdown>
-                        </div>
-                    </Header>
+                    <ArtistHeader
+                        onMenuClick={() => setDrawerOpen(true)}
+                        setModalType={() => {}} // Hàm rỗng vì không cần trong artist
+                        onSearch={() => {}} // Hàm rỗng vì không cần trong artist
+                        showSearch={!location.pathname.startsWith("/artist")}
+                    />
 
                     <Content
                         style={{

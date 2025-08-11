@@ -13,5 +13,11 @@
   "admin_users.status_active": "Active",
   "admin_users.status_blocked": "Blocked",
   "admin_users.action": "Action",
-  "admin_users.search_placeholder": "Search users"
+  "admin_users.search_placeholder": "Search users",
+  "admin_users.edit_role_title": "Set Roles for User",
+  "admin_users.select_roles": "Select roles",
+  "admin_users.save": "Save",
+  "admin_users.cancel": "Cancel",
+  "admin_users.no_users_found": "No users found"
+
 } 

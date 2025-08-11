@@ -1,30 +1,5 @@
-import {
-    Layout,
-    Menu,
-    Avatar,
-    Dropdown,
-    Button,
-    Typography,
-
-    Drawer,
-    Grid,
-    Modal,
-} from "antd";
-import {
-    FiUser,
-    FiMusic,
-    FiDisc,
-    FiUsers,
-    FiTag,
-    FiMessageCircle,
-    FiTrendingUp,
-    FiImage,
-    FiHome,
-    FiLogOut,
-    FiMenu,
-    FiVolume2,
-    FiArrowLeft,
-} from "react-icons/fi";
+import { Layout, Menu, Avatar, Dropdown, Button, Typography, Drawer, Grid, Modal } from "antd"; 
+import { FiUser, FiMusic, FiDisc, FiUsers, FiTag, FiMessageCircle, FiTrendingUp, FiImage, FiHome, FiLogOut, FiMenu, FiVolume2, FiArrowLeft } from "react-icons/fi";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
@@ -33,6 +8,7 @@ import { useTokenExpirationCheck } from "../utils";
 import { GlobalOutlined, CheckCircleOutlined } from "@ant-design/icons";
 import BASE_API_URL from "../services/base.api.url";
 import TokenExpirationModal from "../components/TokenExpirationModal";
+import AppHeader from "../components/Header";
 
 const { Sider, Header, Content } = Layout;
 const { Title } = Typography;
@@ -353,6 +329,8 @@ export default function AdminLayout({ children }) {
                     open={drawerOpen}
                     onClose={() => setDrawerOpen(false)}
                     width={220}
+                    closable={false}
+                    placement="left"
                     styles={{
                         body: {
                             padding: 0,
@@ -371,108 +349,12 @@ export default function AdminLayout({ children }) {
                         padding: 0,
                     }}
                 >
-                    <Header
-                        style={{
-                            background: "rgba(24,29,54,0.95)",
-                            borderBottom: "1px solid #23284a",
-                            display: "flex",
-                            justifyContent: "space-between",
-                            alignItems: "center",
-                            padding: "0 32px",
-                            height: 64,
-                            position: "sticky",
-                            top: 0,
-                            zIndex: 10,
-                        }}
-                    >
-                        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-                            {isMobile && (
-                                <Button
-                                    type="text"
-                                    icon={<FiMenu size={22} />}
-                                    style={{ color: "#3ed8ff" }}
-                                    onClick={() => setDrawerOpen(true)}
-                                />
-                            )}
-                            <Button
-                                type="text"
-                                icon={<FiArrowLeft size={20} />}
-                                onClick={() => navigate("/")}
-                                style={{
-                                    color: "#3ed8ff",
-                                    fontWeight: 600,
-                                    fontSize: 16,
-                                    display: "flex",
-                                    alignItems: "center",
-                                    gap: 8,
-                                    background: "rgba(62,216,255,0.1)",
-                                    borderRadius: 20,
-                                    padding: "0 16px",
-                                    height: 40,
-                                }}
-                            >
-                            </Button>
-                        </div>
-                        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                            {/* NÚT ĐỔI NGÔN NGỮ */}
-                            <Dropdown
-                                menu={{
-                                    items: [
-                                        { key: 'vi', label: t('header.vi'), onClick: () => { i18n.changeLanguage('vi'); localStorage.setItem('i18nextLng', 'vi'); } },
-                                        { key: 'en', label: t('header.en'), onClick: () => { i18n.changeLanguage('en'); localStorage.setItem('i18nextLng', 'en'); } },
-                                        { key: 'ko', label: t('header.ko'), onClick: () => { i18n.changeLanguage('ko'); localStorage.setItem('i18nextLng', 'ko'); } },
-                                        { key: 'ja', label: t('header.ja'), onClick: () => { i18n.changeLanguage('ja'); localStorage.setItem('i18nextLng', 'ja'); } },
-                                    ],
-                                }}
-                                placement="bottomRight"
-                            >
-                                <Button
-                                    icon={<GlobalOutlined />}
-                                    style={{
-                                        borderRadius: 20,
-                                        background: '#232b3e',
-                                        color: '#fff',
-                                        border: 'none',
-                                        minWidth: 44,
-                                        fontWeight: 500,
-                                    }}
-                                    aria-label={t('languages')}
-                                >
-                                    {i18n.language === 'vi' ? t('header.vi') :
-                                        i18n.language === 'ko' ? t('header.ko') :
-                                            i18n.language === 'ja' ? t('header.ja') :
-                                                t('header.en')}
-                                </Button>
-                            </Dropdown>
-                            <Dropdown menu={userMenu} placement="bottomRight" trigger={["click"]}>
-                                <Button
-                                    type="text"
-                                    style={{
-                                        display: "flex",
-                                        alignItems: "center",
-                                        gap: 10,
-                                        color: "#fff",
-                                        fontWeight: 600,
-                                        fontSize: 16,
-                                        background: "none",
-                                    }}
-                                >
-                                    <Avatar
-                                        size={36}
-                                        style={{
-                                            background: "#3ed8ff",
-                                            color: "#181d36",
-                                            fontWeight: 700,
-                                            fontSize: 20,
-                                        }}
-                                    >
-                                        {localStorage.getItem("userName")?.charAt(0)?.toUpperCase() || <FiUser />}
-                                    </Avatar>
-                                    <span>{localStorage.getItem("userName") || "Admin"}</span>
-                                </Button>
-                            </Dropdown>
-                        </div>
-                    </Header>
+                    <AppHeader
+                        onMenuClick={() => setDrawerOpen(true)}
+                        setModalType={() => {}} // Hàm rỗng vì không cần trong admin
+                        onSearch={() => {}} // Hàm rỗng vì không cần trong admin
+                        showSearch={!location.pathname.startsWith("/admin") && !location.pathname.startsWith("/artist")}
+                    />
                     <Content
                         style={{
                             padding: 30,

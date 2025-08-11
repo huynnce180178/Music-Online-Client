@@ -2,8 +2,9 @@ import { useEffect, useState, useMemo } from "react";
 import { Table, Input, Select, Tag, message, Grid, Modal, Button, Space } from "antd";
 import axios from "axios";
 import debounce from "lodash.debounce";
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from "react-i18next";
 import BASE_API_URL from "../../services/base.api.url";
+import { FiEdit } from "react-icons/fi";
 
 const { Search } = Input;
 const { Option } = Select;
@@ -29,14 +30,10 @@ const ROLE_OPTIONS = [
     { id: 4, label: "PREMIUM", value: 4, roleName: "ROLE_PREMIUM" },
 ];
 
-function getRoleIdsFromNames(roleNames) {
-    return roleNames
-        .map(name => {
-            const found = ROLE_OPTIONS.find(r => r.roleName === name);
-            return found ? found.id : null;
-        })
+const getRoleIdsFromNames = (roleNames) =>
+    roleNames
+        .map((name) => ROLE_OPTIONS.find((r) => r.roleName === name)?.id || null)
         .filter(Boolean);
-}
 
 export default function AdminUsers() {
     const { t } = useTranslation();
@@ -48,7 +45,9 @@ export default function AdminUsers() {
     const [editUserId, setEditUserId] = useState(null);
     const [editRoleIds, setEditRoleIds] = useState([]);
     const [editModalOpen, setEditModalOpen] = useState(false);
+
     const token = localStorage.getItem("accessToken");
+    const currentUserId = localStorage.getItem("userId");
     const screens = useBreakpoint();
     const isTablet = !screens.lg;
     const isMobile = screens.xs;
@@ -66,36 +65,32 @@ export default function AdminUsers() {
     useEffect(() => {
         const style = document.createElement("style");
         style.innerHTML = `
-        .ant-table { background-color: #101426 !important; color: #fff !important; }
-        .ant-table-thead > tr > th { background-color: #181C2B !important; color: #fff !important; border-bottom: 2px solid #3ed8ff !important; }
-        .ant-table-tbody > tr > td { background-color: #101426 !important; color: #fff !important; }
-        .ant-table-tbody > tr:hover > td { background-color: #1f2233 !important; }
-        .ant-tag { border: none !important; border-radius: 8px !important; padding: 2px 10px !important; }
-        .ant-pagination-item { background-color: #101426 !important; border: 1px solid #434760 !important; }
-        .ant-pagination-item a { color: #fff !important; }
-        .ant-pagination-item-active { background-color: #434760 !important; border-color: #434760 !important; }
-        .ant-pagination-item-active a { color: #fff !important; }
-        .ant-pagination-prev, .ant-pagination-next, .ant-pagination-jump-prev, .ant-pagination-jump-next { color: #fff !important; }
-        .ant-select-selector { background-color: #101426 !important; color: #fff !important; border: 1px solid #434760 !important; }
-        .ant-select-arrow { color: #fff !important; }
-        .ant-input, .ant-input-affix-wrapper { background-color: #101426 !important; color: #fff !important; border: 1px solid #434760 !important; }
-        .ant-input::placeholder { color: #888 !important; }
-        .ant-modal-content { background-color: #101426 !important; }
-        .ant-modal-header { background-color: #181C2B !important; border-bottom: 1px solid #434760 !important; }
-        .ant-modal-title { color: #fff !important; }
-        .ant-modal-close-x { color: #fff !important; }
-        .ant-select-dropdown { background-color: #101426 !important; }
-        .ant-select-item { color: #fff !important; }
-        .ant-select-item:hover { background-color: #1f2233 !important; }
-        .ant-select-item-option-selected { background-color: #434760 !important; }
-        .ant-empty-description { color: #888 !important; }
-        .ant-select-selection-item-remove {
-            color: #fff !important;
-        }
-        .ant-select-selection-item-remove:hover {
-            color: #3ed8ff !important;
-        }
-        `;
+      .ant-table { background-color: #101426 !important; color: #fff !important; }
+      .ant-table-thead > tr > th { background-color: #181C2B !important; color: #fff !important; border-bottom: 2px solid #3ed8ff !important; }
+      .ant-table-tbody > tr > td { background-color: #101426 !important; color: #fff !important; }
+      .ant-table-tbody > tr:hover > td { background-color: #1f2233 !important; }
+      .ant-tag { border: none !important; border-radius: 8px !important; padding: 2px 10px !important; }
+      .ant-pagination-item { background-color: #101426 !important; border: 1px solid #434760 !important; }
+      .ant-pagination-item a { color: #fff !important; }
+      .ant-pagination-item-active { background-color: #434760 !important; border-color: #434760 !important; }
+      .ant-pagination-item-active a { color: #fff !important; }
+      .ant-pagination-prev, .ant-pagination-next, .ant-pagination-jump-prev, .ant-pagination-jump-next { color: #fff !important; }
+      .ant-select-selector { background-color: #101426 !important; color: #fff !important; border: 1px solid #434760 !important; }
+      .ant-select-arrow { color: #fff !important; }
+      .ant-input, .ant-input-affix-wrapper { background-color: #101426 !important; color: #fff !important; border: 1px solid #434760 !important; }
+      .ant-input::placeholder { color: #888 !important; }
+      .ant-modal-content { background-color: #101426 !important; }
+      .ant-modal-header { background-color: #181C2B !important; border-bottom: 1px solid #434760 !important; }
+      .ant-modal-title { color: #fff !important; }
+      .ant-modal-close-x { color: #fff !important; }
+      .ant-select-dropdown { background-color: #101426 !important; }
+      .ant-select-item { color: #fff !important; }
+      .ant-select-item:hover { background-color: #1f2233 !important; }
+      .ant-select-item-option-selected { background-color: #434760 !important; }
+      .ant-empty-description { color: #888 !important; }
+      .ant-select-selection-item-remove { color: #fff !important; }
+      .ant-select-selection-item-remove:hover { color: #3ed8ff !important; }
+    `;
         document.head.appendChild(style);
         return () => document.head.removeChild(style);
     }, []);
@@ -178,13 +173,7 @@ export default function AdminUsers() {
                 { headers: { Authorization: `Bearer ${token}` } }
             );
             message.success("Status updated successfully!");
-            fetchUsers({
-                current: pagination.current,
-                pageSize: pagination.pageSize,
-                sortField: sorter.field,
-                sortOrder: sorter.order,
-                keyword,
-            });
+            fetchUsers({ current: pagination.current, pageSize: pagination.pageSize, sortField: sorter.field, sortOrder: sorter.order, keyword });
         } catch {
             message.error("Failed to update status!");
         }
@@ -198,23 +187,12 @@ export default function AdminUsers() {
 
     const handleSetRole = async () => {
         try {
-            await axios.patch(
-                `${BASE_API_URL}/api/v1/admin/role/setRole/${editUserId}`,
-                editRoleIds,
-                { headers: { Authorization: `Bearer ${token}` } }
-            );
+            await axios.patch(`${BASE_API_URL}/api/v1/admin/role/setRole/${editUserId}`, editRoleIds, { headers: { Authorization: `Bearer ${token}` } });
             message.success("Roles updated successfully!");
             setEditModalOpen(false);
             setEditUserId(null);
             setEditRoleIds([]);
-            // Chỉ fetch lại users, không reload trang hoặc reset state toàn cục
-            fetchUsers({
-                current: pagination.current,
-                pageSize: pagination.pageSize,
-                sortField: sorter.field,
-                sortOrder: sorter.order,
-                keyword,
-            });
+            fetchUsers({ current: pagination.current, pageSize: pagination.pageSize, sortField: sorter.field, sortOrder: sorter.order, keyword });
         } catch {
             message.error("Failed to update roles!");
         }
@@ -321,23 +299,29 @@ export default function AdminUsers() {
             title: t('admin_users.action'),
             align: "center",
             key: "action",
-            render: (_, record) => (
-                <Select
-                    value={record.status}
-                    style={{ width: isMobile ? 70 : isTablet ? 90 : 120 }}
-                    size={isMobile ? "small" : isTablet ? "small" : "middle"}
-                    onChange={(value) => {
-                        if (value !== record.status) {
-                            handleChangeStatus(record.id, value);
-                        }
-                    }}
-                    onClick={(e) => e.stopPropagation()}
-                >
-                    <Option value="VERIFY">{t('admin_users.status_verify')}</Option>
-                    <Option value="ACTIVE">{t('admin_users.status_active')}</Option>
-                    <Option value="BLOCKED">{t('admin_users.status_blocked')}</Option>
-                </Select>
-            ),
+            render: (_, record) => {
+                // Ẩn nút block nếu là người dùng hiện tại
+                if (record.id.toString() === currentUserId) {
+                    return null;
+                }
+                return (
+                    <Select
+                        value={record.status}
+                        style={{ width: isMobile ? 70 : isTablet ? 90 : 120 }}
+                        size={isMobile ? "small" : isTablet ? "small" : "middle"}
+                        onChange={(value) => {
+                            if (value !== record.status) {
+                                handleChangeStatus(record.id, value);
+                            }
+                        }}
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <Option value="VERIFY">{t('admin_users.status_verify')}</Option>
+                        <Option value="ACTIVE">{t('admin_users.status_active')}</Option>
+                        <Option value="BLOCKED">{t('admin_users.status_blocked')}</Option>
+                    </Select>
+                );
+            },
             width: isMobile ? 80 : isTablet ? 100 : 130,
         },
         {
@@ -346,18 +330,19 @@ export default function AdminUsers() {
             key: "setRole",
             render: (_, record) => (
                 <Button
-                    type="primary"
-                    size={isMobile ? "small" : "small"}
-                    style={{
-                        borderRadius: 8,
-                        fontWeight: 500,
-                        padding: isMobile ? "0 6px" : "0 12px",
-                        fontSize: isMobile ? 12 : 14,
-                    }}
+                    type="text"
+                    icon={<FiEdit size={isMobile ? 16 : 20} color="#3ed8ff" />}
                     onClick={() => openEditRoleModal(record.id, record.roleNames)}
-                >
-                    {t('admin_users.edit', 'Edit')}
-                </Button>
+                    style={{
+                        background: "rgba(62,216,255,0.1)",
+                        borderRadius: "50%",
+                        width: isMobile ? 32 : 40,
+                        height: isMobile ? 32 : 40,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center"
+                    }}
+                />
             ),
             width: isMobile ? 60 : 90,
         },
@@ -366,7 +351,7 @@ export default function AdminUsers() {
     const renderEditRoleModal = () => (
         <Modal
             open={editModalOpen}
-            title={t('admin_users.edit_role_title', 'Set Roles for User')}
+            title={t('admin_users.edit_role_title', 'Thiết lập vai trò cho người dùng')}
             onCancel={() => { setEditModalOpen(false); setEditUserId(null); setEditRoleIds([]); }}
             footer={null}
             centered
@@ -451,7 +436,7 @@ export default function AdminUsers() {
                 }}
             >
                 <Search
-                    placeholder={t('admin_users.search_placeholder', 'Search by name or email')}
+                    placeholder={t('admin_users.search_placeholder')}
                     onSearch={handleSearch}
                     onChange={handleInputChange}
                     style={{
@@ -497,7 +482,7 @@ export default function AdminUsers() {
                     locale={{
                         emptyText: (
                             <div style={{ color: '#888', padding: '20px' }}>
-                                {t('admin_users.no_users_found', 'No users found')}
+                                {t('admin_users.no_users_found')}
                             </div>
                         )
                     }}

@@ -13,5 +13,10 @@
   "admin_users.status_active": "활성",
   "admin_users.status_blocked": "차단됨",
   "admin_users.action": "작업",
-  "admin_users.search_placeholder": "사용자 검색"
+  "admin_users.search_placeholder": "사용자 검색",
+  "admin_users.edit_role_title": "사용자 역할 설정",
+  "admin_users.select_roles": "역할 선택",
+  "admin_users.save": "저장",
+  "admin_users.cancel": "취소",
+  "admin_users.no_users_found": "사용자를 찾을 수 없습니다."
 } 

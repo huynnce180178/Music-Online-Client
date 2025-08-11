@@ -13,5 +13,11 @@
   "admin_users.status_active": "アクティブ",
   "admin_users.status_blocked": "ブロック済み",
   "admin_users.action": "アクション",
-  "admin_users.search_placeholder": "ユーザーを検索"
+  "admin_users.search_placeholder": "ユーザーを検索",
+  "admin_users.edit_role_title": "ユーザーの役割を設定",
+  "admin_users.select_roles": "役割を選択",
+  "admin_users.save": "保存",
+  "admin_users.cancel": "キャンセル",
+  "admin_users.no_users_found": "ユーザーが見つかりませんでした"
+
 } 
