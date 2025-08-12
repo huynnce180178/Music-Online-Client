@@ -3,5 +3,9 @@
   "comment_tab.reply_placeholder": "답글을 입력하세요...",
   "comment_tab.send_comment": "댓글 보내기",
   "comment_tab.send_reply": "답글 보내기",
-  "comment_tab.no_comments": "아직 댓글이 없습니다."
-} 
+  "comment_tab.no_comments": "아직 댓글이 없습니다.",
+  "comment_tab.report_reason_spam": "스팸",
+  "comment_tab.report_reason_offensive": "모욕적인",
+  "comment_tab.report_reason_harassment": "괴롭힘",
+  "comment_tab.report_reason_other": "기타"
+}

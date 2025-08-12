@@ -9,17 +9,15 @@ import BASE_API_URL from "../services/base.api.url";
 export default function AllArtists() {
     const { t } = useTranslation();
     const [artists, setArtists] = useState([]);
+    const [showAll, setShowAll] = useState(false);
     const isLoggedIn = !!localStorage.getItem("accessToken");
 
     useEffect(() => {
         axios.get(`${BASE_API_URL}/api/v1/guest/artist/listArtist?page=0&limit=100&sortBy=id&orderBy=asc`)
             .then(res => {
                 const data = res.data?.content;
-                if (Array.isArray(data)) {
-                    setArtists(data);
-                } else {
-                    setArtists([]);
-                }
+                if (Array.isArray(data)) setArtists(data);
+                else setArtists([]);
             })
             .catch((err) => {
                 console.error("Error fetching artists:", err);
@@ -27,11 +25,14 @@ export default function AllArtists() {
             });
     }, []);
 
+    const visibleArtists = showAll ? artists : artists.slice(0, 18);
+    const canViewMore = !showAll && artists.length > 18;
+
     return (
         <div style={{ width: "100%", background: "#181c2b", padding: "0 0 48px 0", display: "flex", justifyContent: "center" }}>
-            <div className="container-fluid" style={{ maxWidth: 1550, padding: "0 2vw" }}>
+            <div className="container-fluid" style={{ maxWidth: 1550, padding: "0 48px" }}>
                 {/* Header */}
-                <div className="d-flex justify-content-between align-items-end mb-3 mt-4 flex-wrap">
+                <div className="d-flex justify-content-between align-items-center mb-3 mt-4 flex-wrap">
                     <span
                         style={{
                             color: "#3ed8ff",
@@ -43,11 +44,30 @@ export default function AllArtists() {
                     >
                         {t('all_artists.all_artists')}
                     </span>
+
+                    {canViewMore && (
+                        <a
+                            href="#"
+                            onClick={(e) => { e.preventDefault(); setShowAll(true); }}
+                            style={{
+                                color: "#fff",
+                                fontSize: 16,
+                                fontWeight: 400,
+                                fontFamily: "'Quicksand', 'Montserrat', sans-serif",
+                                cursor: "pointer",
+                                textDecoration: "none",
+                                marginTop: 8,
+                                marginLeft: "auto", 
+                            }}
+                        >
+                            {t('featured_artists.view_more')}
+                        </a>
+                    )}
                 </div>
 
                 {/* Artist Grid */}
                 <div className="row g-4">
-                    {artists.map((artist, idx) => (
+                    {visibleArtists.map((artist, idx) => (
                         <div
                             className="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2"
                             key={idx}
@@ -70,12 +90,8 @@ export default function AllArtists() {
                                 }}
                                 onClick={() => {
                                     if (isLoggedIn) {
-                                        // Nếu đăng nhập, chuyển trang
                                         window.location.href = `/artist/${artist.artistId}`;
-                                        // Hoặc dùng useNavigate nếu bạn dùng react-router-dom v6:
-                                        // navigate(`/artist/${artist.artistId}`);
                                     } else {
-                                        // Nếu guest, hiện thông báo
                                         toast.info("Please login to view artist information!", { autoClose: 2000 });
                                     }
                                 }}

@@ -3,5 +3,11 @@
   "comment_tab.reply_placeholder": "返信を入力してください...",
   "comment_tab.send_comment": "コメントを送信",
   "comment_tab.send_reply": "返信を送信",
-  "comment_tab.no_comments": "まだコメントがありません。"
-} 
+  "comment_tab.no_comments": "まだコメントがありません。",
+  "comment_tab.report_title": "コメントを報告",
+  "comment_tab.report_reason": "理由:",
+  "comment_tab.report_reason_spam": "スパム",
+  "comment_tab.report_reason_offensive": "攻撃的",
+  "comment_tab.report_reason_harassment": "嫌がらせ",
+  "comment_tab.report_reason_other": "その他"
+}

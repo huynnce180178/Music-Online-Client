@@ -62,7 +62,6 @@ export default function PlaylistPage() {
         }
     }, []);
 
-    // Fetch age group playlist
     const fetchAgeGroupPlaylist = useCallback(async () => {
         try {
             const { data } = await axios.get(`${BASE_API_URL}/api/v1/user/playlist/age-group`, {
@@ -70,7 +69,6 @@ export default function PlaylistPage() {
             });
             setAgeGroupPlaylist(data.data || null);
         } catch {
-            message.error("Failed to load age group playlist!");
         }
     }, [token]);
 

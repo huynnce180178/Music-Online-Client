@@ -4,6 +4,7 @@ import { DeleteOutlined, PlusOutlined, UploadOutlined, EyeOutlined, EditOutlined
 import axios from "axios";
 import { useTranslation } from 'react-i18next';
 import BASE_API_URL from "../../../services/base.api.url";
+import React from "react";
 
 const { useBreakpoint } = Grid;
 
@@ -74,34 +75,93 @@ export default function ArtistAllSongs() {
         fetchGenres();
     }, []);
 
+    // === Theme tweaks (dark, rõ ràng hơn) ===
     useEffect(() => {
         const style = document.createElement("style");
         style.innerHTML = `
-        .ant-table { background-color: #101426 !important; color: #fff !important; border-radius: 0 !important; }
-        .ant-table-thead > tr > th { background-color: #181C2B !important; color: #fff !important; border-bottom: 2px solid #3ed8ff !important; border-radius: 0 !important; }
-        .ant-table-tbody > tr > td { background-color: #101426 !important; color: #fff !important; border-radius: 0 !important; }
-        .ant-table-tbody > tr:hover > td { background-color: #1f2233 !important; }
-        .ant-empty-description { color: #999 !important; }
+        :root {
+          --bg-0: #0f1628;
+          --bg-1: #101426;
+          --bg-2: #181C2B;
+          --bg-3: #1f2233;
+          --border: #2a3550;
+          --border-strong: #3b4a6b;
+          --text: #ffffff;
+          --text-subtle: #9fb1c6;
+          --primary: #3ed8ff;
+          --primary-strong: #18bff0;
+          --danger: #ff7875;
+        }
+        .ant-table { background-color: var(--bg-1) !important; color: var(--text) !important; border-radius: 0 !important; }
+        .ant-table-thead > tr > th { background-color: var(--bg-2) !important; color: var(--text) !important; border-bottom: 2px solid var(--primary) !important; border-radius: 0 !important; }
+        .ant-table-tbody > tr > td { background-color: var(--bg-1) !important; color: var(--text) !important; border-radius: 0 !important; }
+        .ant-table-tbody > tr:hover > td { background-color: var(--bg-3) !important; }
+        .ant-empty-description { color: var(--text-subtle) !important; }
         .ant-empty-image { filter: invert(0.7); }
-        .ant-input, .ant-input-affix-wrapper, .ant-input-textarea, .ant-select-selector { background-color: #101426 !important; color: #fff !important; border: 1px solid #434760 !important; }
-        .ant-input::placeholder, .ant-input-textarea::placeholder { color: #999 !important; }
-        .ant-select-arrow { color: #fff !important; }
-        .ant-select-selection-placeholder { color: #999 !important; }
-        .ant-select-dropdown { background-color: #181C2B !important; }
-        .ant-select-item-option { color: #fff !important; }
-        .ant-select-item-option-selected:not(.ant-select-item-option-disabled) { background-color: #434760 !important; color: #fff !important; }
-        .modal-light .ant-modal-content { background: #fff !important; color: #000 !important; }
-        .modal-light .ant-modal-header { background: #fff !important; border-bottom: 1px solid #d9d9d9 !important; }
-        .modal-light .ant-modal-title { color: #000 !important; }
-        .modal-light .ant-btn { border-radius: 6px; }
-        .modal-light .ant-input, .modal-light .ant-input-affix-wrapper, .modal-light .ant-input-textarea, .modal-light .ant-select-selector { background-color: #fff !important; color: #000 !important; border: 1px solid #d9d9d9 !important; }
-        .modal-light .ant-input::placeholder, .modal-light .ant-input-textarea::placeholder, .modal-light .ant-select-selection-placeholder { color: #888 !important; }
-    `;
+
+        /* ===== Global Select colors ===== */
+        .ant-input, .ant-input-affix-wrapper, .ant-input-textarea, .ant-select-selector {
+          background-color: var(--bg-0) !important; color: var(--text) !important; border: 1px solid var(--border) !important;
+        }
+        .ant-input:hover, .ant-input-affix-wrapper:not(.ant-input-affix-wrapper-disabled):hover,
+        .ant-select-selector:hover { border-color: var(--primary) !important; }
+        .ant-input:focus, .ant-input-affix-wrapper-focused, .ant-select-focused .ant-select-selector {
+          border-color: var(--primary) !important; box-shadow: 0 0 0 2px rgba(62,216,255,0.15) !important;
+        }
+        .ant-input::placeholder, .ant-input-textarea::placeholder, .ant-select-selection-placeholder { color: var(--text-subtle) !important; }
+        .ant-select-arrow { color: var(--text) !important; }
+        .ant-select-dropdown { background-color: var(--bg-2) !important; border: 1px solid var(--border) !important; }
+        .ant-select-item-option { color: var(--text) !important; }
+        .ant-select-item-option-selected:not(.ant-select-item-option-disabled) { background-color: var(--bg-3) !important; color: var(--text) !important; }
+        /* quan trọng: màu chữ của giá trị đã chọn trong ô Select */
+        .ant-select .ant-select-selection-item { color: var(--text) !important; }
+
+        .modal-light .ant-modal-content { background: var(--bg-2) !important; color: var(--text) !important; border: 1px solid var(--border) !important; }
+        .modal-light .ant-modal-header { background: var(--bg-1) !important; border-bottom: 1px solid var(--border-strong) !important; }
+        .modal-light .ant-modal-title { color: var(--text) !important; }
+        .modal-light .ant-btn { border-radius: 8px; }
+        .modal-light .ant-input, .modal-light .ant-input-affix-wrapper, .modal-light .ant-input-textarea, .modal-light .ant-select-selector {
+          background-color: var(--bg-0) !important; color: var(--text) !important; border: 1px solid var(--border) !important;
+        }
+        .modal-light .ant-input::placeholder, .modal-light .ant-input-textarea::placeholder, .modal-light .ant-select-selection-placeholder { color: var(--text-subtle) !important; }
+
+        /* Primary button màu sáng hơn + hover */
+        .ant-btn-primary {
+          background: var(--primary) !important; border-color: var(--primary) !important; color: #0b1222 !important; font-weight: 600;
+        }
+        .ant-btn-primary:hover, .ant-btn-primary:focus {
+          background: var(--primary-strong) !important; border-color: var(--primary-strong) !important; color: #0b1222 !important;
+        }
+
+        /* ===== Select trong Modal.confirm (chọn album) ===== */
+        .ant-modal-confirm .ant-select-selector {
+          background-color: #0f1628 !important;
+          color: #e8f3ff !important;
+          border: 1.5px solid var(--primary) !important;
+          box-shadow: 0 0 0 2px rgba(62,216,255,0.15) !important;
+        }
+        .ant-modal-confirm .ant-select-selection-placeholder { color: var(--text-subtle) !important; }
+        .ant-modal-confirm .ant-select .ant-select-selection-item { color: #e8f3ff !important; }
+        .ant-modal-confirm .ant-modal-title {
+            color: #3ed8ff !important;
+            font-weight: 600 !important;
+        }
+        /* dropdown gắn class riêng để chắc chắn ăn style */
+        .album-select-dropdown { background: #1c2234 !important; border: 1px solid var(--border) !important; }
+        .album-select-dropdown .ant-select-item { color: #e8f3ff !important; }
+        .album-select-dropdown .ant-select-item-option-selected { background: #233554 !important; }
+
+        /* Đổi màu title đúng cho Modal.confirm (AntD v5) */
+        .ant-modal-confirm .ant-modal-confirm-title,
+        .ant-modal-confirm .ant-modal-body .ant-modal-confirm-title,
+        .ant-modal-confirm .ant-modal-confirm-title strong {
+          color: #3ed8ff !important;
+          font-weight: 600 !important;
+        }
+      `;
         document.head.appendChild(style);
         return () => document.head.removeChild(style);
     }, []);
-
-
 
     const handleDelete = (id) => {
         Modal.confirm({
@@ -133,6 +193,7 @@ export default function ArtistAllSongs() {
                     style={{ width: "100%" }}
                     placeholder={t('select_album')}
                     options={albums.map(a => ({ value: a.id, label: a.titleAlbum }))}
+                    popupClassName="album-select-dropdown"
                     onChange={async (albumId) => {
                         try {
                             await axios.post(
@@ -194,22 +255,15 @@ export default function ArtistAllSongs() {
         formData.append("title", values.title);
 
         if (editingSong) {
-            // Update song - send all provided fields
-
-            // Always send files if provided
             if (values.file && values.file.originFileObj) {
                 formData.append("file", values.file.originFileObj);
             }
             if (values.profilePic && values.profilePic.originFileObj) {
                 formData.append("profilePic", values.profilePic.originFileObj);
             }
-
-            // Always send genreIds from form (form already has current genres loaded)
             if (values.genreIds && values.genreIds.length > 0) {
                 values.genreIds.forEach(id => formData.append("genreIds", id));
             }
-
-            // Always send lyrics from form (form already has current lyrics loaded)
             const lyricsValue = values.lyrics !== undefined ? values.lyrics : "";
             formData.append("lyrics", lyricsValue);
 
@@ -246,11 +300,9 @@ export default function ArtistAllSongs() {
                 } else if (err.response?.data) {
                     errorMessage = JSON.stringify(err.response.data);
                 }
-                
                 message.error(`${errorMessage} (Status: ${err.response?.status || 'Unknown'})`);
             }
         } else {
-            // Add new song
             const artistId = localStorage.getItem("userId");
             if (!artistId || isNaN(Number(artistId))) {
                 message.error(t('artist_id_not_found'));
@@ -314,8 +366,7 @@ export default function ArtistAllSongs() {
     const handleEditSong = async (song) => {
         setEditingSong(song);
         setModalOpen(true);
-        
-        // Load full lyrics from API
+
         let fullLyrics = song.lyrics || '';
         if (song.id) {
             try {
@@ -324,18 +375,15 @@ export default function ArtistAllSongs() {
                     fullLyrics = lyricsRes.data.data;
                 }
             } catch (error) {
-                // If API fails, use existing lyrics from song object
                 console.warn('Failed to load full lyrics, using existing:', error);
             }
         }
-        
-        // Prepare genre IDs from song data (data already includes genres)
+
         let genreIds = [];
         if (song.genres && Array.isArray(song.genres)) {
             genreIds = song.genres.map(g => g.id);
         }
-        
-        // Use setTimeout to ensure modal is opened before setting form values
+
         setTimeout(() => {
             form.setFieldsValue({
                 title: song.title || '',
@@ -407,8 +455,8 @@ export default function ArtistAllSongs() {
                         onClick={() => handleViewLyrics(song.id, song.title)}
                         title={t('view_lyrics')}
                         size="middle"
-                        style={{ 
-                            width: '36px', 
+                        style={{
+                            width: '36px',
                             height: '36px',
                             display: 'flex',
                             alignItems: 'center',
@@ -420,35 +468,37 @@ export default function ArtistAllSongs() {
                         onClick={() => handleEditSong(song)}
                         title={t('edit_song')}
                         size="middle"
-                        style={{ 
-                            width: '36px', 
+                        style={{
+                            width: '36px',
                             height: '36px',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center'
                         }}
                     />
-                    <Button
-                        icon={<PlusOutlined style={{ fontSize: '16px' }} />}
-                        onClick={() => handleAddToAlbum(song.id)}
-                        title={t('add_to_album')}
-                        size="middle"
-                        style={{ 
-                            width: '36px', 
-                            height: '36px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center'
-                        }}
-                    />
+                    {!song.albumId && (
+                        <Button
+                            icon={<PlusOutlined style={{ fontSize: '16px' }} />}
+                            onClick={() => handleAddToAlbum(song.id)}
+                            title={t('add_to_album')}
+                            size="middle"
+                            style={{
+                                width: '36px',
+                                height: '36px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center'
+                            }}
+                        />
+                    )}
                     {song.albumId && (
                         <Button
                             icon={<MinusCircleOutlined style={{ fontSize: '16px' }} />}
                             onClick={() => handleRemoveFromAlbum(song.id, song.albumId)}
                             title={t('remove_from_album')}
                             size="middle"
-                            style={{ 
-                                width: '36px', 
+                            style={{
+                                width: '36px',
                                 height: '36px',
                                 color: '#ff7875',
                                 display: 'flex',
@@ -463,8 +513,8 @@ export default function ArtistAllSongs() {
                         onClick={() => handleDelete(song.id)}
                         title={t('delete_song')}
                         size="middle"
-                        style={{ 
-                            width: '36px', 
+                        style={{
+                            width: '36px',
                             height: '36px',
                             display: 'flex',
                             alignItems: 'center',
@@ -478,208 +528,225 @@ export default function ArtistAllSongs() {
     ];
 
     return (
-        <div
-            style={{
-                padding: isMobile ? 4 : isTablet ? 8 : 24,
-                width: "100%",
-                height: "100%",
-                boxSizing: "border-box",
-                flex: 1,
-                display: "flex",
-                flexDirection: "column",
-            }}
-        >
+        <div className="artist-albums">
+            <style>
+                {`
+                    .artist-albums .ant-btn-primary {
+                        background: var(--primary) !important;
+                        border-color: var(--primary) !important;
+                        color: #0b1222 !important;
+                        font-weight: 600;
+                    }
+                    .artist-albums .ant-btn-primary:hover,
+                    .artist-albums .ant-btn-primary:focus {
+                        background: var(--primary-strong) !important;
+                        border-color: var(--primary-strong) !important;
+                        color: #0b1222 !important;
+                    }
+                    /* ...các style khác giữ nguyên... */
+                `}
+            </style>
             <div
                 style={{
-                    marginBottom: 16,
-                    display: "flex",
-                    flexDirection: isMobile ? "column" : isTablet ? "column" : "row",
-                    gap: 8,
-                    alignItems: isMobile ? "stretch" : isTablet ? "stretch" : "center",
-                    justifyContent: isMobile ? "flex-start" : isTablet ? "flex-start" : "space-between",
+                    padding: isMobile ? 4 : isTablet ? 8 : 24,
                     width: "100%",
-                }}
-            >
-                <Button
-                    type="primary"
-                    icon={<PlusOutlined />}
-                    onClick={() => openModal()}
-                    size={isMobile ? "small" : isTablet ? "middle" : "large"}
-                    style={{ width: isMobile ? "100%" : isTablet ? "100%" : undefined }}
-                >
-                    {t('add_song')}
-                </Button>
-            </div>
-            <div
-                style={{
+                    height: "100%",
+                    boxSizing: "border-box",
                     flex: 1,
-                    width: "100%",
-                    maxWidth: "100vw",
-                    overflowX: isMobile ? "auto" : isTablet ? "auto" : "visible",
-                    margin: 0,
+                    display: "flex",
+                    flexDirection: "column",
                 }}
             >
-                <Table
-                    columns={columns}
-                    dataSource={songs}
-                    rowKey="id"
-                    loading={loading}
-                    pagination={false}
-                    size={isMobile ? "small" : isTablet ? "small" : "middle"}
-                    scroll={isMobile ? { x: 480 } : isTablet ? { x: 700 } : undefined}
+                <div
                     style={{
-                        background: "#181d36",
-                        minWidth: isMobile ? 480 : isTablet ? 700 : undefined,
+                        marginBottom: 16,
+                        display: "flex",
+                        flexDirection: isMobile ? "column" : isTablet ? "column" : "row",
+                        gap: 8,
+                        alignItems: isMobile ? "stretch" : isTablet ? "stretch" : "center",
+                        justifyContent: isMobile ? "flex-start" : isTablet ? "flex-start" : "space-between",
                         width: "100%",
                     }}
-                    locale={{ emptyText: t('no_data') }}
-                />
-            </div>
-            <Modal
-                className="modal-light"
-                title={editingSong ? t('edit_song') : t('add_new_song')}
-                open={modalOpen}
-                onCancel={() => {
-                    setModalOpen(false);
-                    setEditingSong(null);
-                    // Reset form after a short delay to avoid the warning
-                    setTimeout(() => {
-                        form.resetFields();
-                    }, 100);
-                }}
-                footer={null}
-                destroyOnHidden
-                confirmLoading={loading}
-                centered
-                width={isMobile ? 320 : isTablet ? 400 : 600}
-                style={{ top: isMobile ? 10 : undefined }}
-                styles={{ body: { padding: isMobile ? 12 : isTablet ? 18 : 24 } }}
-            >
-                <Form
-                    form={form}
-                    layout="vertical"
-                    onFinish={handleSubmitSong}
-                    disabled={loading}
                 >
-                    <Form.Item
-                        label={t('song_title')}
-                        name="title"
-                        rules={[
-                            { required: true, message: t('please_enter_song_title') },
-                            { min: 2, message: t('song_title_min_length') },
-                            { max: 100, message: t('song_title_max_length') }
-                        ]}
+                    <Button
+                        type="primary"
+                        icon={<PlusOutlined />}
+                        onClick={() => openModal()}
+                        size={isMobile ? "small" : isTablet ? "middle" : "large"}
+                        style={{ width: isMobile ? "100%" : isTablet ? "100%" : undefined }}
                     >
-                        <Input />
-                    </Form.Item>
-                    <Form.Item
-                        label={t('genres')}
-                        name="genreIds"
-                        rules={[
-                            { required: true, message: t('please_select_genres') },
-                            {
-                                validator: (_, value) => {
-                                    if (!value || value.length === 0) {
-                                        return Promise.reject(new Error(t('please_select_genres')));
+                        {t('add_song')}
+                    </Button>
+                </div>
+                <div
+                    style={{
+                        flex: 1,
+                        width: "100%",
+                        maxWidth: "100vw",
+                        overflowX: isMobile ? "auto" : isTablet ? "auto" : "visible",
+                        margin: 0,
+                    }}
+                >
+                    <Table
+                        columns={columns}
+                        dataSource={songs}
+                        rowKey="id"
+                        loading={loading}
+                        pagination={false}
+                        size={isMobile ? "small" : isTablet ? "small" : "middle"}
+                        scroll={isMobile ? { x: 480 } : isTablet ? { x: 700 } : undefined}
+                        style={{
+                            background: "#181d36",
+                            minWidth: isMobile ? 480 : isTablet ? 700 : undefined,
+                            width: "100%",
+                        }}
+                        locale={{ emptyText: t('no_data') }}
+                    />
+                </div>
+                <Modal
+                    className="modal-light"
+                    title={editingSong ? t('edit_song') : t('add_new_song')}
+                    open={modalOpen}
+                    onCancel={() => {
+                        setModalOpen(false);
+                        setEditingSong(null);
+                        setTimeout(() => {
+                            form.resetFields();
+                        }, 100);
+                    }}
+                    footer={null}
+                    destroyOnHidden
+                    confirmLoading={loading}
+                    centered
+                    width={isMobile ? 320 : isTablet ? 400 : 600}
+                    style={{ top: isMobile ? 10 : undefined }}
+                    styles={{ body: { padding: isMobile ? 12 : isTablet ? 18 : 24 } }}
+                >
+                    <Form
+                        form={form}
+                        layout="vertical"
+                        onFinish={handleSubmitSong}
+                        disabled={loading}
+                    >
+                        <Form.Item
+                            label={t('song_title')}
+                            name="title"
+                            rules={[
+                                { required: true, message: t('please_enter_song_title') },
+                                { min: 2, message: t('song_title_min_length') },
+                                { max: 100, message: t('song_title_max_length') }
+                            ]}
+                        >
+                            <Input />
+                        </Form.Item>
+                        <Form.Item
+                            label={t('genres')}
+                            name="genreIds"
+                            rules={[
+                                { required: true, message: t('please_select_genres') },
+                                {
+                                    validator: (_, value) => {
+                                        if (!value || value.length === 0) {
+                                            return Promise.reject(new Error(t('please_select_genres')));
+                                        }
+                                        if (value && value.length > 5) {
+                                            return Promise.reject(new Error(t('genre_max_count')));
+                                        }
+                                        return Promise.resolve();
                                     }
-                                    if (value && value.length > 5) {
-                                        return Promise.reject(new Error(t('genre_max_count')));
-                                    }
-                                    return Promise.resolve();
                                 }
-                            }
-                        ]}
-                    >
-                        <Select
-                            mode="multiple"
-                            placeholder={t('select_genres')}
-                            options={Array.isArray(genres) ? genres.map(g => ({ value: g.id, label: g.genreName })) : []}
-                        />
-                    </Form.Item>
-                    <Form.Item
-                        label={t('music_file')}
-                        name="file"
-                        valuePropName="file"
-                        getValueFromEvent={e => e && e.fileList && e.fileList[0]}
-                        extra={editingSong && editingSong.fileUrl && (
-                            <div style={{ fontSize: '12px', color: '#666' }}>
-                                {t('current_file')}: {editingSong.title}.mp3
-                            </div>
-                        )}
-                        rules={[
-                            { required: !editingSong, message: t('please_select_music_file') },
-                            {
-                                validator: (_, value) => {
-                                    if (!value) return Promise.resolve();
-                                    const allowedTypes = [
-                                        'audio/mpeg', 'audio/wav', 'audio/x-wav', 'audio/flac', 'audio/x-flac',
-                                        'audio/mp4', 'audio/x-m4a', 'audio/ogg', 'audio/x-ogg', 'audio/aac', 'audio/x-aac'
-                                    ];
-                                    if (!allowedTypes.includes(value.type)) {
-                                        return Promise.reject(new Error(t('unsupported_audio_format')));
-                                    }
-                                    return Promise.resolve();
-                                }
-                            }
-                        ]}
-                    >
-                        <Upload beforeUpload={() => false} maxCount={1} accept=".mp3,.wav,.flac,.m4a,.ogg,.aac">
-                            <Button icon={<UploadOutlined />}>
-                                {editingSong ? `${t('change_music_file')} (${t('optional')})` : t('select_music_file')}
-                            </Button>
-                        </Upload>
-                    </Form.Item>
-                    <Form.Item
-                        label={t('cover_image')}
-                        name="profilePic"
-                        valuePropName="file"
-                        getValueFromEvent={e => e && e.fileList && e.fileList[0]}
-                        extra={editingSong && editingSong.profilePicUrl && (
-                            <div style={{ marginTop: 8 }}>
-                                <img 
-                                    src={editingSong.profilePicUrl} 
-                                    alt="Current cover" 
-                                    style={{ width: '50px', height: '50px', objectFit: 'cover', borderRadius: '4px' }}
-                                />
-                                <div style={{ fontSize: '12px', color: '#666', marginTop: 4 }}>
-                                    {t('current_cover_image')}
+                            ]}
+                        >
+                            <Select
+                                mode="multiple"
+                                placeholder={t('select_genres')}
+                                options={Array.isArray(genres) ? genres.map(g => ({ value: g.id, label: g.genreName })) : []}
+                            />
+                        </Form.Item>
+                        <Form.Item
+                            label={t('music_file')}
+                            name="file"
+                            valuePropName="file"
+                            getValueFromEvent={e => e && e.fileList && e.fileList[0]}
+                            extra={editingSong && editingSong.fileUrl && (
+                                <div style={{ fontSize: '12px', color: '#9fb1c6' }}>
+                                    {t('current_file')}: {editingSong.title}.mp3
                                 </div>
-                            </div>
-                        )}
-                        rules={[
-                            { required: !editingSong, message: t('please_upload_cover_image') },
-                            {
-                                validator: (_, value) => {
-                                    if (!value) return Promise.resolve();
-                                    const isImage = value.type && value.type.startsWith('image/');
-                                    const isSizeOk = value.size < 2 * 1024 * 1024;
-                                    if (!isImage) return Promise.reject(new Error(t('cover_only_image')));
-                                    if (!isSizeOk) return Promise.reject(new Error(t('cover_max_size')));
-                                    return Promise.resolve();
+                            )}
+                            rules={[
+                                { required: !editingSong, message: t('please_select_music_file') },
+                                {
+                                    validator: (_, value) => {
+                                        if (!value) return Promise.resolve();
+                                        const allowedTypes = [
+                                            'audio/mpeg', 'audio/wav', 'audio/x-wav', 'audio/flac', 'audio/x-flac',
+                                            'audio/mp4', 'audio/x-m4a', 'audio/ogg', 'audio/x-ogg', 'audio/aac', 'audio/x-aac'
+                                        ];
+                                        if (!allowedTypes.includes(value.type)) {
+                                            return Promise.reject(new Error(t('unsupported_audio_format')));
+                                        }
+                                        return Promise.resolve();
+                                    }
                                 }
-                            }
-                        ]}
-                    >
-                        <Upload beforeUpload={() => false} maxCount={1} accept="image/*">
-                            <Button icon={<UploadOutlined />}>
-                                {editingSong ? `${t('change_cover_image')} (${t('optional')})` : t('select_cover_image')}
+                            ]}
+                        >
+                            <Upload beforeUpload={() => false} maxCount={1} accept=".mp3,.wav,.flac,.m4a,.ogg,.aac">
+                                <Button icon={<UploadOutlined />}>
+                                    {editingSong ? `${t('change_music_file')} (${t('optional')})` : t('select_music_file')}
+                                </Button>
+                            </Upload>
+                        </Form.Item>
+                        <Form.Item
+                            label={t('cover_image')}
+                            name="profilePic"
+                            valuePropName="file"
+                            getValueFromEvent={e => e && e.fileList && e.fileList[0]}
+                            extra={editingSong && editingSong.profilePicUrl && (
+                                <div style={{ marginTop: 8 }}>
+                                    <img
+                                        src={editingSong.profilePicUrl}
+                                        alt="Current cover"
+                                        style={{ width: '50px', height: '50px', objectFit: 'cover', borderRadius: '4px' }}
+                                    />
+                                    <div style={{ fontSize: '12px', color: '#9fb1c6', marginTop: 4 }}>
+                                        {t('current_cover_image')}
+                                    </div>
+                                </div>
+                            )}
+                            rules={[
+                                { required: !editingSong, message: t('please_upload_cover_image') },
+                                {
+                                    validator: (_, value) => {
+                                        if (!value) return Promise.resolve();
+                                        const isImage = value.type && value.type.startsWith('image/');
+                                        const isSizeOk = value.size < 2 * 1024 * 1024;
+                                        if (!isImage) return Promise.reject(new Error(t('cover_only_image')));
+                                        if (!isSizeOk) return Promise.reject(new Error(t('cover_max_size')));
+                                        return Promise.resolve();
+                                    }
+                                }
+                            ]}
+                        >
+                            <Upload beforeUpload={() => false} maxCount={1} accept="image/*">
+                                <Button icon={<UploadOutlined />}>
+                                    {editingSong ? `${t('change_cover_image')} (${t('optional')})` : t('select_cover_image')}
+                                </Button>
+                            </Upload>
+                        </Form.Item>
+                        <Form.Item
+                            label={t('lyrics')}
+                            name="lyrics"
+                        >
+                            <Input.TextArea rows={4} placeholder={t('enter_lyrics_here')} />
+                        </Form.Item>
+                        <Form.Item>
+                            <Button type="primary" htmlType="submit" loading={loading} block>
+                                {editingSong ? t('update') : t('add')}
                             </Button>
-                        </Upload>
-                    </Form.Item>
-                    <Form.Item
-                        label={t('lyrics')}
-                        name="lyrics"
-
-                    >
-                        <Input.TextArea rows={4} placeholder={t('enter_lyrics_here')} />
-                    </Form.Item>
-                    <Form.Item>
-                        <Button type="primary" htmlType="submit" loading={loading} block>
-                            {editingSong ? t('update') : t('add')}
-                        </Button>
-                    </Form.Item>
-                </Form>
-            </Modal>
+                        </Form.Item>
+                    </Form>
+                </Modal>
+            </div>
         </div>
     );
 }

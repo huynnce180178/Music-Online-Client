@@ -255,8 +255,8 @@ function SongPlay({ sidebarWidth = 0 }) {
     const isArtist = roles.includes("ROLE_ARTIST"); 
 
 
-    const handleSongEnd = () => {
-        if (isPremium || isArtist) { 
+    const handleSongEnd = useCallback(() => {
+        if (isPremium || isArtist) {
             const nextId = getNextSongId();
             if (nextId) {
                 setCurrentSongId(nextId);
@@ -266,7 +266,7 @@ function SongPlay({ sidebarWidth = 0 }) {
             }
             return;
         }
-    if ((songCount + 1) % 5 === 0) {
+        if ((songCount + 1) % 5 === 0) {
             setPendingAutoNextSong(true);
             fetchAdAudio("next");
         } else {
@@ -279,7 +279,7 @@ function SongPlay({ sidebarWidth = 0 }) {
                 setIsPlaying(false);
             }
         }
-    };
+    }, [isPremium, isArtist, getNextSongId, setCurrentSongId, setIsPlaying, songCount, setPendingAutoNextSong, fetchAdAudio]);
 
     useEffect(() => {
         if (adPlaying) {

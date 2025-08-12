@@ -3,5 +3,17 @@
   "comment_tab.reply_placeholder": "Enter your reply...",
   "comment_tab.send_comment": "Send Comment",
   "comment_tab.send_reply": "Send Reply",
-  "comment_tab.no_comments": "No comments yet."
-} 
+  "comment_tab.no_comments": "No comments yet.",
+  "comment_tab.report_title": "Report Comment",
+  "comment_tab.report_reason": "Reason:",
+  "comment_tab.report_reason_spam": "Spam",
+  "comment_tab.report_reason_offensive": "Offensive language",
+  "comment_tab.report_reason_harassment": "Harassment",
+  "comment_tab.report_reason_other": "Other",
+  "comment_tab.report_custom_reason_placeholder": "Enter your specific reason...",
+  "comment_tab.report_submit": "Submit Report",
+  "comment_tab.report_cancel": "Cancel",
+  "comment_tab.report_success": "Report submitted!",
+  "comment_tab.report_error_login": "You need to login to report a comment.",
+  "comment_tab.report_error_reason": "Please enter your specific reason."
+}

@@ -13,9 +13,11 @@ export default function ArtistAllAlbums() {
     const [form] = Form.useForm();
     const [editingId, setEditingId] = useState(null);
     const [modalOpen, setModalOpen] = useState(false);
+
     const screens = useBreakpoint();
     const isTablet = !screens.lg;
     const isMobile = !screens.md;
+
     const artistId = localStorage.getItem("userId");
     const token = localStorage.getItem("accessToken");
     const config = { headers: { Authorization: `Bearer ${token}` } };
@@ -34,19 +36,86 @@ export default function ArtistAllAlbums() {
         }
         setLoading(false);
     };
+
+    // ===== Copy theme + Select styles từ ArtistAllSongs =====
     useEffect(() => {
         const style = document.createElement("style");
         style.innerHTML = `
-        .ant-table { background-color: #101426 !important; color: #fff !important; }
-        .ant-table-thead > tr > th { background-color: #181C2B !important; color: #fff !important; border-bottom: 2px solid #3ed8ff !important; }
-        .ant-table-tbody > tr > td { background-color: #101426 !important; color: #fff !important; }
-        .ant-table-tbody > tr:hover > td { background-color: #1f2233 !important; }
-        .ant-empty-description { color: #999 !important; }
+        :root {
+          --bg-0: #0f1628;
+          --bg-1: #101426;
+          --bg-2: #181C2B;
+          --bg-3: #1f2233;
+          --border: #2a3550;
+          --border-strong: #3b4a6b;
+          --text: #ffffff;
+          --text-subtle: #9fb1c6;
+          --primary: #3ed8ff;
+          --primary-strong: #18bff0;
+          --danger: #ff7875;
+        }
+        .ant-table { background-color: var(--bg-1) !important; color: var(--text) !important; border-radius: 0 !important; }
+        .ant-table-thead > tr > th { background-color: var(--bg-2) !important; color: var(--text) !important; border-bottom: 2px solid var(--primary) !important; border-radius: 0 !important; }
+        .ant-table-tbody > tr > td { background-color: var(--bg-1) !important; color: var(--text) !important; border-radius: 0 !important; }
+        .ant-table-tbody > tr:hover > td { background-color: var(--bg-3) !important; }
+        .ant-empty-description { color: var(--text-subtle) !important; }
         .ant-empty-image { filter: invert(0.7); }
+
+        /* Global Input/Select */
+        .ant-input, .ant-input-affix-wrapper, .ant-input-textarea, .ant-select-selector {
+          background-color: var(--bg-0) !important; color: var(--text) !important; border: 1px solid var(--border) !important;
+        }
+        .ant-input:hover, .ant-input-affix-wrapper:not(.ant-input-affix-wrapper-disabled):hover,
+        .ant-select-selector:hover { border-color: var(--primary) !important; }
+        .ant-input:focus, .ant-input-affix-wrapper-focused, .ant-select-focused .ant-select-selector {
+          border-color: var(--primary) !important; box-shadow: 0 0 0 2px rgba(62,216,255,0.15) !important;
+        }
+        .ant-input::placeholder, .ant-input-textarea::placeholder, .ant-select-selection-placeholder { color: var(--text-subtle) !important; }
+        .ant-select-arrow { color: var(--text) !important; }
+        .ant-select-dropdown { background-color: var(--bg-2) !important; border: 1px solid var(--border) !important; }
+        .ant-select-item-option { color: var(--text) !important; }
+        .ant-select-item-option-selected:not(.ant-select-item-option-disabled) { background-color: var(--bg-3) !important; color: var(--text) !important; }
+        .ant-select .ant-select-selection-item { color: var(--text) !important; }
+
+        /* Modal (className="modal-light") */
+        .modal-light .ant-modal-content { background: var(--bg-2) !important; color: var(--text) !important; border: 1px solid var(--border) !important; }
+        .modal-light .ant-modal-header { background: var(--bg-1) !important; border-bottom: 1px solid var(--border-strong) !important; }
+        .modal-light .ant-modal-title { color: var(--text) !important; }
+        .modal-light .ant-btn { border-radius: 8px; }
+        .modal-light .ant-input, .modal-light .ant-input-affix-wrapper, .modal-light .ant-input-textarea, .modal-light .ant-select-selector {
+          background-color: var(--bg-0) !important; color: var(--text) !important; border: 1px solid var(--border) !important;
+        }
+        .modal-light .ant-input::placeholder, .modal-light .ant-input-textarea::placeholder, .modal-light .ant-select-selection-placeholder { color: var(--text-subtle) !important; }
+
+        /* Primary Button */
+        .ant-btn-primary {
+          background: var(--primary) !important; border-color: var(--primary) !important; color: #0b1222 !important; font-weight: 600;
+        }
+        .ant-btn-primary:hover, .ant-btn-primary:focus {
+          background: var(--primary-strong) !important; border-color: var(--primary-strong) !important; color: #0b1222 !important;
+        }
+
+        /* Modal.confirm (xóa / confirm) */
+        .ant-modal-confirm .ant-select-selector {
+          background-color: #0f1628 !important;
+          color: #e8f3ff !important;
+          border: 1.5px solid var(--primary) !important;
+          box-shadow: 0 0 0 2px rgba(62,216,255,0.15) !important;
+        }
+        .ant-modal-confirm .ant-select-selection-placeholder { color: var(--text-subtle) !important; }
+        .ant-modal-confirm .ant-select .ant-select-selection-item { color: #e8f3ff !important; }
+        .ant-modal-confirm .ant-modal-title {
+          color: #3ed8ff !important;
+          font-weight: 600 !important;
+        }
+        .album-select-dropdown { background: #1c2234 !important; border: 1px solid var(--border) !important; }
+        .album-select-dropdown .ant-select-item { color: #e8f3ff !important; }
+        .album-select-dropdown .ant-select-item-option-selected { background: #233554 !important; }
         `;
         document.head.appendChild(style);
         return () => document.head.removeChild(style);
     }, []);
+
     useEffect(() => { fetchAlbums(); }, []);
 
     const handleFinish = async (values) => {
@@ -202,7 +271,60 @@ export default function ArtistAllAlbums() {
     ].filter(Boolean);
 
     return (
-        <div style={{ padding: isMobile ? 4 : isTablet ? 8 : 24 }}>
+        <div className="artist-albums" style={{ padding: isMobile ? 4 : isTablet ? 8 : 24 }}>
+            <style>
+                {`
+                    .artist-albums .ant-btn-primary {
+                        background: var(--primary) !important;
+                        border-color: var(--primary) !important;
+                        color: #0b1222 !important;
+                        font-weight: 600;
+                    }
+                    .artist-albums .ant-btn-primary:hover,
+                    .artist-albums .ant-btn-primary:focus {
+                        background: var(--primary-strong) !important;
+                        border-color: var(--primary-strong) !important;
+                        color: #0b1222 !important;
+                    }
+                    .ant-form-item-label > label {
+                        color: #3ed8ff !important;
+                        font-weight: 600;
+                        letter-spacing: 0.5px;
+                    }
+                    .ant-modal-close {
+                        color: #3ed8ff !important;
+                        transition: color 0.2s;
+                    }
+                    .ant-modal-close:hover, .ant-modal-close:focus {
+                        color: #18bff0 !important;
+                    }
+                    .ant-modal .ant-select-selector {
+                        background-color: #0f1628 !important;
+                        color: #fff !important;
+                        border: 1.5px solid #3ed8ff !important;
+                        box-shadow: 0 0 0 2px rgba(62,216,255,0.15) !important;
+                    }
+                    .ant-modal .ant-select-selection-placeholder {
+                        color: #9fb1c6 !important;
+                    }
+                    .ant-modal .ant-select-arrow {
+                        color: #3ed8ff !important;
+                    }
+                    .ant-modal-confirm .ant-modal-content {
+                        background: #181d36 !important;
+                        color: #fff !important;
+                    }
+                    .ant-modal-confirm .ant-modal-header {
+                        background: #101426 !important;
+                        border-bottom: 1px solid #3ed8ff !important;
+                    }
+                    .ant-modal-confirm .ant-modal-title {
+                        color: #3ed8ff !important;
+                        font-weight: 600 !important;
+                    }
+                `}
+            </style>
+
             <Button
                 type="primary"
                 icon={<PlusOutlined />}
@@ -212,6 +334,7 @@ export default function ArtistAllAlbums() {
             >
                 {t('add_album')}
             </Button>
+
             <div style={{ width: "100%", overflowX: isMobile ? "auto" : isTablet ? "auto" : "visible" }}>
                 <Table
                     columns={columns}
@@ -225,6 +348,7 @@ export default function ArtistAllAlbums() {
                     locale={{ emptyText: t('no_data') }}
                 />
             </div>
+
             <Modal
                 className="modal-light"
                 open={modalOpen}
@@ -252,6 +376,7 @@ export default function ArtistAllAlbums() {
                             alt={t('old_cover')}
                         />
                     )}
+
                     <Form.Item
                         label={t('album_name')}
                         name="titleAlbum"
@@ -259,6 +384,7 @@ export default function ArtistAllAlbums() {
                     >
                         <Input placeholder={t('album_name_placeholder')} />
                     </Form.Item>
+
                     <Form.Item
                         label={t('cover_image')}
                         name="cover"
@@ -275,6 +401,7 @@ export default function ArtistAllAlbums() {
                             <Button icon={<UploadOutlined />}>{t('choose_image')}</Button>
                         </Upload>
                     </Form.Item>
+
                     <Form.Item
                         label={t('release_date')}
                         name="releaseDate"
@@ -298,6 +425,7 @@ export default function ArtistAllAlbums() {
                     >
                         <Input type="datetime-local" placeholder={t('release_date_placeholder')} />
                     </Form.Item>
+
                     <Form.Item
                         label={t('type')}
                         name="type"
@@ -309,8 +437,10 @@ export default function ArtistAllAlbums() {
                                 { value: "PREMIUM", label: t('premium') }
                             ]}
                             placeholder={t('select_album_type')}
+                            popupClassName="album-select-dropdown"
                         />
                     </Form.Item>
+
                     <Form.Item>
                         <Button type="primary" htmlType="submit" block loading={loading}>
                             {editingId ? t('update') : t('add')}
@@ -321,3 +451,4 @@ export default function ArtistAllAlbums() {
         </div>
     );
 }
+

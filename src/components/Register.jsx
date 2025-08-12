@@ -298,25 +298,24 @@ export default function Register(props) {
                             </Form.Item>
                             <Form.Item
                                 name="profilePic"
-                                label={t('profile.avatar')}
+                                label={`${t('profile.avatar')} (${t('common.optional')})`}
                                 valuePropName="fileList"
-                                getValueFromEvent={e => Array.isArray(e) ? e : e && e.fileList}
+                                getValueFromEvent={(e) => (Array.isArray(e) ? e : e && e.fileList)}
+                                // Bỏ required; chỉ kiểm tra khi có file
                                 rules={[
                                     {
-                                        required: true,
-                                        message: t('please_upload_profile_picture'),
                                         validator: (_, value) => {
-                                            if (value && value.length > 0) {
-                                                const file = value[0];
-                                                const isImage = file.type && file.type.startsWith('image/');
-                                                const isSizeOk = file.size < 2 * 1024 * 1024;
-                                                if (!isImage) return Promise.reject(new Error(t('avatar_only_image')));
-                                                if (!isSizeOk) return Promise.reject(new Error(t('avatar_max_size')));
-                                                return Promise.resolve();
+                                            if (!value || value.length === 0) {
+                                                return Promise.resolve(); // cho phép để trống
                                             }
-                                            return Promise.reject(new Error(t('please_upload_profile_picture')));
-                                        }
-                                    }
+                                            const file = value[0];
+                                            const isImage = file.type && file.type.startsWith('image/');
+                                            const isSizeOk = file.size < 2 * 1024 * 1024;
+                                            if (!isImage) return Promise.reject(new Error(t('avatar_only_image')));
+                                            if (!isSizeOk) return Promise.reject(new Error(t('avatar_max_size')));
+                                            return Promise.resolve();
+                                        },
+                                    },
                                 ]}
                                 style={{ marginBottom: 10 }}
                             >

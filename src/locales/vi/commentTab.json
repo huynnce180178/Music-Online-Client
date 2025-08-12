@@ -3,5 +3,17 @@
   "comment_tab.reply_placeholder": "Nhập phản hồi...",
   "comment_tab.send_comment": "Gửi bình luận",
   "comment_tab.send_reply": "Gửi phản hồi",
-  "comment_tab.no_comments": "Chưa có bình luận nào."
-} 
+  "comment_tab.no_comments": "Chưa có bình luận nào.",
+  "comment_tab.report_title": "Báo cáo bình luận",
+  "comment_tab.report_reason": "Lý do:",
+  "comment_tab.report_reason_spam": "Spam",
+  "comment_tab.report_reason_offensive": "Ngôn ngữ phản cảm",
+  "comment_tab.report_reason_harassment": "Quấy rối",
+  "comment_tab.report_reason_other": "Khác",
+  "comment_tab.report_custom_reason_placeholder": "Nhập lý do cụ thể của bạn...",
+  "comment_tab.report_submit": "Gửi báo cáo",
+  "comment_tab.report_cancel": "Hủy",
+  "comment_tab.report_success": "Báo cáo đã được gửi!",
+  "comment_tab.report_error_login": "Bạn cần đăng nhập để báo cáo bình luận.",
+  "comment_tab.report_error_reason": "Vui lòng nhập lý do cụ thể của bạn."
+}

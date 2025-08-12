@@ -402,6 +402,8 @@ function Header({ setModalType, onMenuClick, onSearch, showSearch = true }) {
     if (recognitionRef.current) recognitionRef.current.stop();
   };
 
+  const hideGoPremium = location.pathname.startsWith("/artist") || location.pathname.startsWith("/admin");
+
   return (
     <>
       <Layout.Header style={{ background: "#181f2a", padding: isMobile ? "0 12px" : "0 40px", boxShadow: "0 2px 8px rgba(0,0,0,0.08)", display: "flex", alignItems: "center", height: isMobile ? 56 : 72, zIndex: 10 }}>
@@ -508,7 +510,7 @@ function Header({ setModalType, onMenuClick, onSearch, showSearch = true }) {
               `}
             </style>
 
-            {userName && Array.isArray(roles) && !roles.includes("ROLE_PREMIUM") && (
+            {userName && Array.isArray(roles) && !roles.includes("ROLE_PREMIUM") && !hideGoPremium && (
               <Tooltip title={t("header.upgrade_now")}>
                 <Button
                   type="primary"
