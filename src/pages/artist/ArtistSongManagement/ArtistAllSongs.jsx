@@ -142,10 +142,6 @@ export default function ArtistAllSongs() {
         }
         .ant-modal-confirm .ant-select-selection-placeholder { color: var(--text-subtle) !important; }
         .ant-modal-confirm .ant-select .ant-select-selection-item { color: #e8f3ff !important; }
-        .ant-modal-confirm .ant-modal-title {
-            color: #3ed8ff !important;
-            font-weight: 600 !important;
-        }
         /* dropdown gắn class riêng để chắc chắn ăn style */
         .album-select-dropdown { background: #1c2234 !important; border: 1px solid var(--border) !important; }
         .album-select-dropdown .ant-select-item { color: #e8f3ff !important; }
@@ -528,22 +524,49 @@ export default function ArtistAllSongs() {
     ];
 
     return (
-        <div className="artist-albums">
+        <>
             <style>
                 {`
-                    .artist-albums .ant-btn-primary {
-                        background: var(--primary) !important;
-                        border-color: var(--primary) !important;
-                        color: #0b1222 !important;
+                    .ant-form-item-label > label {
+                        color: #3ed8ff !important;
                         font-weight: 600;
+                        letter-spacing: 0.5px;
                     }
-                    .artist-albums .ant-btn-primary:hover,
-                    .artist-albums .ant-btn-primary:focus {
-                        background: var(--primary-strong) !important;
-                        border-color: var(--primary-strong) !important;
-                        color: #0b1222 !important;
+                    .ant-modal-close {
+                        color: #3ed8ff !important;
+                        transition: color 0.2s;
                     }
-                    /* ...các style khác giữ nguyên... */
+                    .ant-modal-close:hover, .ant-modal-close:focus {
+                        color: #18bff0 !important;
+                    }
+                    .ant-modal .ant-select-selector {
+                        background-color: #0f1628 !important;
+                        color: #fff !important;
+                        border: 1.5px solid #3ed8ff !important;
+                        box-shadow: 0 0 0 2px rgba(62,216,255,0.15) !important;
+                    }
+                    .ant-modal .ant-select-selection-placeholder {
+                        color: #9fb1c6 !important;
+                    }
+                    .ant-modal .ant-select-arrow {
+                        color: #3ed8ff !important;
+                    }
+                    /* Đổi nền modal confirm chọn album */
+                    .ant-modal-confirm .ant-modal-content {
+                        background: #181d36 !important;
+                        color: #fff !important;
+                    }
+                    .ant-modal-confirm .ant-modal-header {
+                        background: #101426 !important;
+                        border-bottom: 1px solid #3ed8ff !important;
+                    }
+                    .ant-modal-confirm .ant-modal-title {
+                        color: #3ed8ff !important;
+                        font-weight: 600 !important;
+                    }
+                    .ant-modal-confirm .ant-btn {
+                        border-radius: 8px;
+                    }
                 `}
             </style>
             <div
@@ -747,6 +770,6 @@ export default function ArtistAllSongs() {
                     </Form>
                 </Modal>
             </div>
-        </div>
+        </>
     );
 }
